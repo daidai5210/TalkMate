@@ -1,0 +1,24 @@
+# 开发约束文档（队长要求，不随 git 追踪）
+.dev-constraints.md
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 密钥
+*.pem
+*.key
+*.cert
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
