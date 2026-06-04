@@ -1,6 +1,6 @@
-# SpeakFlow 业务调研报告
+# TalkMate 业务调研报告
 
-> 项目代号：SpeakFlow  
+> 项目代号：TalkMate  
 > 调研日期：2026-06-04  
 > 调研人：PM  
 > 版本：v0.1  
