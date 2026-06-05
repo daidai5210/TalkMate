@@ -82,3 +82,10 @@
 - 定向复测：`tests/e2e/test_mobile_layout_e2e.py` 通过，覆盖 375/390/430/768/1440 视口。
 - Issue 状态：MUI-ISSUE-001 已 verified。
 - 当前结论：三阶段计划主体完成，待生成 S6 验收交付记录和阶段复盘。
+
+## 2026-06-05T23:16:00Z
+
+- 已生成 S6 验收交付记录：`docs/acceptance/ACCEPT-001-mobile-app-ui-adjustment.md`。
+- 已生成 S7 阶段复盘：`docs/retros/RETRO-001-mobile-app-ui-adjustment.md`。
+- S6 门禁结论：有条件通过，条件项为远程 PR 受 SSH host key 阻塞。
+- S7 门禁结论：通过。
