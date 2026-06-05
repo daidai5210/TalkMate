@@ -96,3 +96,11 @@
 - Code Review 发现并修复：E2E 绝对截图路径、前端新增字距类、Markdown 行尾格式问题。
 - 远程推送复核：`git push -u origin feature/mobile-app-ui-shell` 仍失败，错误为 `Host key verification failed.`。
 - 测试服务清理：8000 无监听；5173 端口进程已退出为 defunct，PID 文件已清理。
+
+## 2026-06-05T23:28:00Z
+
+- 队长要求通过飞书发送最新版截图证据。
+- 已发送飞书说明消息到当前群：`om_x100b6d01fb2830a0b29d4deed5be9b1`。
+- 已成功发送关键预览截图 2 张：注册页 `om_x100b6d01fb34cca0b3b7d86cb2414ca`、首页 `om_x100b6d01f8c088a0b182eff9e28f4d3`。
+- 第 3 张长截图作为图片上传失败，飞书接口返回 `HTTP 400: field validation failed`。
+- 已改为发送完整截图包 `talkmate-mobile-app-ui-screenshots-2026-06-05.zip`，包含 40 张截图，飞书消息：`om_x100b6d01f9dc70a0b28b6b68f5787fd`。
