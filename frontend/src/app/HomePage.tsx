@@ -7,16 +7,13 @@ import ScenarioList, {
 import { useScenarioStore } from '../features/scenario/scenarioStore';
 
 export default function HomePage() {
-  const { scenarios, loading, error, fetched, fetchScenarios, reset } = useScenarioStore();
+  const { scenarios, loading, error, fetched, fetchScenarios } = useScenarioStore();
 
   useEffect(() => {
     if (!fetched) {
       fetchScenarios();
     }
-    return () => {
-      reset();
-    };
-  }, [fetched, fetchScenarios, reset]);
+  }, [fetched, fetchScenarios]);
 
   return (
     <div className="min-h-screen px-4 py-6 max-w-6xl mx-auto">
