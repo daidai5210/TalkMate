@@ -70,7 +70,7 @@ def main() -> None:
         page.fill("#username", "not_exist")
         page.fill("#password", "WrongPass1")
         page.click("button[type=submit]")
-        page.wait_for_selector("text=用户不存在", timeout=10000)
+        page.wait_for_selector("text=用户名不存在", timeout=10000)
         page.screenshot(path=str(SCREENSHOT_DIR / "01-login-error.png"), full_page=True)
 
         page.goto(f"{BASE_URL}/register")

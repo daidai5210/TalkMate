@@ -63,3 +63,14 @@
 - PR 状态：暂未创建；后续需在 SSH known_hosts 配置完成后补推送并创建 PR。
 - 替代记录：阶段一提交链已保存在本地分支 `feature/mobile-app-ui-shell`。
 - 下一步：继续本地进入阶段二 S5 完整功能与用户体验测试。
+
+## 2026-06-05T23:08:00Z
+
+- 阶段二测试环境准备：创建临时 Playwright venv `/tmp/talkmate-playwright-env`，安装 Playwright 与 Chromium。
+- 首次 E2E 失败原因：Chromium 缺少系统库 `libglib-2.0.so.0`。
+- 已安装 Playwright Chromium 运行依赖，复测浏览器可启动。
+- 已启动测试服务：后端 PID `/tmp/talkmate-backend-mobile-ui.pid`，前端 PID `/tmp/talkmate-frontend-mobile-ui.pid`。
+- 完整用户旅程 E2E：通过。
+- 页面状态 E2E：通过；期间修正测试脚本文案断言 `用户不存在` -> `用户名不存在`。
+- 多视口布局 E2E：不通过，发现 MUI-ISSUE-001 登录/注册切换链接触控目标过小。
+- 下一步：提交阶段二验证记录，进入阶段三定向修复 MUI-ISSUE-001。
