@@ -41,8 +41,9 @@ def test_build_messages_basic() -> None:
     history = [_make_msg("user", "hi"), _make_msg("ai", "hello")]
     msgs = build_messages("sys", history, "how are you?")
     assert msgs[0] == {"role": "system", "content": "sys"}
+    # DB 用 'ai' 角色,OpenAI 协议用 'assistant',边界层转换
     assert msgs[1] == {"role": "user", "content": "hi"}
-    assert msgs[2] == {"role": "ai", "content": "hello"}
+    assert msgs[2] == {"role": "assistant", "content": "hello"}
     assert msgs[3] == {"role": "user", "content": "how are you?"}
 
 
