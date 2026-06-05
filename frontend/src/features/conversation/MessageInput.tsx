@@ -1,4 +1,5 @@
 import { FormEvent, KeyboardEvent, useState } from 'react';
+import VoiceRecorder from '../../components/voice/VoiceRecorder';
 
 interface Props {
   onSend: (text: string) => Promise<void>;
@@ -34,13 +35,22 @@ export default function MessageInput({ onSend, disabled }: Props) {
       data-testid="message-input-form"
     >
       <div className="flex items-end gap-2">
+        <VoiceRecorder
+          disabled={disabled}
+          onTranscript={(t, isFinal) => {
+            setText(t);
+            if (isFinal) {
+              // final transcript, ready to send
+            }
+          }}
+        />
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={onKeyDown}
           rows={1}
           maxLength={5000}
-          placeholder={disabled ? '请稍候…' : '输入消息,Enter 发送,Shift+Enter 换行'}
+          placeholder={disabled ? '请稍候…' : '输入消息,Enter 发送,Shift+Enter 换行,或点麦克风录音'}
           disabled={disabled}
           className="flex-1 resize-none border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 max-h-32"
           data-testid="message-textarea"
