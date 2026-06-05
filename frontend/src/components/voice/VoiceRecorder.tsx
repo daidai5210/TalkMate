@@ -55,7 +55,7 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       <button
         type="button"
         disabled
-        className="min-h-11 min-w-11 p-2 text-gray-300 cursor-not-allowed"
+        className="min-h-12 min-w-12 cursor-not-allowed rounded-2xl bg-slate-100 p-2 text-slate-300"
         title="当前浏览器不支持语音识别"
         aria-label="当前浏览器不支持语音识别"
         data-testid="voice-recorder-unsupported"
@@ -71,10 +71,10 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       onClick={recording ? handleStop : handleStart}
       onMouseDown={(e) => e.preventDefault()}
       disabled={disabled && !recording}
-      className={`relative min-h-11 min-w-11 p-2 rounded-md transition ${
+      className={`relative min-h-12 min-w-12 rounded-2xl p-2 shadow-sm transition ${
         recording
-          ? 'bg-red-500 text-white'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          ? 'bg-rose-500 text-white shadow-rose-200'
+          : 'bg-slate-950 text-white hover:bg-brand-700'
       } disabled:opacity-50`}
       title={recording ? '点击停止' : '点击录音'}
       aria-label={recording ? '点击停止录音' : '点击开始录音'}
@@ -84,7 +84,7 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       {recording && <PulseRing />}
       <MicrophoneIcon recording={recording} />
       {error && (
-        <span className="absolute bottom-full left-0 mb-1 max-w-[12rem] rounded bg-red-600 px-1.5 py-0.5 text-[10px] text-white break-words">
+        <span className="absolute bottom-full left-0 mb-1 max-w-[12rem] rounded-2xl bg-red-600 px-2 py-1 text-[10px] text-white break-words">
           {error}
         </span>
       )}
@@ -117,7 +117,7 @@ function PulseRing() {
   return (
     <span
       aria-hidden="true"
-      className="absolute inset-0 rounded-md bg-red-400 opacity-50 animate-ping"
+      className="absolute inset-0 rounded-2xl bg-red-400 opacity-50 animate-ping"
       data-testid="voice-recorder-pulse"
     />
   );
