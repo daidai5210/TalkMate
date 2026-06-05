@@ -15,5 +15,12 @@ body,
 }
 
 body {
+  margin: 0;
   overflow-x: hidden;
+  background: #f8fafc;
+}
+
+:root {
+  --app-max-width: 430px;
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
 }
