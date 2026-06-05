@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import ConversationPage from './ConversationPage';
 import HomePage from './HomePage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
@@ -20,6 +21,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/conversation/:id"
+        element={
+          <ProtectedRoute>
+            <ConversationPage />
           </ProtectedRoute>
         }
       />
