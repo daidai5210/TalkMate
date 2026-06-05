@@ -18,5 +18,6 @@ class Base(DeclarativeBase):
 
 def init_db() -> None:
     from app.modules.auth.models import User  # noqa: F401
+    from app.modules.scenario.models import Scenario  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
