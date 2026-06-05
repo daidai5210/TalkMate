@@ -36,3 +36,10 @@
 - 未提交改动是否为当前用户或其他 Agent 已完成但未提交的开发内容。
 - `frontend/src/features/training/` 新增目录对应的业务目标和验收口径。
 - 是否接受当前训练/成长反馈方向作为下一轮迭代范围。
+
+## 阶段一执行审计结论
+
+- 当前 dirty worktree 中的前端 UI 改动与队长确认的“移动 App Shell + 任务训练流”方向一致，可纳入阶段一实现范围。
+- `frontend/src/features/training/trainingDesign.ts` 可作为纯前端 UI 辅助数据和反馈计算使用，但不得在阶段一引入新接口或后端数据模型。
+- `talkmate.db` 为本地运行数据变更，必须保持未提交。
+- 阶段一执行分支为 `feature/mobile-app-ui-shell`。

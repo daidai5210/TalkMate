@@ -33,3 +33,11 @@
 - 已产出计划：`docs/superpowers/plans/2026-06-05-mobile-app-ui-three-phase-plan.md`。
 - 计划覆盖：阶段一 UI 实现、阶段二完整功能与用户体验测试、阶段三问题修复与定向复测循环。
 - Git 策略：小阶段本地 commit，大阶段 push 远程并创建 PR。
+
+## 2026-06-05T22:46:00Z
+
+- 用户通过 `/crew` 要求按计划进入执行，除非必要阻塞不再中断询问。
+- 当前阶段：S4 开发实施，阶段一“手机端 App 化 UI 实现”。
+- 已执行 1.1 分支准备：创建并切换到 `feature/mobile-app-ui-shell`。
+- 工作区审计结论：前端 UI 改动纳入阶段一；`frontend/src/features/training/` 仅作为前端辅助；`talkmate.db` 不纳入提交。
+- 下一步：提交 1.1 审计记录，然后进入 1.2 App Shell 与全局布局约束。
