@@ -8,6 +8,7 @@
 - 错误码 2001(场景不存在)/ 3001(对话不存在)
 """
 import os
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -49,6 +50,25 @@ def client() -> TestClient:
     app.dependency_overrides.clear()
     if os.path.exists(TEST_DB_PATH):
         os.remove(TEST_DB_PATH)
+
+
+@pytest.fixture
+def mock_ai_client():
+    """替换 conversation routes 内部的 AIService 使用的 DeepSeekClient。"""
+    from app.modules.ai_service.client import DeepSeekClient
+    from app.modules.ai_service.service import AIService
+
+    fake = MagicMock(spec=DeepSeekClient)
+    fake.chat.return_value = "AI 占位回复:已收到你的消息"
+    original = DeepSeekClient.__init__
+    DeepSeekClient.__init__ = lambda self, *a, **kw: setattr(self, "client", MagicMock()) or setattr(self, "model", "fake") or setattr(self, "chat", fake.chat)
+    original_service_init = AIService.__init__
+    AIService.__init__ = lambda self, *a, **kw: setattr(self, "client", fake) or setattr(self, "max_history", 20)
+    try:
+        yield fake
+    finally:
+        DeepSeekClient.__init__ = original
+        AIService.__init__ = original_service_init
 
 
 def _auth_header(token: str) -> dict:
@@ -100,7 +120,7 @@ def test_create_conversation_scenario_not_found(client: TestClient) -> None:
     assert resp.json()["code"] == 2001
 
 
-def test_get_conversation_with_messages(client: TestClient) -> None:
+def test_get_conversation_with_messages(client: TestClient, mock_ai_client) -> None:
     token = _register_login(client, "convuser3")
     create = client.post(
         "/api/v1/conversations",
