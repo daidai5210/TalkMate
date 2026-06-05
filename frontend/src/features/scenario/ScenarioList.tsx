@@ -8,7 +8,7 @@ interface Props {
 export default function ScenarioList({ scenarios }: Props) {
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+      className="grid grid-cols-1 gap-3"
       data-testid="scenario-list"
     >
       {scenarios.map((s) => (
@@ -20,16 +20,24 @@ export default function ScenarioList({ scenarios }: Props) {
 
 export function ScenarioListSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 gap-3">
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
-          className="bg-white rounded-lg border border-gray-100 p-4 sm:p-5 min-h-40 sm:h-44 animate-pulse"
+          className="min-h-52 animate-pulse rounded-3xl border border-slate-100 bg-white p-4 shadow-sm"
         >
-          <div className="h-10 w-10 bg-gray-200 rounded mb-3" />
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
-          <div className="h-3 bg-gray-200 rounded w-full mb-1" />
-          <div className="h-3 bg-gray-200 rounded w-4/5" />
+          <div className="mb-5 flex items-center justify-between">
+            <div className="h-12 w-12 rounded-2xl bg-slate-200" />
+            <div className="h-6 w-20 rounded-full bg-slate-200" />
+          </div>
+          <div className="mb-3 h-3 w-24 rounded bg-slate-200" />
+          <div className="mb-3 h-6 w-3/4 rounded bg-slate-200" />
+          <div className="mb-2 h-3 w-full rounded bg-slate-200" />
+          <div className="mb-6 h-3 w-5/6 rounded bg-slate-200" />
+          <div className="flex gap-2">
+            <div className="h-6 w-16 rounded-full bg-slate-200" />
+            <div className="h-6 w-20 rounded-full bg-slate-200" />
+          </div>
         </div>
       ))}
     </div>
@@ -38,10 +46,10 @@ export function ScenarioListSkeleton() {
 
 export function ScenarioListEmpty() {
   return (
-    <div className="bg-white rounded-lg border border-gray-100 p-6 sm:p-10 text-center">
-      <p className="text-gray-500 mb-1">暂无场景</p>
-      <p className="text-sm text-gray-400 break-words">
-        系统尚未配置任何练习场景,请稍后再来或联系管理员。
+    <div className="rounded-3xl border border-dashed border-slate-300 bg-white/80 p-8 text-center shadow-sm sm:p-10">
+      <p className="mb-1 text-lg font-bold text-slate-700">暂无训练任务</p>
+      <p className="break-words text-sm text-slate-500">
+        系统尚未配置任何口语任务，请稍后再来或联系管理员。
       </p>
     </div>
   );

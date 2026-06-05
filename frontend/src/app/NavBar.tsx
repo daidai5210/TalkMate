@@ -4,23 +4,26 @@ export default function NavBar() {
   const { user, logout } = useAuthStore();
   const initial = user?.username?.[0]?.toUpperCase() ?? '?';
   return (
-    <header className="flex items-center justify-between mb-8" data-testid="navbar">
-      <h1 className="text-xl font-semibold text-brand-600">TalkMate</h1>
+    <header className="mb-5 flex items-center justify-between gap-3" data-testid="navbar">
+      <div className="min-w-0">
+        <h1 className="text-lg font-black tracking-tight text-slate-950">TalkMate</h1>
+        <p className="truncate text-xs font-medium text-slate-500">AI 口语训练</p>
+      </div>
       {user && (
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2">
           <div
-            className="w-9 h-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-sm font-semibold"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-sm font-bold text-brand-700"
             aria-label="用户头像"
             data-testid="user-avatar"
           >
             {initial}
           </div>
-          <span className="text-sm text-gray-600 hidden sm:inline" data-testid="navbar-username">
+          <span className="max-w-20 truncate text-sm font-medium text-slate-600" data-testid="navbar-username">
             {user.username}
           </span>
           <button
             onClick={logout}
-            className="text-sm px-3 py-1 border rounded-md hover:bg-gray-100"
+            className="min-h-10 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 hover:border-brand-200 hover:text-brand-700"
             data-testid="logout-button"
           >
             登出
