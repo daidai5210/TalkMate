@@ -5,9 +5,10 @@ import type { Message } from './types';
 interface Props {
   messages: Message[];
   sending: boolean;
+  emptyText?: string;
 }
 
-export default function MessageList({ messages, sending }: Props) {
+export default function MessageList({ messages, sending, emptyText = '开始一段对话吧' }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const lastIdRef = useRef<number | null>(null);
 
@@ -33,12 +34,12 @@ export default function MessageList({ messages, sending }: Props) {
 
   return (
     <div
-      className="flex-1 overflow-y-auto px-1 py-4 space-y-3"
+      className="min-h-0 flex-1 overflow-y-auto px-1 py-4 space-y-3"
       data-testid="message-list"
     >
       {messages.length === 0 && (
-        <div className="text-center text-sm text-gray-400 py-12">
-          开始一段对话吧
+        <div className="py-12 text-center text-sm text-gray-400 break-words">
+          {emptyText}
         </div>
       )}
       {messages.map((m) => (

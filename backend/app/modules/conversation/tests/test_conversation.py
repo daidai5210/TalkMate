@@ -8,6 +8,7 @@
 - 错误码 2001(场景不存在)/ 3001(对话不存在)
 """
 import os
+from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
@@ -19,6 +20,8 @@ from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
+from app.modules.conversation.models import Message
+from app.modules.summary.models import Summary
 from app.modules.scenario.seed import seed_scenarios
 
 TEST_DB_PATH = "./test_conversation.db"
@@ -154,6 +157,77 @@ def test_get_conversation_with_messages(client: TestClient, mock_ai_client) -> N
     assert msgs[1]["role"] == "ai"
 
 
+def test_list_conversations_empty(client: TestClient) -> None:
+    token = _register_login(client, "history_empty")
+    resp = client.get("/api/v1/conversations", headers=_auth_header(token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["code"] == 0
+    assert body["data"] == []
+
+
+def test_list_conversations_with_summary_and_messages(client: TestClient) -> None:
+    token = _register_login(client, "history_full")
+    resp = client.post(
+        "/api/v1/conversations",
+        json={"scenario_id": 1},
+        headers=_auth_header(token),
+    )
+    conv_id = resp.json()["data"]["id"]
+
+    db = next(app.dependency_overrides[get_db]())
+    try:
+        db.add(Message(conversation_id=conv_id, role="user", text="hello"))
+        db.add(Message(conversation_id=conv_id, role="ai", text="hi"))
+        db.add(
+            Summary(
+                conversation_id=conv_id,
+                score=88,
+                feedback="[]",
+                suggestions="[]",
+                created_at=datetime.utcnow(),
+            )
+        )
+        db.commit()
+    finally:
+        db.close()
+
+    resp = client.get("/api/v1/conversations", headers=_auth_header(token))
+    assert resp.status_code == 200, resp.text
+    data = resp.json()["data"]
+    assert len(data) == 1
+    item = data[0]
+    assert item["id"] == conv_id
+    assert item["scenario"]["id"] == 1
+    assert item["scenario"]["name"] == "面试"
+    assert item["scenario"]["icon"]
+    assert item["created_at"] is not None
+    assert item["finished_at"] is None
+    assert item["message_count"] == 2
+    assert item["summary_score"] == 88
+    assert item["has_summary"] is True
+
+
+def test_list_conversations_current_user_only(client: TestClient) -> None:
+    token_a = _register_login(client, "history_owner_a")
+    token_b = _register_login(client, "history_owner_b")
+    own = client.post(
+        "/api/v1/conversations",
+        json={"scenario_id": 1},
+        headers=_auth_header(token_a),
+    ).json()["data"]["id"]
+    client.post(
+        "/api/v1/conversations",
+        json={"scenario_id": 2},
+        headers=_auth_header(token_b),
+    )
+
+    resp = client.get("/api/v1/conversations", headers=_auth_header(token_a))
+    assert resp.status_code == 200, resp.text
+    data = resp.json()["data"]
+    assert [item["id"] for item in data] == [own]
+
+
 def test_get_conversation_not_found(client: TestClient) -> None:
     token = _register_login(client, "convuser4")
     resp = client.get(
@@ -162,6 +236,23 @@ def test_get_conversation_not_found(client: TestClient) -> None:
     )
     assert resp.status_code == 400
     assert resp.json()["code"] == 3001
+
+
+def test_get_conversation_forbidden_for_other_user(client: TestClient) -> None:
+    owner_token = _register_login(client, "detail_owner")
+    other_token = _register_login(client, "detail_other")
+    conv_id = client.post(
+        "/api/v1/conversations",
+        json={"scenario_id": 1},
+        headers=_auth_header(owner_token),
+    ).json()["data"]["id"]
+
+    resp = client.get(
+        f"/api/v1/conversations/{conv_id}",
+        headers=_auth_header(other_token),
+    )
+    assert resp.status_code == 400
+    assert resp.json()["code"] == 4001
 
 
 def test_send_message_not_found(client: TestClient) -> None:
@@ -173,6 +264,24 @@ def test_send_message_not_found(client: TestClient) -> None:
     )
     assert resp.status_code == 400
     assert resp.json()["code"] == 3001
+
+
+def test_send_message_forbidden_for_other_user(client: TestClient) -> None:
+    owner_token = _register_login(client, "send_owner")
+    other_token = _register_login(client, "send_other")
+    conv_id = client.post(
+        "/api/v1/conversations",
+        json={"scenario_id": 1},
+        headers=_auth_header(owner_token),
+    ).json()["data"]["id"]
+
+    resp = client.post(
+        f"/api/v1/conversations/{conv_id}/messages",
+        json={"text": "hi"},
+        headers=_auth_header(other_token),
+    )
+    assert resp.status_code == 400
+    assert resp.json()["code"] == 4001
 
 
 def test_send_message_validation(client: TestClient) -> None:

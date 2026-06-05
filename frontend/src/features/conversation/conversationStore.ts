@@ -12,9 +12,20 @@ interface ConversationState {
   sending: boolean;
   error: string | null;
   initFromScenario: (scenario: ScenarioSummary) => Promise<void>;
-  loadExisting: (conversationId: number) => Promise<void>;
+  loadExisting: (conversationId: number, options?: { persistCurrent?: boolean }) => Promise<void>;
   send: (text: string) => Promise<void>;
   reset: () => void;
+}
+
+let activeConversationRequestId = 0;
+
+function nextConversationRequestId(): number {
+  activeConversationRequestId += 1;
+  return activeConversationRequestId;
+}
+
+function isLatestConversationRequest(requestId: number): boolean {
+  return requestId === activeConversationRequestId;
 }
 
 function getStoredConvId(scenarioId: number): number | null {
@@ -42,34 +53,45 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
   sending: false,
   error: null,
   initFromScenario: async (scenario) => {
+    const requestId = nextConversationRequestId();
     set({ loading: true, error: null });
     try {
       const existingId = getStoredConvId(scenario.id);
       if (existingId) {
         try {
           const conv = await getApi(existingId);
+          if (!isLatestConversationRequest(requestId)) return;
           set({ conversation: conv, loading: false });
           return;
         } catch {
+          if (!isLatestConversationRequest(requestId)) return;
           // existing conv not found, fall through to create new
           sessionStorage.removeItem(`talkmate_conv_${scenario.id}`);
         }
       }
       const conv = await createApi(scenario.id);
+      if (!isLatestConversationRequest(requestId)) return;
       storeConvId(scenario.id, conv.id);
       set({ conversation: conv, loading: false });
     } catch (err) {
+      if (!isLatestConversationRequest(requestId)) return;
       const message = err instanceof Error ? err.message : '加载对话失败';
       set({ loading: false, error: message });
     }
   },
-  loadExisting: async (conversationId) => {
+  loadExisting: async (conversationId, options) => {
+    const requestId = nextConversationRequestId();
+    const persistCurrent = options?.persistCurrent ?? true;
     set({ loading: true, error: null });
     try {
       const conv = await getApi(conversationId);
-      storeConvId(conv.scenario.id, conv.id);
+      if (!isLatestConversationRequest(requestId)) return;
+      if (persistCurrent) {
+        storeConvId(conv.scenario.id, conv.id);
+      }
       set({ conversation: conv, loading: false });
     } catch (err) {
+      if (!isLatestConversationRequest(requestId)) return;
       const message = err instanceof Error ? err.message : '加载对话失败';
       set({ loading: false, error: message });
     }
@@ -79,6 +101,10 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
     if (!current) {
       throw new Error('对话未就绪');
     }
+    const conversationId = current.id;
+    const requestId = activeConversationRequestId;
+    const isCurrentSendTarget = () =>
+      isLatestConversationRequest(requestId) && get().conversation?.id === conversationId;
     const tempId = -Date.now();
     const optimistic: Message = {
       id: tempId,
@@ -94,7 +120,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
       },
     });
     try {
-      const result = await sendApi(current.id, text);
+      const result = await sendApi(conversationId, text);
+      if (!isCurrentSendTarget()) return;
       const updated = get().conversation;
       if (!updated) return;
       const realMessages = updated.messages.map((m) =>
@@ -108,6 +135,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         },
       });
     } catch (err) {
+      if (!isCurrentSendTarget()) return;
       const message = err instanceof Error ? err.message : '发送消息失败';
       set((s) => ({
         sending: false,
@@ -122,5 +150,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
       throw err;
     }
   },
-  reset: () => set({ conversation: null, loading: false, sending: false, error: null }),
+  reset: () => {
+    nextConversationRequestId();
+    set({ conversation: null, loading: false, sending: false, error: null });
+  },
 }));

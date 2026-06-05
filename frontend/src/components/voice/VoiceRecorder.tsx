@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { createSTT, isSTTSupported } from '../../utils/stt';
+import { useEffect, useRef, useState } from 'react';
+import { createSTT, isSTTSupported, type STTHandle } from '../../utils/stt';
 
 interface Props {
   onTranscript: (text: string, isFinal: boolean) => void;
@@ -10,9 +10,14 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
   const [recording, setRecording] = useState(false);
   const [supported, setSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const sttRef = useRef<STTHandle | null>(null);
 
   useEffect(() => {
     setSupported(isSTTSupported());
+    return () => {
+      sttRef.current?.abort();
+      sttRef.current = null;
+    };
   }, []);
 
   const handleStart = () => {
@@ -35,10 +40,13 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       setSupported(false);
       return;
     }
+    sttRef.current?.abort();
+    sttRef.current = stt;
     stt.start();
   };
 
   const handleStop = () => {
+    sttRef.current?.stop();
     setRecording(false);
   };
 
@@ -47,8 +55,9 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       <button
         type="button"
         disabled
-        className="p-2 text-gray-300 cursor-not-allowed"
+        className="min-h-11 min-w-11 p-2 text-gray-300 cursor-not-allowed"
         title="当前浏览器不支持语音识别"
+        aria-label="当前浏览器不支持语音识别"
         data-testid="voice-recorder-unsupported"
       >
         <MicrophoneIcon />
@@ -62,19 +71,20 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       onClick={recording ? handleStop : handleStart}
       onMouseDown={(e) => e.preventDefault()}
       disabled={disabled && !recording}
-      className={`relative p-2 rounded-md transition ${
+      className={`relative min-h-11 min-w-11 p-2 rounded-md transition ${
         recording
           ? 'bg-red-500 text-white'
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
       } disabled:opacity-50`}
       title={recording ? '点击停止' : '点击录音'}
+      aria-label={recording ? '点击停止录音' : '点击开始录音'}
       data-testid="voice-recorder-button"
       data-recording={recording}
     >
       {recording && <PulseRing />}
       <MicrophoneIcon recording={recording} />
       {error && (
-        <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded whitespace-nowrap">
+        <span className="absolute bottom-full left-0 mb-1 max-w-[12rem] rounded bg-red-600 px-1.5 py-0.5 text-[10px] text-white break-words">
           {error}
         </span>
       )}

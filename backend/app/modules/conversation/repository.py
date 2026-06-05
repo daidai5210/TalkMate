@@ -1,9 +1,21 @@
-from typing import List, Optional
+from datetime import datetime
+from typing import List, NamedTuple, Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from app.modules.conversation.models import Conversation, Message
 from app.modules.scenario.models import Scenario
+from app.modules.summary.models import Summary
+
+
+class ConversationHistoryRow(NamedTuple):
+    id: int
+    scenario_id: int
+    created_at: datetime
+    finished_at: Optional[datetime]
+    message_count: int
+    summary_score: Optional[int]
 
 
 class ConversationRepository:
@@ -24,6 +36,31 @@ class ConversationRepository:
         self.db.commit()
         self.db.refresh(conv)
         return conv
+
+    def list_by_user(self, user_id: int) -> List[ConversationHistoryRow]:
+        rows = (
+            self.db.query(
+                Conversation.id,
+                Conversation.scenario_id,
+                Conversation.created_at,
+                Conversation.finished_at,
+                func.count(Message.id).label("message_count"),
+                Summary.score.label("summary_score"),
+            )
+            .outerjoin(Message, Message.conversation_id == Conversation.id)
+            .outerjoin(Summary, Summary.conversation_id == Conversation.id)
+            .filter(Conversation.user_id == user_id, Conversation.deleted_at.is_(None))
+            .group_by(
+                Conversation.id,
+                Conversation.scenario_id,
+                Conversation.created_at,
+                Conversation.finished_at,
+                Summary.score,
+            )
+            .order_by(Conversation.created_at.desc(), Conversation.id.desc())
+            .all()
+        )
+        return [ConversationHistoryRow(*row) for row in rows]
 
 
 class MessageRepository:

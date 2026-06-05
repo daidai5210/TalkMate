@@ -47,6 +47,16 @@ class ConversationSummary(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ConversationHistoryItem(BaseModel):
+    id: int
+    scenario: ScenarioSummary
+    created_at: datetime
+    finished_at: Optional[datetime] = None
+    message_count: int
+    summary_score: Optional[int] = None
+    has_summary: bool
+
+
 class SendMessageResponse(BaseModel):
     user_message: MessagePublic
     ai_message: MessagePublic

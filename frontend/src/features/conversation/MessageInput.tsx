@@ -34,7 +34,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
       className="border-t border-gray-200 bg-white px-4 py-3"
       data-testid="message-input-form"
     >
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 min-w-0">
         <VoiceRecorder
           disabled={disabled}
           onTranscript={(t, isFinal) => {
@@ -50,15 +50,15 @@ export default function MessageInput({ onSend, disabled }: Props) {
           onKeyDown={onKeyDown}
           rows={1}
           maxLength={5000}
-          placeholder={disabled ? '请稍候…' : '输入消息,Enter 发送,Shift+Enter 换行,或点麦克风录音'}
+          placeholder={disabled ? '请稍候…' : '输入消息…'}
           disabled={disabled}
-          className="flex-1 resize-none border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 max-h-32"
+          className="min-h-11 min-w-0 flex-1 resize-none border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 max-h-32"
           data-testid="message-textarea"
         />
         <button
           type="submit"
           disabled={disabled || !text.trim()}
-          className="px-4 py-2 bg-brand-600 text-white text-sm rounded-md hover:bg-brand-700 disabled:opacity-50"
+          className="min-h-11 px-4 py-2 bg-brand-600 text-white text-sm rounded-md hover:bg-brand-700 disabled:opacity-50"
           data-testid="message-send-button"
         >
           发送

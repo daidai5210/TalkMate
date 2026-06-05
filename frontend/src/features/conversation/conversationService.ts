@@ -1,7 +1,7 @@
 import axios from 'axios';
 import api from '../../services/api';
 import type { ApiResponse } from '../../types';
-import type { Conversation, SendMessageResult } from './types';
+import type { Conversation, ConversationHistoryItem, SendMessageResult } from './types';
 
 export async function createConversation(scenarioId: number): Promise<Conversation> {
   try {
@@ -20,6 +20,25 @@ export async function createConversation(scenarioId: number): Promise<Conversati
     }
     if (err instanceof Error) throw err;
     throw new Error('创建对话失败');
+  }
+}
+
+export async function listConversations(): Promise<ConversationHistoryItem[]> {
+  try {
+    const { data } = await api.get<ApiResponse<ConversationHistoryItem[]>>(
+      '/api/v1/conversations',
+    );
+    if (data.code !== 0 || !data.data) {
+      throw new Error(data.message);
+    }
+    return data.data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      const body = err.response?.data as { message?: string } | undefined;
+      if (body?.message) throw new Error(body.message);
+    }
+    if (err instanceof Error) throw err;
+    throw new Error('获取练习记录失败');
   }
 }
 

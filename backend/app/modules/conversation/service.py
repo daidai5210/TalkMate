@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -7,6 +7,7 @@ from app.modules.auth.repository import UserRepository
 from app.modules.conversation.models import Message
 from app.modules.conversation.repository import ConversationRepository, MessageRepository
 from app.modules.conversation.schemas import (
+    ConversationHistoryItem,
     ConversationPublic,
     MessagePublic,
     ScenarioSummary,
@@ -45,16 +46,23 @@ class ConversationService:
         conv = self.conv_repo.create(user_id=user_id, scenario_id=scenario_id)
         return self._to_public(conv)
 
-    def get(self, conversation_id: int) -> ConversationPublic:
+    def list_history(self, user_id: int) -> List[ConversationHistoryItem]:
+        conversations = self.conv_repo.list_by_user(user_id)
+        scenarios = {s.id: s for s in self.scenario_repo.list_ordered()}
+        return [self._to_history_item(conv, scenarios) for conv in conversations]
+
+    def get(self, conversation_id: int, user_id: int) -> ConversationPublic:
         conv = self.conv_repo.get_by_id(conversation_id)
         if conv is None:
             raise BusinessError(self.ERR_CONVERSATION_NOT_FOUND, "对话不存在")
+        self._ensure_owner(conv, user_id)
         return self._to_public(conv)
 
-    def send_message(self, conversation_id: int, text: str) -> SendMessageResponse:
+    def send_message(self, conversation_id: int, text: str, user_id: int) -> SendMessageResponse:
         conv = self.conv_repo.get_by_id(conversation_id)
         if conv is None:
             raise BusinessError(self.ERR_CONVERSATION_NOT_FOUND, "对话不存在")
+        self._ensure_owner(conv, user_id)
 
         user_msg = self.msg_repo.add(conversation_id=conversation_id, role="user", text=text)
 
@@ -80,6 +88,10 @@ class ConversationService:
             ai_message=MessagePublic.model_validate(ai_msg),
         )
 
+    def _ensure_owner(self, conv, user_id: int) -> None:
+        if conv.user_id != user_id:
+            raise BusinessError(4001, "无权访问该对话")
+
     def _to_public(self, conv) -> ConversationPublic:
         scenario = self.scenario_repo.list_ordered()
         scen = next((s for s in scenario if s.id == conv.scenario_id), None)
@@ -93,4 +105,18 @@ class ConversationService:
             created_at=conv.created_at,
             finished_at=conv.finished_at,
             messages=[MessagePublic.model_validate(m) for m in conv.messages],
+        )
+
+    def _to_history_item(self, conv, scenarios: dict[int, object]) -> ConversationHistoryItem:
+        scen = scenarios.get(conv.scenario_id)
+        if scen is None:
+            raise BusinessError(self.ERR_SCENARIO_NOT_FOUND, "关联场景不存在")
+        return ConversationHistoryItem(
+            id=conv.id,
+            scenario=ScenarioSummary(id=scen.id, name=scen.name, icon=scen.icon),
+            created_at=conv.created_at,
+            finished_at=conv.finished_at,
+            message_count=conv.message_count,
+            summary_score=conv.summary_score,
+            has_summary=conv.summary_score is not None,
         )
