@@ -43,7 +43,7 @@
 | 可维护性 | 通过 | 已修正 E2E 绝对路径、字距类和 Markdown 格式问题 |
 | 测试 | 通过 | 已有全量 E2E、状态 E2E、布局 E2E 与定向复测证据 |
 | 模块化 | 通过 | `AppShell` 负责外壳，`trainingDesign` 负责训练展示辅助数据 |
-| 提交洁净度 | 有条件通过 | `talkmate.db` 和 `evidence/` 保持未提交，远程 push 受 SSH host key 阻塞 |
+| 提交洁净度 | 有条件通过 | `talkmate.db` 和 `evidence/` 保持未提交，远程 push 受 GitHub SSH publickey 权限阻塞 |
 
 ## 5. 问题清单
 
@@ -52,7 +52,7 @@
 | Minor | E2E 截图目录使用绝对路径 | 后续 CI 或其他机器运行不便 | 改为基于测试文件定位项目根目录 | fixed |
 | Minor | 新增 UI 中存在 `tracking-*` 字距类 | 不符合当前前端约束 | 移除新增字距类 | fixed |
 | Minor | 部分 Markdown 行尾空格/EOF 空行 | `git diff --check` 不通过 | 清理文档格式 | fixed |
-| Minor | 远程 push 因 SSH host key 阻塞 | 无法创建远程 PR | 配置 known_hosts 后补推送 | open |
+| Minor | 远程 push 因 GitHub SSH publickey 权限阻塞 | 无法创建远程 PR | 配置 SSH 私钥或仓库访问权限后补推送 | open |
 
 ## 6. 修复与复审
 
@@ -65,7 +65,7 @@
 
 有条件通过。
 
-条件项：远程 PR 仍受 SSH host key 阻塞，当前只能保留本地提交链和阶段评审记录。
+条件项：远程 PR 仍受 GitHub SSH publickey 权限阻塞，当前只能保留本地提交链和阶段评审记录。SSH host key 已于 2026-06-05 补齐。
 
 ## 8. 是否允许提交
 

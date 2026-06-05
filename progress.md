@@ -104,3 +104,9 @@
 - 已成功发送关键预览截图 2 张：注册页 `om_x100b6d01fb34cca0b3b7d86cb2414ca`、首页 `om_x100b6d01f8c088a0b182eff9e28f4d3`。
 - 第 3 张长截图作为图片上传失败，飞书接口返回 `HTTP 400: field validation failed`。
 - 已改为发送完整截图包 `talkmate-mobile-app-ui-screenshots-2026-06-05.zip`，包含 40 张截图，飞书消息：`om_x100b6d01f9dc70a0b28b6b68f5787fd`。
+
+## 2026-06-05T23:34:00Z
+
+- 已补齐本机 GitHub SSH host key：创建 `~/.ssh/known_hosts` 并写入 `github.com` host key。
+- 远程推送复核：`git push -u origin feature/mobile-app-ui-shell` 仍失败，错误更新为 `Permission denied (publickey)`。
+- 最新阻塞结论：SSH host key 阻塞已解除；当前环境缺少可用 GitHub SSH 私钥或仓库访问权限，仍无法创建远程 PR。

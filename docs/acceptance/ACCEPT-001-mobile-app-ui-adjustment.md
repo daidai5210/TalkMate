@@ -63,7 +63,7 @@
 
 | 风险 | 影响 | 处理建议 |
 |---|---|---|
-| 远程推送失败：SSH host key verification failed | 暂未创建远程 PR | 配置 GitHub SSH known_hosts 后补推送和 PR |
+| 远程推送失败：Permission denied (publickey) | 暂未创建远程 PR | 配置 GitHub SSH 私钥或仓库访问权限后补推送和 PR |
 | `talkmate.db` 本地运行数据变更 | 不影响代码交付 | 不提交，后续测试前可清理本地数据 |
 | 后端测试存在 47 个 deprecation warnings | 不影响本次 UI 验收 | 后续技术债任务处理 |
 
@@ -76,6 +76,6 @@
 - 核心用户流程和移动体验测试通过。
 - P0/P1 问题已清零。
 - 验证证据和 Issue 记录完整。
-- 条件项：远程 PR 受 SSH host key 阻塞，当前只完成本地提交链。
+- 条件项：远程 PR 受 GitHub SSH publickey 权限阻塞，当前只完成本地提交链。SSH host key 已于 2026-06-05 补齐。
 
 是否建议进入下一阶段：是。建议在补齐远程 PR 后进入队长/PM 验收和阶段复盘闭环。
