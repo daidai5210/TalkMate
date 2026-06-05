@@ -6,7 +6,7 @@
 
 ## 当前阶段
 
-S4 开发实施阶段：正在执行三阶段计划中的阶段一“手机端 App 化 UI 实现”，当前小阶段为 1.1 工作区审计与分支准备。
+S4 开发实施阶段：三阶段计划中的阶段一“手机端 App 化 UI 实现”已完成开发实施与自查，待进入 S5 阶段二完整功能与用户体验测试。
 
 ## 阶段任务
 
@@ -18,7 +18,13 @@ S4 开发实施阶段：正在执行三阶段计划中的阶段一“手机端 A
 | T4 | 给出下一步开发动作 | complete | 输出可执行任务、风险、待确认事项和是否可进入开发 |
 | T5 | 提交 S2 UIUX 方案讨论产物 | complete | 本地 Git commit 完成，且不混入业务代码和数据库 |
 | T6 | 制定三阶段实施计划 | complete | 明确 UI 实现、完整体验测试、问题修复循环和提交/PR 策略 |
-| T7 | 阶段一 1.1 工作区审计与分支准备 | in_progress | 明确 dirty worktree 纳入/排除范围，创建实现分支并提交审计记录 |
+| T7 | 阶段一 1.1 工作区审计与分支准备 | complete | 明确 dirty worktree 纳入/排除范围，创建实现分支并提交审计记录 |
+| T8 | 阶段一 1.2 App Shell 与全局布局约束 | complete | 建立手机端 App Shell 和安全区布局变量，前端 build 通过 |
+| T9 | 阶段一 1.3 登录/注册 App 化 | complete | 登录/注册改为手机 App 启动流程，前端 build 通过 |
+| T10 | 阶段一 1.4 首页任务流 App 化 | complete | 首页改为移动任务流，前端 build 通过 |
+| T11 | 阶段一 1.5 对话训练页 App 化 | complete | 对话页改为移动训练舱，前端 build 通过 |
+| T12 | 阶段一 1.6 总结页 App 化 | complete | 总结页改为移动训练报告，前端 build 通过 |
+| T13 | 阶段一 1.7 阶段自查与构建 | complete | 前端 build 通过，后端模块测试通过，Git 洁净度检查仅剩不提交的 `talkmate.db` |
 
 ## 风险
 
@@ -47,3 +53,9 @@ S4 开发实施阶段：正在执行三阶段计划中的阶段一“手机端 A
 - 纳入阶段一：`frontend/src/app/*`、`frontend/src/features/auth/*`、`frontend/src/features/scenario/*`、`frontend/src/features/conversation/*`、`frontend/src/components/PracticeHistoryList.tsx`、`frontend/src/components/voice/VoiceRecorder.tsx`、`frontend/src/pages/SummaryPage.tsx`、`frontend/src/features/training/trainingDesign.ts`
 - 不纳入提交：`talkmate.db`
 - 约束：`frontend/src/features/training/` 仅作为前端 UI 反馈辅助，不新增后端接口、不扩大业务契约。
+
+## 阶段一验证证据
+
+- 前端构建：`npm --prefix /home/user13/Desktop/talkmate/frontend run build`，结果通过。
+- 后端模块测试：`./venv/bin/pytest app/modules/auth/tests/test_auth.py app/modules/scenario/tests/test_scenario.py app/modules/conversation/tests/test_conversation.py app/modules/summary/tests/test_summary.py app/modules/ai_service/tests/test_ai_service.py -q`，结果 `41 passed, 47 warnings`。
+- Git 洁净度：业务代码已全部提交，仅剩 `talkmate.db` 本地运行数据变更，按计划不提交。
