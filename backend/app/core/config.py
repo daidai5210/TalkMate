@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     REGISTER_CAPTCHA: str = "1234"
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    DEEPSEEK_API_KEY: str = "sk-dummy-for-local-dev"
+    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
+    DEEPSEEK_MODEL: str = "deepseek-chat"
+    DEEPSEEK_TIMEOUT: float = 3.0
+    AI_MAX_HISTORY: int = 20
 
     @property
     def cors_origins_list(self) -> List[str]:

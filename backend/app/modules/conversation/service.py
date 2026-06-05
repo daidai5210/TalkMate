@@ -2,6 +2,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
+from app.modules.ai_service.service import AIService
 from app.modules.auth.repository import UserRepository
 from app.modules.conversation.models import Message
 from app.modules.conversation.repository import ConversationRepository, MessageRepository
@@ -14,20 +15,21 @@ from app.modules.conversation.schemas import (
 from app.modules.scenario.repository import ScenarioRepository
 from app.shared.exceptions import BusinessError
 
-FIXED_AI_REPLY = (
-    "收到你的消息!这是占位回复,AI 集成将在 T-004 接入 DeepSeek API。"
-)
-
 
 class ConversationService:
     ERR_CONVERSATION_NOT_FOUND = 3001
     ERR_SCENARIO_NOT_FOUND = 2001
 
-    def __init__(self, db: Session):
+    def __init__(
+        self,
+        db: Session,
+        ai_service: Optional[AIService] = None,
+    ):
         self.db = db
         self.conv_repo = ConversationRepository(db)
         self.msg_repo = MessageRepository(db)
         self.scenario_repo = ScenarioRepository(db)
+        self.ai_service = ai_service or AIService()
 
     def create(self, user_id: int, scenario_id: int) -> ConversationPublic:
         if self.scenario_repo.list_ordered() is None:
@@ -55,8 +57,23 @@ class ConversationService:
             raise BusinessError(self.ERR_CONVERSATION_NOT_FOUND, "对话不存在")
 
         user_msg = self.msg_repo.add(conversation_id=conversation_id, role="user", text=text)
+
+        # Get scenario for system prompt
+        from app.modules.conversation.repository import MessageRepository as _MR
+
+        scen = _MR(self.db).get_scenario(conv.scenario_id)
+        if scen is None:
+            raise BusinessError(self.ERR_SCENARIO_NOT_FOUND, "关联场景不存在")
+
+        history = list(conv.messages)
+        ai_text = self.ai_service.send_message(
+            scenario_prompt=scen.prompt,
+            history=history,
+            user_text=text,
+        )
+
         ai_msg = self.msg_repo.add(
-            conversation_id=conversation_id, role="ai", text=FIXED_AI_REPLY
+            conversation_id=conversation_id, role="ai", text=ai_text
         )
         return SendMessageResponse(
             user_message=MessagePublic.model_validate(user_msg),
