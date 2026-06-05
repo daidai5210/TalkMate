@@ -82,9 +82,14 @@ export default function LoginPage() {
             {loading ? '登录中…' : '登录'}
           </button>
 
-          <p className="mt-5 text-center text-sm text-slate-500">
-            还没有账号？<Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700">去注册</Link>
-          </p>
+          <div className="mt-4 text-center">
+            <Link
+              to="/register"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-brand-700 hover:border-brand-200 hover:bg-brand-50"
+            >
+              还没有账号？去注册
+            </Link>
+          </div>
         </div>
       </form>
     </AppShell>

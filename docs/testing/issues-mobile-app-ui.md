@@ -54,4 +54,11 @@ Issue：MUI-ISSUE-001
 
 - 将登录/注册底部文本链接改为 `inline-flex min-h-11` 或整行次按钮，保持视觉权重低于主按钮。
 
-状态：open
+修复记录：
+
+- 修复方式：将登录页“还没有账号？去注册”和注册页“已有账号？去登录”从内联小链接改为 `inline-flex min-h-11` 的次级胶囊按钮。
+- 修复文件：`frontend/src/features/auth/LoginPage.tsx`、`frontend/src/features/auth/RegisterPage.tsx`
+- 定向复测：`tests/e2e/test_mobile_layout_e2e.py`
+- 复测结果：通过，所有视口无横向滚动且无过小可见控件。
+
+状态：verified

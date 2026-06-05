@@ -163,9 +163,14 @@ export default function RegisterPage() {
             {loading ? '注册中…' : '注册'}
           </button>
 
-          <p className="mt-5 text-center text-sm text-slate-500">
-            已有账号？<Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">去登录</Link>
-          </p>
+          <div className="mt-4 text-center">
+            <Link
+              to="/login"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-brand-700 hover:border-brand-200 hover:bg-brand-50"
+            >
+              已有账号？去登录
+            </Link>
+          </div>
         </div>
       </form>
     </AppShell>
