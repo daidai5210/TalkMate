@@ -1,9 +1,9 @@
 """TalkMate Backend FastAPI Application.
 
-集成 PR-003 内容:
+集成 PR-003 + PR-006 内容:
 - CORS 中间件(允许前端 5173 跨域)
-- lifespan 启动时 init_db() 自动建表
-- 注册 /api/v1/auth 路由
+- lifespan 启动时 init_db() 自动建表 + seed_scenarios() 写入 5 个种子场景
+- 注册 /api/v1/auth + /api/v1/scenarios 路由
 - BusinessError / SQLAlchemyError 异常处理
 """
 from contextlib import asynccontextmanager
@@ -15,9 +15,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1 import api_v1_router
 from app.core.config import get_settings
-from app.db.base import init_db
+from app.db.base import engine, init_db
+from app.modules.scenario.seed import seed_scenarios
 from app.shared.exceptions import BusinessError
 from app.shared.responses import err, ok
+from sqlalchemy.orm import sessionmaker
 
 settings = get_settings()
 
@@ -25,12 +27,14 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
+    SessionLocal = sessionmaker(bind=engine)
+    seed_scenarios(SessionLocal())
     yield
 
 
 app = FastAPI(
     title="TalkMate API",
-    version="0.1.0",
+    version="0.2.0",
     description="AI 英语口语陪练后端服务",
     lifespan=lifespan,
 )
