@@ -12,7 +12,6 @@ from app.modules.conversation.schemas import (
     SendMessageResponse,
 )
 from app.modules.conversation.service import ConversationService
-from app.modules.conversation.schemas import ConversationPublic
 from app.shared.exceptions import AuthError, BusinessError
 from app.shared.responses import ok
 
@@ -44,15 +43,26 @@ def create_conversation(
     return ok(data=conv.model_dump(mode="json"), message="创建对话成功")
 
 
+@router.get("")
+def list_conversations(
+    authorization: Optional[str] = Header(default=None),
+    db: Session = Depends(get_db),
+) -> dict:
+    user_id = _require_user_id(authorization)
+    service = ConversationService(db)
+    conversations = service.list_history(user_id=user_id)
+    return ok(data=[item.model_dump(mode="json") for item in conversations])
+
+
 @router.get("/{conversation_id}")
 def get_conversation(
     conversation_id: int,
     authorization: Optional[str] = Header(default=None),
     db: Session = Depends(get_db),
 ) -> dict:
-    _require_user_id(authorization)
+    user_id = _require_user_id(authorization)
     service = ConversationService(db)
-    conv = service.get(conversation_id=conversation_id)
+    conv = service.get(conversation_id=conversation_id, user_id=user_id)
     return ok(data=conv.model_dump(mode="json"))
 
 
@@ -63,9 +73,9 @@ def send_message(
     authorization: Optional[str] = Header(default=None),
     db: Session = Depends(get_db),
 ) -> dict:
-    _require_user_id(authorization)
+    user_id = _require_user_id(authorization)
     service = ConversationService(db)
     result: SendMessageResponse = service.send_message(
-        conversation_id=conversation_id, text=payload.text
+        conversation_id=conversation_id, text=payload.text, user_id=user_id
     )
     return ok(data=result.model_dump(mode="json"), message="消息已发送")

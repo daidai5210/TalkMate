@@ -51,10 +51,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm bg-white rounded-lg shadow-md p-6 space-y-4"
+        className="w-full max-w-md bg-white rounded-lg shadow-md p-5 sm:p-6 space-y-4"
       >
         <h1 className="text-2xl font-semibold text-center text-brand-600">TalkMate</h1>
         <p className="text-sm text-gray-500 text-center">创建账号</p>
@@ -73,7 +73,7 @@ export default function RegisterPage() {
             minLength={3}
             maxLength={50}
             pattern="[A-Za-z0-9_]+"
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -90,11 +90,11 @@ export default function RegisterPage() {
             required
             minLength={8}
             maxLength={32}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
           {password && (
-            <div className="flex items-center gap-2 text-xs">
-              <div className="flex-1 h-1.5 bg-gray-200 rounded">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="min-w-24 flex-1 h-1.5 bg-gray-200 rounded">
                 <div
                   className={`h-full ${STRENGTH_COLOR[strength]} rounded`}
                   style={{
@@ -117,15 +117,15 @@ export default function RegisterPage() {
             required
             minLength={8}
             maxLength={32}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            className={`w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 ${
               mismatch ? 'border-red-500 focus:ring-red-500' : 'focus:ring-brand-500'
             }`}
           />
-          {mismatch && <p className="text-xs text-red-500">两次密码不一致</p>}
+          {mismatch && <p className="text-xs text-red-500 break-words">两次密码不一致</p>}
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm text-gray-700" htmlFor="captcha">验证码(MVP 固定值:1234)</label>
+          <label className="block text-sm text-gray-700 break-words" htmlFor="captcha">验证码(MVP 固定值:1234)</label>
           <input
             id="captcha"
             type="text"
@@ -138,16 +138,16 @@ export default function RegisterPage() {
             minLength={4}
             maxLength={4}
             inputMode="numeric"
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 break-words">{error}</p>}
 
         <button
           type="submit"
           disabled={loading || mismatch}
-          className="w-full py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50"
+          className="w-full min-h-11 py-2 text-base sm:text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50"
         >
           {loading ? '注册中…' : '注册'}
         </button>

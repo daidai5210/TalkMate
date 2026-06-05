@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ConversationPage from './ConversationPage';
 import HomePage from './HomePage';
+import SummaryPage from '../pages/SummaryPage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
 import { useAuthStore } from '../stores/authStore';
@@ -21,6 +22,22 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/conversation/:id/summary"
+        element={
+          <ProtectedRoute>
+            <SummaryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/conversation/history/:conversationId"
+        element={
+          <ProtectedRoute>
+            <ConversationPage />
           </ProtectedRoute>
         }
       />

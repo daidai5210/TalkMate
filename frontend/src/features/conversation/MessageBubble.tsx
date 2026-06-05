@@ -17,9 +17,23 @@ export default function MessageBubble({ message }: Props) {
       data-testid={`message-${message.role}`}
     >
       <div
-        className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${ROLE_STYLE[message.role]}`}
+        className={`max-w-[88%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${ROLE_STYLE[message.role]}`}
       >
-        {message.text}
+        <p className="break-words">{message.text}</p>
+        {!isUser && (
+          <button
+            type="button"
+            onClick={() => {
+              void import('../../utils/tts').then(({ ttsSpeak }) => ttsSpeak(message.text));
+            }}
+            className="mt-2 inline-flex min-h-9 items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs text-gray-600 shadow-sm hover:text-brand-700"
+            data-testid="tts-play-button"
+            title="朗读这条 AI 回复"
+          >
+            <span aria-hidden="true">🔊</span>
+            朗读
+          </button>
+        )}
       </div>
     </div>
   );

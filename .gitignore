@@ -1,6 +1,9 @@
 # 开发约束文档（队长要求，不随 git 追踪）
 .dev-constraints.md
 
+# 团队内部配置与密钥（不随 git 追踪）
+.team-secrets.md
+
 # 环境变量
 .env
 .env.local
@@ -22,3 +25,6 @@ Thumbs.db
 # 临时文件
 *.tmp
 *.bak
+frontend/test-results/
+frontend/test-results/
+__pycache__/

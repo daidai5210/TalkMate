@@ -21,6 +21,16 @@ export interface Conversation {
   messages: Message[];
 }
 
+export interface ConversationHistoryItem {
+  id: number;
+  scenario: ScenarioSummary;
+  created_at: string;
+  finished_at: string | null;
+  message_count: number;
+  summary_score: number | null;
+  has_summary: boolean;
+}
+
 export interface SendMessageResult {
   user_message: Message;
   ai_message: Message;
