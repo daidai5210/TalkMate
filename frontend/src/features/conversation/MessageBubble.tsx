@@ -19,7 +19,7 @@ export default function MessageBubble({ message }: Props) {
       <div
         className={`max-w-[88%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-sm whitespace-pre-wrap break-words ${ROLE_STYLE[message.role]}`}
       >
-        {!isUser && <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">AI Coach</p>}
+        {!isUser && <p className="mb-2 text-xs font-bold uppercase text-slate-500">AI Coach</p>}
         <p className="break-words">{message.text}</p>
         {!isUser && (
           <button

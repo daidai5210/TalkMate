@@ -132,7 +132,7 @@ export default function ConversationPage() {
               >
                 ← 返回
               </button>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">AI 角色：{task.role}</p>
+              <p className="text-xs font-bold uppercase text-brand-600">AI 角色：{task.role}</p>
               <h1 className="mt-2 break-words text-xl font-black leading-tight text-slate-950">
                 {isHistoryMode ? '历史训练回放' : task.title}
               </h1>

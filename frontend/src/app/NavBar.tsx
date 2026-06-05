@@ -6,7 +6,7 @@ export default function NavBar() {
   return (
     <header className="mb-5 flex items-center justify-between gap-3" data-testid="navbar">
       <div className="min-w-0">
-        <h1 className="text-lg font-black tracking-tight text-slate-950">TalkMate</h1>
+        <h1 className="text-lg font-black text-slate-950">TalkMate</h1>
         <p className="truncate text-xs font-medium text-slate-500">AI 口语训练</p>
       </div>
       {user && (

@@ -194,7 +194,7 @@ export default function SummaryPage() {
           <div className="p-4">
             <div className="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-lg" data-testid="summary-score">
               <p className="text-sm text-slate-300">综合评分</p>
-              <div className={`mt-4 text-6xl font-black tracking-tight ${scoreTone(summary.score)}`}>
+              <div className={`mt-4 text-6xl font-black ${scoreTone(summary.score)}`}>
                 {summary.score}
               </div>
               <div className="mt-5 rounded-2xl bg-white/10 p-4">
@@ -204,7 +204,7 @@ export default function SummaryPage() {
             </div>
 
             <div className="mt-5">
-              <p className="break-words text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Growth Report</p>
+              <p className="break-words text-xs font-bold uppercase text-brand-600">Growth Report</p>
               <h1 className="mt-2 break-words text-2xl font-black leading-tight text-slate-950">任务反馈与中式英语画像</h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 优先看关键问题，再按建议回到对话复练。
@@ -304,7 +304,7 @@ export default function SummaryPage() {
         </section>
 
         <section className="mt-5 rounded-3xl border border-brand-100 bg-brand-50 p-6 shadow-sm" data-testid="summary-next-action">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-700">Next Training</p>
+          <p className="text-xs font-bold uppercase text-brand-700">Next Training</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">练习后行动建议</h2>
           <p className="mt-3 break-words text-sm leading-6 text-slate-700">{nextAction}</p>
           <div className="mt-4 flex flex-col gap-3">

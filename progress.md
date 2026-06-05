@@ -89,3 +89,10 @@
 - 已生成 S7 阶段复盘：`docs/retros/RETRO-001-mobile-app-ui-adjustment.md`。
 - S6 门禁结论：有条件通过，条件项为远程 PR 受 SSH host key 阻塞。
 - S7 门禁结论：通过。
+
+## 2026-06-05T23:24:00Z
+
+- 已补充 PR 前 Code Review：`docs/reviews/CR-001-mobile-app-ui-adjustment.md`。
+- Code Review 发现并修复：E2E 绝对截图路径、前端新增字距类、Markdown 行尾格式问题。
+- 远程推送复核：`git push -u origin feature/mobile-app-ui-shell` 仍失败，错误为 `Host key verification failed.`。
+- 测试服务清理：8000 无监听；5173 端口进程已退出为 defunct，PID 文件已清理。

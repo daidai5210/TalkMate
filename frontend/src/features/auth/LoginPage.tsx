@@ -22,7 +22,7 @@ export default function LoginPage() {
   return (
     <AppShell className="flex flex-col px-5 pb-[calc(24px+var(--app-safe-bottom))] pt-10">
       <header className="shrink-0">
-        <p className="text-sm font-bold uppercase tracking-[0.22em] text-brand-600">TalkMate</p>
+        <p className="text-sm font-bold uppercase text-brand-600">TalkMate</p>
         <h1 className="mt-4 text-3xl font-black leading-tight text-slate-950">
           开始今天的英语口语训练
         </h1>

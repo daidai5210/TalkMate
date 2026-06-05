@@ -11,9 +11,10 @@ from pathlib import Path
 from playwright.sync_api import Page, sync_playwright
 
 BASE_URL = os.environ.get("E2E_BASE_URL", "http://127.0.0.1:5173")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TEST_USER = f"mobile_full_{int(time.time())}"
 TEST_PASSWORD = "MobileFull123"
-SCREENSHOT_DIR = Path("/home/user13/Desktop/talkmate/evidence/2026-06-05-mobile-app-ui/full-journey")
+SCREENSHOT_DIR = PROJECT_ROOT / "evidence/2026-06-05-mobile-app-ui/full-journey"
 SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
 
 

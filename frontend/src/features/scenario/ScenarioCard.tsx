@@ -27,7 +27,7 @@ export default function ScenarioCard({ scenario }: Props) {
       </div>
 
       <div className="mt-4 min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">{scenario.name}任务</p>
+        <p className="text-xs font-semibold uppercase text-brand-600">{scenario.name}任务</p>
         <h3 className="mt-2 break-words text-lg font-black text-slate-950 group-hover:text-brand-700">
           {task.title}
         </h3>

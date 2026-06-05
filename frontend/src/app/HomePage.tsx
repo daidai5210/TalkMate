@@ -77,7 +77,7 @@ export default function HomePage() {
 
         <main className="space-y-7">
           <section className="rounded-[1.75rem] bg-slate-950 p-5 text-white shadow-lg shadow-slate-200" data-testid="home-hero">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-200">Today's training</p>
+            <p className="text-xs font-bold uppercase text-brand-200">Today's training</p>
             <h1 className="mt-3 break-words text-2xl font-black leading-tight">
               今天完成一个真实英语任务
             </h1>
@@ -100,7 +100,7 @@ export default function HomePage() {
 
           <section data-testid="task-section">
             <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Training tasks</p>
+              <p className="text-xs font-bold uppercase text-brand-600">Training tasks</p>
               <h2 className="mt-2 text-xl font-black text-slate-950">选择一个任务开始训练</h2>
               <p className="mt-1 text-sm leading-6 text-slate-500">任务卡包含 AI 角色、训练重点和预计时长。</p>
             </div>
@@ -131,7 +131,7 @@ export default function HomePage() {
           <section id="practice-history-section" data-testid="practice-history-section">
             <div className="mb-4 flex items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">History</p>
+                <p className="text-xs font-bold uppercase text-brand-600">History</p>
                 <h2 className="mt-2 text-xl font-black text-slate-950">口语成长记录</h2>
                 <p className="mt-1 text-sm text-slate-500">回顾最近练习、评分与总结，让每次开口都有沉淀。</p>
               </div>
