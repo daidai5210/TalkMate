@@ -3,6 +3,7 @@ import AppLayout from './AppLayout';
 import ConversationPage from './ConversationPage';
 import NewHomePage from '../pages/NewHomePage';
 import TrainingPage from '../pages/TrainingPage';
+import ProfilePage from '../pages/ProfilePage';
 import SummaryPage from '../pages/SummaryPage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
@@ -12,14 +13,6 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
   return children;
-}
-
-function NewProfilePage() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh] text-slate-400 text-sm">
-      👤 个人中心（待实现 T2-003）
-    </div>
-  );
 }
 
 export default function AppRouter() {
@@ -44,7 +37,7 @@ export default function AppRouter() {
         <Route index element={<Navigate to="/app/home" replace />} />
         <Route path="home" element={<NewHomePage />} />
         <Route path="training" element={<TrainingPage />} />
-        <Route path="profile" element={<NewProfilePage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       {/* 旧路由兼容：/conversation/* 保持可用 */}
