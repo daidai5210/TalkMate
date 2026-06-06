@@ -2,13 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import get_settings
+from app.db.url import build_engine_kwargs
 
 settings = get_settings()
 
 engine = create_engine(
     settings.DATABASE_URL,
-    connect_args={"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {},
     echo=False,
+    **build_engine_kwargs(settings.DATABASE_URL),
 )
 
 
