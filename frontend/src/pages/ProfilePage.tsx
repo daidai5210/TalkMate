@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
+import {
+  fetchHeatmap,
+  fetchScoreTrend,
+  fetchAchievements,
+  computeStreakDays,
+  type Achievement,
+  type HeatmapDay,
+  type ScorePoint,
+} from '../services/userStatsService';
 
 /* ---------- helpers ---------- */
 
@@ -17,62 +26,6 @@ function daysAgo(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
   return d.toISOString().split('T')[0];
-}
-
-/* ---------- mock data (待后端接口就绪后替换) ---------- */
-
-interface HeatmapDay {
-  date: string;
-  count: number;
-}
-
-interface Achievement {
-  key: string;
-  label: string;
-  description: string;
-  icon: string;
-  unlocked: boolean;
-  unlockedAt?: string;
-}
-
-interface ScorePoint {
-  date: string;
-  score: number;
-  type: 'conversation' | 'card';
-}
-
-const MOCK_ACHIEVEMENTS: Achievement[] = [
-  { key: 'first_practice', label: '初次尝试', description: '完成第一次口语练习', icon: '🎤', unlocked: true, unlockedAt: '2026-05-20' },
-  { key: 'streak_3', label: '三天坚持', description: '连续 3 天完成练习', icon: '🔥', unlocked: true, unlockedAt: '2026-05-25' },
-  { key: 'streak_7', label: '周冠军', description: '连续 7 天完成练习', icon: '🏆', unlocked: false },
-  { key: 'perfect_score', label: '满分达人', description: '获得一次满分评价', icon: '⭐', unlocked: false },
-  { key: 'all_scenarios', label: '场景全通', description: '完成所有场景的练习', icon: '🗺️', unlocked: false },
-  { key: 'voice_master', label: '朗读新手', description: '完成 10 次语音输入', icon: '🎙️', unlocked: true, unlockedAt: '2026-06-01' },
-];
-
-function generateMockHeatmap(): HeatmapDay[] {
-  const days: HeatmapDay[] = [];
-  for (let i = 89; i >= 0; i--) {
-    const date = daysAgo(i);
-    const rand = Math.random();
-    const count = rand < 0.4 ? 0 : rand < 0.7 ? 1 : rand < 0.85 ? 2 : rand < 0.95 ? 4 : 7;
-    days.push({ date, count });
-  }
-  return days;
-}
-
-function generateMockScoreTrend(): ScorePoint[] {
-  const points: ScorePoint[] = [];
-  for (let i = 29; i >= 0; i--) {
-    const date = daysAgo(i);
-    if (Math.random() < 0.6) {
-      points.push({ date, score: Math.round(60 + Math.random() * 40), type: 'conversation' });
-    }
-    if (Math.random() < 0.3) {
-      points.push({ date, score: Math.round(55 + Math.random() * 45), type: 'card' });
-    }
-  }
-  return points;
 }
 
 /* ---------- HeatmapCalendar ---------- */
@@ -175,7 +128,6 @@ function ScoreChart({ data }: { data: ScorePoint[] }) {
         <p className="text-xs text-slate-400 py-4 text-center">暂无数据</p>
       ) : (
         <svg viewBox={`0 0 ${w} ${h}`} className="w-full" aria-label="得分趋势图">
-          {/* grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((frac) => {
             const yy = pad.top + plotH * (1 - frac);
             return (
@@ -187,9 +139,7 @@ function ScoreChart({ data }: { data: ScorePoint[] }) {
               </g>
             );
           })}
-          {/* line */}
           <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          {/* dots */}
           {filtered.map((p, i) => (
             <circle
               key={i}
@@ -222,8 +172,12 @@ export default function ProfilePage() {
   const mountedRef = useRef(false);
   const ridRef = useRef(0);
 
-  const [heatmap] = useState<HeatmapDay[]>(() => generateMockHeatmap());
-  const [scoreTrend] = useState<ScorePoint[]>(() => generateMockScoreTrend());
+  const [heatmap, setHeatmap] = useState<HeatmapDay[]>([]);
+  const [heatmapLoading, setHeatmapLoading] = useState(true);
+  const [scoreTrend, setScoreTrend] = useState<ScorePoint[]>([]);
+  const [scoreTrendLoading, setScoreTrendLoading] = useState(true);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievementsLoading, setAchievementsLoading] = useState(true);
 
   const fetchHistory = useCallback(async () => {
     const rid = ridRef.current + 1;
@@ -244,18 +198,45 @@ export default function ProfilePage() {
     }
   }, []);
 
+  const fetchStats = useCallback(async () => {
+    setHeatmapLoading(true);
+    setScoreTrendLoading(true);
+    setAchievementsLoading(true);
+    try {
+      const [heatmapData, trendData, achievementsData] = await Promise.all([
+        fetchHeatmap(),
+        fetchScoreTrend(),
+        fetchAchievements(),
+      ]);
+      if (mountedRef.current) {
+        setHeatmap(heatmapData);
+        setScoreTrend(trendData);
+        setAchievements(achievementsData);
+      }
+    } catch {
+      // 统计加载失败静默处理，不影响主流程
+    } finally {
+      if (mountedRef.current) {
+        setHeatmapLoading(false);
+        setScoreTrendLoading(false);
+        setAchievementsLoading(false);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     mountedRef.current = true;
     fetchHistory();
+    fetchStats();
     return () => { mountedRef.current = false; };
-  }, [fetchHistory]);
+  }, [fetchHistory, fetchStats]);
 
   const scoredHistory = history.filter((h) => h.summary_score !== null);
   const averageScore = scoredHistory.length === 0
     ? null
     : Math.round(scoredHistory.reduce((s, h) => s + (h.summary_score ?? 0), 0) / scoredHistory.length);
   const completedCount = history.filter((h) => h.has_summary).length;
-  const streakDays = 3; // TODO: 后端接口
+  const streakDays = computeStreakDays(heatmap);
 
   const initial = user?.username?.[0]?.toUpperCase() ?? '?';
 
@@ -340,31 +321,47 @@ export default function ProfilePage() {
           {/* Heatmap */}
           <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-heatmap">
             <h2 className="text-sm font-bold text-slate-700 mb-3">练习热力图（近 3 个月）</h2>
-            <HeatmapCalendar data={heatmap} />
+            {heatmapLoading ? (
+              <div className="animate-pulse rounded-xl bg-slate-200 h-24" />
+            ) : (
+              <HeatmapCalendar data={heatmap} />
+            )}
           </section>
 
           {/* Achievements */}
           <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-achievements">
             <h2 className="text-sm font-bold text-slate-700 mb-3">成就徽章</h2>
-            <div className="grid grid-cols-3 gap-3">
-              {MOCK_ACHIEVEMENTS.map((a) => (
-                <div
-                  key={a.key}
-                  className={`rounded-xl p-3 text-center transition ${a.unlocked ? 'bg-brand-50' : 'bg-slate-50 opacity-50'}`}
-                >
-                  <span className="text-2xl">{a.icon}</span>
-                  <p className={`mt-1 text-xs font-bold ${a.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>
-                    {a.label}
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-slate-400 leading-tight">{a.description}</p>
-                </div>
-              ))}
-            </div>
+            {achievementsLoading ? (
+              <div className="grid grid-cols-3 gap-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="animate-pulse rounded-xl bg-slate-200 h-20" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {achievements.map((a) => (
+                  <div
+                    key={a.key}
+                    className={`rounded-xl p-3 text-center transition ${a.unlocked ? 'bg-brand-50' : 'bg-slate-50 opacity-50'}`}
+                  >
+                    <span className="text-2xl">{a.icon}</span>
+                    <p className={`mt-1 text-xs font-bold ${a.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>
+                      {a.label}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-slate-400 leading-tight">{a.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Score trend */}
           <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-trend">
-            <ScoreChart data={scoreTrend} />
+            {scoreTrendLoading ? (
+              <div className="animate-pulse rounded-xl bg-slate-200 h-36" />
+            ) : (
+              <ScoreChart data={scoreTrend} />
+            )}
           </section>
 
           {/* Report list */}
