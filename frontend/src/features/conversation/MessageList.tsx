@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import type { Message } from './types';
 
+const playedMessageIds = new Set<number>();
+
 interface Props {
   messages: Message[];
   sending: boolean;
@@ -10,22 +12,19 @@ interface Props {
 
 export default function MessageList({ messages, sending, emptyText = '开始一段对话吧' }: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const lastIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length, sending]);
 
-  // Auto-speak the latest AI message (skipping optimistic user msg with negative id)
   useEffect(() => {
     if (messages.length === 0) return;
     const last = messages[messages.length - 1];
-    if (last.id < 0) return; // optimistic user message
+    if (last.id < 0) return;
     if (last.role !== 'ai') return;
-    if (last.id === lastIdRef.current) return; // already seen
-    lastIdRef.current = last.id;
+    if (playedMessageIds.has(last.id)) return;
+    playedMessageIds.add(last.id);
 
-    // Dynamic import to keep tts code separate (and tree-shake unused)
     void import('../../utils/tts').then(({ ttsSpeak, isTTSSupported }) => {
       if (!isTTSSupported()) return;
       ttsSpeak(last.text);

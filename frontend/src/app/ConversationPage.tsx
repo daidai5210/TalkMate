@@ -48,6 +48,9 @@ export default function ConversationPage() {
   useEffect(() => {
     reset();
     setEndError(null);
+    return () => {
+      void import('../utils/tts').then(({ ttsCancel }) => ttsCancel());
+    };
   }, [isHistoryMode, scenarioIdParam, conversationIdParam, reset]);
 
   useEffect(() => {
