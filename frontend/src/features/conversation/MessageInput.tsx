@@ -31,10 +31,11 @@ export default function MessageInput({ onSend, disabled }: Props) {
   return (
     <form
       onSubmit={onSubmit}
-      className="border-t border-gray-200 bg-white px-4 py-3"
+      className="border-t border-slate-100 bg-white/95 px-3 pb-[calc(12px+var(--app-safe-bottom))] pt-3"
       data-testid="message-input-form"
     >
-      <div className="flex items-end gap-2 min-w-0">
+      <p className="mb-2 break-words text-xs font-medium text-slate-500">建议优先用语音回答；文字输入可作为备用。</p>
+      <div className="flex min-w-0 items-end gap-2">
         <VoiceRecorder
           disabled={disabled}
           onTranscript={(t, isFinal) => {
@@ -50,15 +51,15 @@ export default function MessageInput({ onSend, disabled }: Props) {
           onKeyDown={onKeyDown}
           rows={1}
           maxLength={5000}
-          placeholder={disabled ? '请稍候…' : '输入消息…'}
+          placeholder={disabled ? '请稍候…' : '说不出来时，可以先输入一句英文试试…'}
           disabled={disabled}
-          className="min-h-11 min-w-0 flex-1 resize-none border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 max-h-32"
+          className="max-h-32 min-h-12 min-w-0 flex-1 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200"
           data-testid="message-textarea"
         />
         <button
           type="submit"
           disabled={disabled || !text.trim()}
-          className="min-h-11 px-4 py-2 bg-brand-600 text-white text-sm rounded-md hover:bg-brand-700 disabled:opacity-50"
+          className="min-h-12 rounded-2xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           data-testid="message-send-button"
         >
           发送

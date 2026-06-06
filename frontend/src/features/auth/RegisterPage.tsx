@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AppShell from '../../app/AppShell';
 import { useAuthStore } from '../../stores/authStore';
 
 type Strength = 'weak' | 'medium' | 'strong';
@@ -51,16 +52,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6">
+    <AppShell className="flex flex-col px-5 pb-[calc(24px+var(--app-safe-bottom))] pt-8">
+      <header className="shrink-0">
+        <p className="text-sm font-bold uppercase text-brand-600">TalkMate</p>
+        <h1 className="mt-4 text-3xl font-black leading-tight text-slate-950">
+          创建口语成长档案
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-slate-500">
+          注册后即可进入任务制英语训练。
+        </p>
+      </header>
+
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-md bg-white rounded-lg shadow-md p-5 sm:p-6 space-y-4"
+        className="mt-8 flex min-h-0 flex-1 flex-col"
       >
-        <h1 className="text-2xl font-semibold text-center text-brand-600">TalkMate</h1>
-        <p className="text-sm text-gray-500 text-center">创建账号</p>
-
-        <div className="space-y-1">
-          <label className="text-sm text-gray-700" htmlFor="username">用户名</label>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700" htmlFor="username">用户名</label>
           <input
             id="username"
             type="text"
@@ -73,12 +82,12 @@ export default function RegisterPage() {
             minLength={3}
             maxLength={50}
             pattern="[A-Za-z0-9_]+"
-            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200"
           />
-        </div>
+          </div>
 
-        <div className="space-y-1">
-          <label className="text-sm text-gray-700" htmlFor="password">密码</label>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700" htmlFor="password">密码</label>
           <input
             id="password"
             type="password"
@@ -90,7 +99,7 @@ export default function RegisterPage() {
             required
             minLength={8}
             maxLength={32}
-            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200"
           />
           {password && (
             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -105,10 +114,10 @@ export default function RegisterPage() {
               <span className="text-gray-600">强度: {STRENGTH_LABEL[strength]}</span>
             </div>
           )}
-        </div>
+          </div>
 
-        <div className="space-y-1">
-          <label className="text-sm text-gray-700" htmlFor="confirm">确认密码</label>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700" htmlFor="confirm">确认密码</label>
           <input
             id="confirm"
             type="password"
@@ -117,15 +126,15 @@ export default function RegisterPage() {
             required
             minLength={8}
             maxLength={32}
-            className={`w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 ${
-              mismatch ? 'border-red-500 focus:ring-red-500' : 'focus:ring-brand-500'
+              className={`min-h-12 w-full rounded-2xl border bg-slate-50 px-4 py-3 text-base focus:bg-white focus:outline-none focus:ring-2 ${
+                mismatch ? 'border-red-500 focus:ring-red-200' : 'border-slate-200 focus:border-brand-500 focus:ring-brand-200'
             }`}
           />
           {mismatch && <p className="text-xs text-red-500 break-words">两次密码不一致</p>}
-        </div>
+          </div>
 
-        <div className="space-y-1">
-          <label className="block text-sm text-gray-700 break-words" htmlFor="captcha">验证码(MVP 固定值:1234)</label>
+          <div className="space-y-2">
+            <label className="block break-words text-sm font-semibold text-slate-700" htmlFor="captcha">验证码(MVP 固定值:1234)</label>
           <input
             id="captcha"
             type="text"
@@ -138,24 +147,32 @@ export default function RegisterPage() {
             minLength={4}
             maxLength={4}
             inputMode="numeric"
-            className="w-full min-h-11 px-3 py-2 text-base sm:text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200"
           />
+          </div>
         </div>
 
-        {error && <p className="text-sm text-red-500 break-words">{error}</p>}
+        {error && <p className="mt-4 break-words rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading || mismatch}
-          className="w-full min-h-11 py-2 text-base sm:text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50"
-        >
-          {loading ? '注册中…' : '注册'}
-        </button>
+        <div className="mt-auto pt-6">
+          <button
+            type="submit"
+            disabled={loading || mismatch}
+            className="min-h-12 w-full rounded-2xl bg-slate-950 px-4 py-3 text-base font-bold text-white shadow-lg shadow-slate-200 hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          >
+            {loading ? '注册中…' : '注册'}
+          </button>
 
-        <p className="text-sm text-center text-gray-500">
-          已有账号？<Link to="/login" className="text-brand-600 hover:underline">去登录</Link>
-        </p>
+          <div className="mt-4 text-center">
+            <Link
+              to="/login"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-brand-700 hover:border-brand-200 hover:bg-brand-50"
+            >
+              已有账号？去登录
+            </Link>
+          </div>
+        </div>
       </form>
-    </div>
+    </AppShell>
   );
 }

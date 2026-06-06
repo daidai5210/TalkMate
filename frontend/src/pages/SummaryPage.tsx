@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import NavBar from '../app/NavBar';
+import AppShell from '../app/AppShell';
 import {
   generateSummary,
   getSummary,
   SummaryApiError,
   type ConversationSummary,
 } from '../services/summaryService';
+import {
+  getMandarinIssueTags,
+  getNextActionSuggestion,
+  getTaskCompletionScore,
+  getTrainingTaskMeta,
+} from '../features/training/trainingDesign';
 
 const grammarLabels: Record<string, string> = {
   tense_errors: '时态错误',
@@ -105,51 +111,47 @@ export default function SummaryPage() {
   );
 
   const vocabulary = summary?.vocabulary_usage;
+  const mandarinTags = summary ? getMandarinIssueTags(summary.feedback, summary.grammar_issues) : [];
+  const taskCompletion = summary ? getTaskCompletionScore(summary.score, summary.feedback.length) : 0;
+  const nextAction = summary ? getNextActionSuggestion(mandarinTags, summary.suggestions) : '';
+  const task = getTrainingTaskMeta(null);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-6" data-testid="summary-loading" role="status" aria-live="polite">
-        <div className="mx-auto max-w-5xl">
-          <NavBar />
-          <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-10">
+      <AppShell className="flex items-center justify-center px-4 py-6" data-testid="summary-loading" role="status" aria-live="polite">
+          <div className="w-full rounded-3xl bg-white p-6 text-center shadow-sm">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-brand-600" />
             <p className="text-sm font-medium text-slate-600">正在读取课后总结…</p>
           </div>
-        </div>
-      </div>
+      </AppShell>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-6" data-testid="summary-error">
-        <div className="mx-auto max-w-5xl">
-          <NavBar />
-          <div className="mt-10 rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm sm:p-8">
+      <AppShell className="px-4 py-6" data-testid="summary-error">
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
             <p className="text-lg font-semibold text-red-700">总结加载失败</p>
-            <p className="mt-2 text-sm text-red-600">{error}</p>
+            <p className="mt-2 break-words text-sm text-red-600">{error}</p>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="mt-5 rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700"
+              className="mt-5 min-h-11 rounded-2xl bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700"
               data-testid="summary-back-button"
             >
               返回上一页
             </button>
           </div>
-        </div>
-      </div>
+      </AppShell>
     );
   }
 
   if (!summary) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-6" data-testid="summary-empty">
-        <div className="mx-auto max-w-5xl">
-          <NavBar />
-          <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
+      <AppShell className="px-4 py-6" data-testid="summary-empty">
+          <div className="rounded-3xl bg-white p-6 text-center shadow-sm">
             <p className="text-lg font-semibold text-slate-800">暂无总结数据</p>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 break-words text-sm leading-6 text-slate-500">
               {emptyMessage ?? '这段对话还没有生成总结。你可以返回对话页点击结束对话,或在这里直接生成。'}
             </p>
             {generateError && (
@@ -161,56 +163,64 @@ export default function SummaryPage() {
               type="button"
               onClick={handleGenerateSummary}
               disabled={generating}
-              className="mt-5 min-h-11 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="mt-5 min-h-11 rounded-2xl bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
               data-testid="summary-empty-generate-button"
             >
               {generating ? '生成总结中…' : '生成总结'}
             </button>
           </div>
-        </div>
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe,transparent_34%),linear-gradient(135deg,#f8fafc,#eef2ff)] px-4 py-6" data-testid="summary-page">
-      <div className="mx-auto max-w-5xl">
-        <NavBar />
-        <div className="mt-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center sm:gap-4">
+    <AppShell className="bg-slate-50" data-testid="summary-page">
+      <div className="px-4 pb-[calc(28px+var(--app-safe-bottom))] pt-4">
+        <div className="flex items-start justify-between gap-3">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="text-sm text-slate-500 hover:text-brand-600"
+            className="min-h-10 text-sm font-semibold text-slate-500 hover:text-brand-600"
             data-testid="summary-home-button"
           >
-            ← 返回场景
+            ← 返回
           </button>
-          <span className="w-fit break-words rounded-full bg-white/80 px-3 py-1 text-xs text-slate-500 shadow-sm sm:text-right">
-            生成时间 {new Date(summary.created_at).toLocaleString()}
+          <span className="max-w-[12rem] break-words rounded-full bg-white px-3 py-1 text-right text-xs text-slate-500 shadow-sm">
+            {new Date(summary.created_at).toLocaleString()}
           </span>
         </div>
 
-        <section className="mt-4 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-xl backdrop-blur">
-          <div className="grid gap-6 p-4 sm:p-6 md:grid-cols-[240px_1fr] md:p-8">
-            <div className="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-lg sm:p-6" data-testid="summary-score">
+        <section className="mt-4 overflow-hidden rounded-[1.75rem] bg-white shadow-sm">
+          <div className="p-4">
+            <div className="rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-lg" data-testid="summary-score">
               <p className="text-sm text-slate-300">综合评分</p>
-              <div className={`mt-4 text-5xl font-black tracking-tight sm:text-7xl ${scoreTone(summary.score)}`}>
+              <div className={`mt-4 text-6xl font-black ${scoreTone(summary.score)}`}>
                 {summary.score}
               </div>
-              <p className="mt-3 text-sm text-slate-300">满分 100，根据表达自然度、语法、词汇与沟通完整度综合评估。</p>
+              <div className="mt-5 rounded-2xl bg-white/10 p-4">
+                <p className="text-xs text-slate-300">任务完成度</p>
+                <p className="mt-2 text-3xl font-black text-white">{taskCompletion}%</p>
+              </div>
             </div>
 
-            <div className="flex flex-col justify-center">
-              <p className="break-words text-sm font-semibold uppercase tracking-[0.3em] text-brand-600">TalkMate Lesson Report</p>
-              <h1 className="mt-3 break-words text-2xl font-black text-slate-950 sm:text-3xl md:text-4xl">课后纠错与成长建议</h1>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
-                以下总结基于本轮对话自动生成，帮助你快速定位表达问题、复盘词汇使用，并形成下一轮练习目标。
+            <div className="mt-5">
+              <p className="break-words text-xs font-bold uppercase text-brand-600">Growth Report</p>
+              <h1 className="mt-2 break-words text-2xl font-black leading-tight text-slate-950">任务反馈与中式英语画像</h1>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                优先看关键问题，再按建议回到对话复练。
               </p>
+              <div className="mt-5 flex flex-wrap gap-2" data-testid="mandarin-issue-tags">
+                {mandarinTags.map((tag) => (
+                  <span key={tag} className="rounded-full bg-brand-50 px-3 py-1 text-sm font-bold text-brand-700">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <section className="mt-5 grid gap-5">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-feedback">
             <h2 className="text-xl font-bold text-slate-900">详细纠错</h2>
             {summary.feedback.length === 0 ? (
@@ -223,9 +233,24 @@ export default function SummaryPage() {
                     <p className="mt-1 break-words text-sm text-rose-700 line-through decoration-rose-300">{item.original}</p>
                     <p className="mt-4 text-xs font-semibold text-slate-400">建议表达</p>
                     <p className="mt-1 break-words text-base font-semibold text-emerald-700">{item.corrected}</p>
-                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <div className="mt-4 grid gap-3">
                       <p className="break-words rounded-xl bg-white p-3 text-sm text-slate-600"><span className="font-semibold text-slate-900">原因：</span>{item.reason}</p>
                       <p className="break-words rounded-xl bg-white p-3 text-sm text-slate-600"><span className="font-semibold text-slate-900">建议：</span>{item.suggestion}</p>
+                    </div>
+                    <div className="mt-4 rounded-2xl bg-white p-4">
+                      <p className="text-xs font-bold text-brand-700">中式英语改写器</p>
+                      <div className="mt-3 grid gap-3">
+                        <RewriteCard title="正确版" content={item.corrected} />
+                        <RewriteCard title="自然版" content={item.suggestion || item.corrected} />
+                        <RewriteCard title="场景版" content={`在${task.title}中，建议优先使用更具体、礼貌且目标明确的表达。`} />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        className="mt-4 inline-flex min-h-11 items-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white hover:bg-brand-700"
+                      >
+                        复练这句话
+                      </button>
                     </div>
                   </article>
                 ))}
@@ -278,12 +303,34 @@ export default function SummaryPage() {
           </div>
         </section>
 
-        <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-suggestions">
+        <section className="mt-5 rounded-3xl border border-brand-100 bg-brand-50 p-6 shadow-sm" data-testid="summary-next-action">
+          <p className="text-xs font-bold uppercase text-brand-700">Next Training</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">练习后行动建议</h2>
+          <p className="mt-3 break-words text-sm leading-6 text-slate-700">{nextAction}</p>
+          <div className="mt-4 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="min-h-11 rounded-2xl bg-slate-950 px-5 text-sm font-semibold text-white hover:bg-brand-700"
+            >
+              回到对话复练
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="min-h-11 rounded-2xl border border-brand-200 bg-white px-5 text-sm font-semibold text-brand-700 hover:bg-white/80"
+            >
+              选择下一任务
+            </button>
+          </div>
+        </section>
+
+        <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-suggestions">
           <h2 className="text-xl font-bold text-slate-900">改进建议</h2>
           {summary.suggestions.length === 0 ? (
             <p className="mt-4 text-sm text-slate-500">暂无改进建议。</p>
           ) : (
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="mt-5 grid gap-4">
               {summary.suggestions.map((item, index) => (
                 <article key={`${item.category}-${index}`} className="rounded-2xl bg-brand-50 p-4">
                   <p className="text-xs font-bold text-brand-700">{suggestionLabels[item.category] ?? item.category}</p>
@@ -294,6 +341,15 @@ export default function SummaryPage() {
           )}
         </section>
       </div>
+    </AppShell>
+  );
+}
+
+function RewriteCard({ title, content }: { title: string; content: string }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 p-3">
+      <p className="text-xs font-bold text-slate-500">{title}</p>
+      <p className="mt-2 break-words text-sm leading-6 text-slate-700">{content}</p>
     </div>
   );
 }
