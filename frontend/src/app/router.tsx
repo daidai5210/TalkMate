@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './AppLayout';
 import ConversationPage from './ConversationPage';
+import NewHomePage from '../pages/NewHomePage';
 import SummaryPage from '../pages/SummaryPage';
 import LoginPage from '../features/auth/LoginPage';
 import RegisterPage from '../features/auth/RegisterPage';
@@ -10,14 +11,6 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
   return children;
-}
-
-function NewHomePage() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh] text-slate-400 text-sm">
-      🏠 首页（待实现 T2-002）
-    </div>
-  );
 }
 
 function NewTrainingPage() {
