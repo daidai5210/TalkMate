@@ -3,6 +3,7 @@ import AppLayout from './AppLayout';
 import ConversationPage from './ConversationPage';
 import NewHomePage from '../pages/NewHomePage';
 import TrainingPage from '../pages/TrainingPage';
+import PracticeCardPage from '../pages/PracticeCardPage';
 import ProfilePage from '../pages/ProfilePage';
 import SummaryPage from '../pages/SummaryPage';
 import LoginPage from '../features/auth/LoginPage';
@@ -62,6 +63,16 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <ConversationPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 抽卡跟练页（无底部 Tab 导航） */}
+      <Route
+        path="/practice-card"
+        element={
+          <ProtectedRoute>
+            <PracticeCardPage />
           </ProtectedRoute>
         }
       />

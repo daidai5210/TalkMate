@@ -21,7 +21,7 @@ export default function TrainingPage() {
   }
 
   function handleStartCardPractice() {
-    setActionError('抽卡模式即将上线，敬请期待');
+    navigate('/practice-card');
   }
 
   if (loading) {
@@ -114,8 +114,8 @@ export default function TrainingPage() {
             <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">碎片时间</span>
           </div>
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-xs text-slate-400">即将上线</span>
-            <span className="rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-400">开始抽卡</span>
+            <span className="text-xs text-slate-400">随机抽卡练习</span>
+            <span className="rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white">开始抽卡</span>
           </div>
         </button>
       </div>
