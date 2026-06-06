@@ -15,7 +15,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1 import api_v1_router
 from app.core.config import get_settings
+from app.core.security import AuthError as SecurityAuthError
 from app.db.base import engine, init_db
+from app.modules.practice.seed import seed_practice_cards
 from app.modules.scenario.seed import seed_scenarios
 from app.shared.exceptions import BusinessError
 from app.shared.responses import err, ok
@@ -29,6 +31,7 @@ async def lifespan(_: FastAPI):
     init_db()
     SessionLocal = sessionmaker(bind=engine)
     seed_scenarios(SessionLocal())
+    seed_practice_cards(SessionLocal())
     yield
 
 
@@ -50,6 +53,14 @@ app.add_middleware(
 
 @app.exception_handler(BusinessError)
 async def business_error_handler(_: Request, exc: BusinessError) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=err(code=exc.code, message=exc.message),
+    )
+
+
+@app.exception_handler(SecurityAuthError)
+async def security_auth_error_handler(_: Request, exc: SecurityAuthError) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
         content=err(code=exc.code, message=exc.message),

@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.orm import Session
 
-from app.core.security import decode_access_token
+from app.core.security import decode_access_token, get_current_user_id
 from app.db.session import get_db
 from app.modules.auth.repository import UserRepository
 from app.modules.auth.schemas import (
@@ -16,16 +16,6 @@ from app.shared.exceptions import AuthError
 from app.shared.responses import ok
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-def _current_user_id(authorization: Optional[str] = Header(default=None)) -> int:
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise AuthError(AuthService.ERR_TOKEN_INVALID, "未提供有效 token")
-    token = authorization.split(" ", 1)[1].strip()
-    user_id = decode_access_token(token)
-    if user_id is None:
-        raise AuthError(AuthService.ERR_TOKEN_INVALID, "Token 无效或已过期")
-    return user_id
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -47,7 +37,7 @@ def logout(
     authorization: Optional[str] = Header(default=None),
     db: Session = Depends(get_db),
 ) -> dict:
-    user_id = _current_user_id(authorization)
+    user_id = get_current_user_id(authorization)
     repo = UserRepository(db)
     if repo.get_by_id(user_id) is None:
         raise AuthError(AuthService.ERR_TOKEN_INVALID, "Token 无效或已过期")

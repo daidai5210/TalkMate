@@ -1,12 +1,21 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
+from fastapi import Header
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.core.config import get_settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+class AuthError(Exception):
+    def __init__(self, code: int, message: str):
+        self.code = code
+        self.message = message
+        self.status_code = 401
+        super().__init__(message)
 
 
 def hash_password(plain_password: str) -> str:
@@ -34,3 +43,13 @@ def decode_access_token(token: str) -> Optional[int]:
         return int(sub)
     except (JWTError, ValueError):
         return None
+
+
+def get_current_user_id(authorization: Optional[str] = Header(default=None)) -> int:
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise AuthError(2001, "未提供有效 token")
+    token = authorization.split(" ", 1)[1].strip()
+    user_id = decode_access_token(token)
+    if user_id is None:
+        raise AuthError(2001, "Token 无效或已过期")
+    return user_id
