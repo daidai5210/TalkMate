@@ -1,7 +1,10 @@
-from app.db.url import build_engine_kwargs, write_tidb_ca_pem
+import base64
+
+from app.db.url import build_engine_kwargs, get_tidb_ca_pem, write_tidb_ca_pem
 
 
 TEST_TIDB_CA_PEM = "-----BEGIN CERTIFICATE-----\nexample-ca\n-----END CERTIFICATE-----\n"
+TEST_TIDB_CA_PEM_B64 = base64.b64encode(TEST_TIDB_CA_PEM.encode("utf-8")).decode("ascii")
 
 
 def test_sqlite_engine_kwargs_include_check_same_thread(monkeypatch):
@@ -27,6 +30,7 @@ def test_tidb_engine_kwargs_enable_pool_pre_ping_without_sqlite_connect_args(mon
 def test_tidb_engine_kwargs_write_ca_pem_and_enable_ssl_connect_args(monkeypatch, tmp_path):
     runtime_ca_path = tmp_path / "tidb-ca.pem"
     monkeypatch.setenv("TIDB_CA_PEM", TEST_TIDB_CA_PEM)
+    monkeypatch.delenv("TIDB_CA_PEM_B64", raising=False)
     monkeypatch.setattr("app.db.url.TIDB_CA_RUNTIME_PATH", runtime_ca_path)
 
     kwargs = build_engine_kwargs("mysql+pymysql://user:password@example.com:4000/talkmate")
@@ -34,6 +38,28 @@ def test_tidb_engine_kwargs_write_ca_pem_and_enable_ssl_connect_args(monkeypatch
     assert kwargs["pool_pre_ping"] is True
     assert kwargs["connect_args"] == {"ssl": {"ca": str(runtime_ca_path)}}
     assert runtime_ca_path.read_text(encoding="utf-8") == TEST_TIDB_CA_PEM
+
+
+def test_tidb_engine_kwargs_decode_ca_pem_b64_when_plain_pem_missing(monkeypatch, tmp_path):
+    runtime_ca_path = tmp_path / "tidb-ca.pem"
+    monkeypatch.delenv("TIDB_CA_PEM", raising=False)
+    monkeypatch.setenv("TIDB_CA_PEM_B64", TEST_TIDB_CA_PEM_B64)
+    monkeypatch.setattr("app.db.url.TIDB_CA_RUNTIME_PATH", runtime_ca_path)
+
+    kwargs = build_engine_kwargs("mysql+pymysql://user:password@example.com:4000/talkmate")
+
+    assert kwargs["pool_pre_ping"] is True
+    assert kwargs["connect_args"] == {"ssl": {"ca": str(runtime_ca_path)}}
+    assert runtime_ca_path.read_text(encoding="utf-8") == TEST_TIDB_CA_PEM
+
+
+def test_plain_ca_pem_takes_precedence_over_ca_pem_b64():
+    other_ca_pem = "-----BEGIN CERTIFICATE-----\nother-ca\n-----END CERTIFICATE-----\n"
+    other_ca_pem_b64 = base64.b64encode(other_ca_pem.encode("utf-8")).decode("ascii")
+
+    pem = get_tidb_ca_pem(ca_pem=TEST_TIDB_CA_PEM, ca_pem_b64=other_ca_pem_b64)
+
+    assert pem == TEST_TIDB_CA_PEM
 
 
 def test_write_tidb_ca_pem_returns_none_when_missing(tmp_path):
