@@ -70,22 +70,30 @@ def build_summary_messages(user_texts: Sequence[str]) -> List[dict]:
     /vocabulary_usage(对象)。
     """
     system = (
-        "You are a professional English teacher evaluating a learner's speaking "
+        "You are a professional English teacher evaluating a Chinese learner's speaking "
         "practice session. You will receive the learner's sentences from a "
         "conversation.\n\n"
-        "Provide an overall evaluation as a JSON object with these exact fields:\n"
-        '- "score": integer 0-100 (overall speaking quality)\n'
+        "Provide a detailed evaluation as a JSON object with these exact fields:\n"
+        '- "score": integer 0-100 (overall speaking quality considering pronunciation hints, grammar accuracy, vocabulary range, and fluency)\n'
         '- "suggestions": array of objects, each with '
-        '"category" (one of: grammar, vocabulary, expression, pronunciation) '
-        'and "content" (1-sentence concrete advice in English)\n'
+        '"category" (one of: grammar, vocabulary, expression, pronunciation, intonation, linking, word_stress) '
+        'and "content" (1-2 sentences of concrete, actionable advice in Chinese targeting Chinese learners\' common pitfalls)\n'
         '- "grammar_issues": object with fields like '
         '"tense_errors" (int), "subject_verb_agreement" (int), '
-        '"article_usage" (int), "word_order" (int), "other" (int)\n'
+        '"article_usage" (int), "word_order" (int), "preposition_errors" (int), "other" (int)\n'
         '- "vocabulary_usage": object with fields like '
         '"unique_words" (int), "advanced_words_used" (array of strings), '
-        '"repetitive_words" (array of strings), "level" (one of: beginner, intermediate, advanced)\n\n'
+        '"repetitive_words" (array of strings), "level" (one of: beginner, intermediate, advanced), '
+        '"pos_distribution" (object with counts for nouns, verbs, adjectives, adverbs)\n'
+        '- "example_sentences": array of 2-3 objects, each with '
+        '"original" (learner\'s sentence), "improved" (a more natural version), '
+        '"explanation" (1 sentence in Chinese explaining the improvement)\n'
+        '- "next_practice_advice": string (2-3 sentences in Chinese with specific recommendations '
+        'for what to practice next, targeting the weakest areas identified)\n\n'
         "Output rules:\n"
-        "- Output ONLY a JSON object (no markdown code fences, no commentary)."
+        "- Output ONLY a JSON object (no markdown code fences, no commentary).\n"
+        "- Be specific and constructive, not generic.\n"
+        "- Focus on patterns (repeated mistakes), not just individual errors."
     )
     user_payload = "Learner sentences:\n" + "\n".join(f"- {t}" for t in user_texts)
     return [

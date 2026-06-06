@@ -31,6 +31,12 @@ export interface VocabularyUsage {
   [key: string]: string | string[] | number | undefined;
 }
 
+export interface ExampleSentence {
+  original: string;
+  improved: string;
+  explanation: string;
+}
+
 export interface ConversationSummary {
   id: number;
   conversation_id: number;
@@ -39,6 +45,8 @@ export interface ConversationSummary {
   suggestions: SuggestionItem[];
   grammar_issues: GrammarIssues | null;
   vocabulary_usage: VocabularyUsage | null;
+  example_sentences?: ExampleSentence[];
+  next_practice_advice?: string;
   created_at: string;
 }
 

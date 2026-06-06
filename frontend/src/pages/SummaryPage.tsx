@@ -306,7 +306,9 @@ export default function SummaryPage() {
         <section className="mt-5 rounded-3xl border border-brand-100 bg-brand-50 p-6 shadow-sm" data-testid="summary-next-action">
           <p className="text-xs font-bold uppercase text-brand-700">Next Training</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">练习后行动建议</h2>
-          <p className="mt-3 break-words text-sm leading-6 text-slate-700">{nextAction}</p>
+          <p className="mt-3 break-words text-sm leading-6 text-slate-700">
+            {summary.next_practice_advice || nextAction}
+          </p>
           <div className="mt-4 flex flex-col gap-3">
             <button
               type="button"
@@ -324,6 +326,29 @@ export default function SummaryPage() {
             </button>
           </div>
         </section>
+
+        {summary.example_sentences && summary.example_sentences.length > 0 && (
+          <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-examples">
+            <h2 className="text-xl font-bold text-slate-900">可改进例句</h2>
+            <div className="mt-4 space-y-4">
+              {summary.example_sentences.map((ex, i) => (
+                <div key={i} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <div className="grid gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400">原句</p>
+                      <p className="text-sm text-rose-700 line-through decoration-rose-300">{ex.original}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400">改进版</p>
+                      <p className="text-sm font-semibold text-emerald-700">{ex.improved}</p>
+                    </div>
+                    <p className="text-xs text-slate-500">{ex.explanation}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-suggestions">
           <h2 className="text-xl font-bold text-slate-900">改进建议</h2>
