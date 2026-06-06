@@ -1,4 +1,26 @@
+import os
+from pathlib import Path
 from typing import Any
+
+TIDB_CA_PEM_ENV = "TIDB_CA_PEM"
+TIDB_CA_RUNTIME_PATH = Path("/tmp/tidb-ca.pem")
+
+
+def write_tidb_ca_pem(ca_pem: str | None = None, ca_path: Path | None = None) -> str | None:
+    """Write TiDB CA PEM content to a runtime-accessible file.
+
+    Vercel Serverless cannot access local secret files from the developer machine.
+    When TIDB_CA_PEM is provided as an environment variable, this helper writes it
+    to /tmp so PyMySQL can use a normal CA file path for TLS verification.
+    """
+    pem = ca_pem if ca_pem is not None else os.getenv(TIDB_CA_PEM_ENV)
+    if not pem:
+        return None
+
+    runtime_ca_path = ca_path or TIDB_CA_RUNTIME_PATH
+    runtime_ca_path.parent.mkdir(parents=True, exist_ok=True)
+    runtime_ca_path.write_text(pem, encoding="utf-8")
+    return str(runtime_ca_path)
 
 
 def build_engine_kwargs(database_url: str) -> dict[str, Any]:
@@ -8,11 +30,17 @@ def build_engine_kwargs(database_url: str) -> dict[str, Any]:
     TiDB Cloud is MySQL-compatible and should not receive SQLite-only args.
     `pool_pre_ping=True` helps serverless/runtime environments avoid stale
     pooled connections after cold starts or network reconnects.
+    When `TIDB_CA_PEM` exists, its PEM content is written to `/tmp/tidb-ca.pem`
+    and passed to PyMySQL through SQLAlchemy `connect_args`.
     """
     if database_url.startswith("sqlite"):
         return {"connect_args": {"check_same_thread": False}}
 
     if database_url.startswith("mysql"):
-        return {"pool_pre_ping": True}
+        kwargs: dict[str, Any] = {"pool_pre_ping": True}
+        ca_path = write_tidb_ca_pem()
+        if ca_path:
+            kwargs["connect_args"] = {"ssl": {"ca": ca_path}}
+        return kwargs
 
     return {}
