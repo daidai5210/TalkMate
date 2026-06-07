@@ -140,8 +140,8 @@ export default function ScenariosPage() {
   return (
     <div className="px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
       <header className="mb-5">
-        <h1 className="text-lg font-black text-slate-950">场景对话</h1>
-        <p className="mt-1 text-xs text-slate-400">选择一个场景，开始角色扮演对话练习</p>
+        <h1 className="text-[17px] font-black text-slate-950">场景对话</h1>
+        <p className="mt-1 text-[13px] text-slate-400">选择一个场景，开始角色扮演对话练习</p>
       </header>
 
       <div className="space-y-3 animate-fade-in">
@@ -149,21 +149,21 @@ export default function ScenariosPage() {
           <button
             key={scenario.id}
             onClick={() => navigate(`/conversation/${scenario.id}`)}
-            className="flex w-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-card transition hover:border-brand-200 hover:shadow-card-hover active:scale-[0.98]"
+            className="flex w-full items-center gap-4 rounded-[14px] bg-white p-4 text-left shadow-md transition hover:shadow-lg active:scale-[0.98]"
             data-testid="training-conversation-card"
           >
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${scenario.color || 'bg-brand-50 text-brand-600'}`}>
+            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] ${scenario.color || 'bg-brand-50 text-brand-600'}`}>
               <span className="text-xl">{scenario.icon}</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-slate-900">{scenario.name}</h2>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${difficultyColor(scenario.difficulty || '简单')}`}>
+                <h2 className="text-[15px] font-bold text-slate-900">{scenario.name}</h2>
+                <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${difficultyColor(scenario.difficulty || '简单')}`}>
                   {scenario.difficulty}
                 </span>
               </div>
-              <p className="mt-1 text-xs leading-5 text-slate-500 line-clamp-2">{scenario.description}</p>
-              <div className="mt-2 flex items-center gap-3 text-xs text-slate-400">
+              <p className="mt-1 text-[13px] leading-5 text-slate-500 line-clamp-2">{scenario.description}</p>
+              <div className="mt-2 flex items-center gap-3 text-[13px] text-slate-400">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" strokeWidth={2} />
                   {scenario.duration || '5-10 分钟'}

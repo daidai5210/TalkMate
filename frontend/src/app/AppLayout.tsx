@@ -39,7 +39,7 @@ export default function AppLayout() {
                 key={path}
                 to={path}
                 className={({ isActive }) =>
-                  `flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs font-medium transition ${
+                  `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium transition ${
                     isActive ? 'text-brand-600' : 'text-slate-400'
                   }`
                 }

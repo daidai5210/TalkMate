@@ -322,8 +322,8 @@ export default function ProfilePage() {
           {initial}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-lg font-black text-slate-950 truncate">{user?.username ?? '用户'}</h1>
-          <p className="text-xs text-slate-400">坚持练习，每天进步</p>
+          <h1 className="text-[17px] font-black text-slate-950 truncate">{user?.username ?? '用户'}</h1>
+          <p className="text-[13px] text-slate-400">坚持练习，每天进步</p>
         </div>
         <button
           onClick={logout}
@@ -361,28 +361,28 @@ export default function ProfilePage() {
         <div className="space-y-5 animate-fade-in">
           {/* Stats */}
           <section className="grid grid-cols-3 gap-3" data-testid="profile-stats">
-            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
-              <Target className="mb-1 h-5 w-5 text-brand-500" strokeWidth={1.5} />
-              <p className="text-lg font-black text-slate-900">{completedCount}</p>
-              <p className="text-xs text-slate-400">总练习</p>
+            <div className="flex flex-col items-center rounded-[14px] bg-white p-4 shadow-sm">
+              <Target className="mb-1.5 h-5 w-5 text-brand-500" strokeWidth={1.5} />
+              <p className="text-[24px] font-black text-slate-900">{completedCount}</p>
+              <p className="text-[13px] text-slate-400">总练习</p>
             </div>
-            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
-              <TrendingUp className="mb-1 h-5 w-5 text-emerald-500" strokeWidth={1.5} />
-              <p className="text-lg font-black text-slate-900">{averageScore ?? '-'}</p>
-              <p className="text-xs text-slate-400">平均分</p>
+            <div className="flex flex-col items-center rounded-[14px] bg-white p-4 shadow-sm">
+              <TrendingUp className="mb-1.5 h-5 w-5 text-emerald-500" strokeWidth={1.5} />
+              <p className="text-[24px] font-black text-slate-900">{averageScore ?? '-'}</p>
+              <p className="text-[13px] text-slate-400">平均分</p>
             </div>
-            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
-              <Flame className="mb-1 h-5 w-5 text-amber-500" strokeWidth={1.5} />
-              <p className="text-lg font-black text-slate-900">{streakDays}</p>
-              <p className="text-xs text-slate-400">连续天数</p>
+            <div className="flex flex-col items-center rounded-[14px] bg-white p-4 shadow-sm">
+              <Flame className="mb-1.5 h-5 w-5 text-amber-500" strokeWidth={1.5} />
+              <p className="text-[24px] font-black text-slate-900">{streakDays}</p>
+              <p className="text-[13px] text-slate-400">连续天数</p>
             </div>
           </section>
 
           {/* Heatmap */}
-          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-heatmap">
+          <section className="rounded-[14px] bg-white p-4 shadow-sm" data-testid="profile-heatmap">
             <div className="mb-3 flex items-center gap-2">
               <Calendar className="h-4 w-4 text-brand-500" strokeWidth={1.5} />
-              <h2 className="text-sm font-bold text-slate-700">练习热力图（近 3 个月）</h2>
+              <h2 className="text-[15px] font-bold text-slate-700">练习热力图（近 3 个月）</h2>
             </div>
             {heatmapLoading ? (
               <div className="animate-pulse rounded-xl bg-slate-200 h-24" />
@@ -392,10 +392,10 @@ export default function ProfilePage() {
           </section>
 
           {/* Achievements */}
-          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-achievements">
+          <section className="rounded-[14px] bg-white p-4 shadow-sm" data-testid="profile-achievements">
             <div className="mb-3 flex items-center gap-2">
               <Trophy className="h-4 w-4 text-amber-500" strokeWidth={1.5} />
-              <h2 className="text-sm font-bold text-slate-700">成就徽章</h2>
+              <h2 className="text-[15px] font-bold text-slate-700">成就徽章</h2>
             </div>
             {achievementsLoading ? (
               <div className="grid grid-cols-3 gap-3">
@@ -433,7 +433,7 @@ export default function ProfilePage() {
           </section>
 
           {/* Score trend */}
-          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-trend">
+          <section className="rounded-[14px] bg-white p-4 shadow-sm" data-testid="profile-trend">
             {scoreTrendLoading ? (
               <div className="animate-pulse rounded-xl bg-slate-200 h-36" />
             ) : (
@@ -443,7 +443,7 @@ export default function ProfilePage() {
 
           {/* Report list */}
           <section data-testid="profile-reports">
-            <h2 className="mb-3 text-sm font-bold text-slate-700">分析报告</h2>
+            <h2 className="mb-3 text-[15px] font-bold text-slate-700">分析报告</h2>
             <div className="space-y-2">
               {displayReports
                 .filter((h) => h.has_summary)
