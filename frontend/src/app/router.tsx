@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './AppLayout';
 import ConversationPage from './ConversationPage';
 import NewHomePage from '../pages/NewHomePage';
-import TrainingPage from '../pages/TrainingPage';
+import ScenariosPage from '../pages/ScenariosPage';
 import PracticeCardPage from '../pages/PracticeCardPage';
 import ProfilePage from '../pages/ProfilePage';
 import SummaryPage from '../pages/SummaryPage';
@@ -37,7 +37,7 @@ export default function AppRouter() {
       >
         <Route index element={<Navigate to="/app/home" replace />} />
         <Route path="home" element={<NewHomePage />} />
-        <Route path="training" element={<TrainingPage />} />
+        <Route path="scenarios" element={<ScenariosPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 
