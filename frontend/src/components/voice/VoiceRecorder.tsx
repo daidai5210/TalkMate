@@ -4,13 +4,15 @@ import { createSTT, isSTTSupported, type STTHandle } from '../../utils/stt';
 interface Props {
   onTranscript: (text: string, isFinal: boolean) => void;
   disabled: boolean;
+  variant?: 'default' | 'immersive';
 }
 
-export default function VoiceRecorder({ onTranscript, disabled }: Props) {
+export default function VoiceRecorder({ onTranscript, disabled, variant = 'immersive' }: Props) {
   const [recording, setRecording] = useState(false);
   const [supported, setSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const sttRef = useRef<STTHandle | null>(null);
+  const isImmersive = variant === 'immersive';
 
   useEffect(() => {
     setSupported(isSTTSupported());
@@ -50,17 +52,19 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
     setRecording(false);
   };
 
+  const sizeClass = isImmersive ? 'h-[72px] w-[72px] rounded-full' : 'min-h-12 min-w-12 rounded-2xl';
+
   if (!supported) {
     return (
       <button
         type="button"
         disabled
-        className="min-h-12 min-w-12 cursor-not-allowed rounded-2xl bg-slate-100 p-2 text-slate-300"
+        className={`cursor-not-allowed ${sizeClass} bg-white/10 p-2 text-white/30`}
         title="当前浏览器不支持语音识别"
         aria-label="当前浏览器不支持语音识别"
         data-testid="voice-recorder-unsupported"
       >
-        <MicrophoneIcon />
+        <MicrophoneIcon size={isImmersive ? 28 : 20} />
       </button>
     );
   }
@@ -71,20 +75,24 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
       onClick={recording ? handleStop : handleStart}
       onMouseDown={(e) => e.preventDefault()}
       disabled={disabled && !recording}
-      className={`relative min-h-12 min-w-12 rounded-2xl p-2 shadow-sm transition ${
+      className={`relative ${sizeClass} p-2 transition select-none ${
         recording
-          ? 'bg-rose-500 text-white shadow-rose-200'
-          : 'bg-slate-950 text-white hover:bg-brand-700'
+          ? isImmersive
+            ? 'bg-white text-rose-500 shadow-[0_0_40px_rgba(255,255,255,0.35)] scale-110'
+            : 'bg-rose-500 text-white shadow-rose-200'
+          : isImmersive
+            ? 'bg-gradient-to-br from-rose-500 to-pink-600 text-white shadow-[0_0_32px_rgba(244,63,94,0.45)] hover:from-rose-400 hover:to-pink-500 active:scale-95'
+            : 'bg-slate-950 text-white hover:bg-brand-700 shadow-sm'
       } disabled:opacity-50`}
       title={recording ? '点击停止' : '点击录音'}
       aria-label={recording ? '点击停止录音' : '点击开始录音'}
       data-testid="voice-recorder-button"
       data-recording={recording}
     >
-      {recording && <PulseRing />}
-      <MicrophoneIcon recording={recording} />
+      {recording && <PulseRing immersive={isImmersive} />}
+      <MicrophoneIcon recording={recording} size={isImmersive ? 28 : 20} />
       {error && (
-        <span className="absolute bottom-full left-0 mb-1 max-w-[12rem] rounded-2xl bg-red-600 px-2 py-1 text-[10px] text-white break-words">
+        <span className="absolute bottom-full left-1/2 mb-2 max-w-[12rem] -translate-x-1/2 rounded-2xl bg-red-600 px-2 py-1 text-[10px] text-white break-words">
           {error}
         </span>
       )}
@@ -92,11 +100,11 @@ export default function VoiceRecorder({ onTranscript, disabled }: Props) {
   );
 }
 
-function MicrophoneIcon({ recording = false }: { recording?: boolean }) {
+function MicrophoneIcon({ recording = false, size = 20 }: { recording?: boolean; size?: number }) {
   return (
     <svg
-      width="20"
-      height="20"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -113,11 +121,13 @@ function MicrophoneIcon({ recording = false }: { recording?: boolean }) {
   );
 }
 
-function PulseRing() {
+function PulseRing({ immersive }: { immersive: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className="absolute inset-0 rounded-2xl bg-red-400 opacity-50 animate-ping"
+      className={`absolute inset-0 animate-ping ${
+        immersive ? 'rounded-full bg-rose-400/30' : 'rounded-2xl bg-red-400 opacity-50'
+      }`}
       data-testid="voice-recorder-pulse"
     />
   );

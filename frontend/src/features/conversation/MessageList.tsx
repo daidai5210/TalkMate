@@ -8,10 +8,17 @@ interface Props {
   messages: Message[];
   sending: boolean;
   emptyText?: string;
+  variant?: 'default' | 'immersive';
 }
 
-export default function MessageList({ messages, sending, emptyText = '开始一段对话吧' }: Props) {
+export default function MessageList({
+  messages,
+  sending,
+  emptyText = '开始一段对话吧',
+  variant = 'immersive',
+}: Props) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const isImmersive = variant === 'immersive';
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,20 +40,30 @@ export default function MessageList({ messages, sending, emptyText = '开始一�
 
   return (
     <div
-      className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-5"
+      className={`min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-5 ${isImmersive ? 'pb-2' : ''}`}
       data-testid="message-list"
     >
       {messages.length === 0 && (
-        <div className="mx-auto max-w-md py-12 text-center text-sm leading-6 text-slate-400 break-words">
+        <div
+          className={`mx-auto max-w-md py-16 text-center text-sm leading-6 break-words animate-fade-in ${
+            isImmersive ? 'text-white/40' : 'text-slate-400'
+          }`}
+        >
           {emptyText}
         </div>
       )}
       {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} />
+        <MessageBubble key={m.id} message={m} variant={variant} />
       ))}
       {sending && (
-        <div className="flex justify-start" data-testid="ai-thinking">
-          <div className="flex items-center gap-1 rounded-2xl bg-slate-100 px-4 py-2.5 text-sm italic text-slate-500">
+        <div className="flex justify-start animate-fade-in" data-testid="ai-thinking">
+          <div
+            className={`flex items-center gap-1 rounded-2xl px-4 py-2.5 text-sm italic ${
+              isImmersive
+                ? 'border border-white/10 bg-white/10 text-white/60 backdrop-blur-md'
+                : 'bg-slate-100 text-slate-500'
+            }`}
+          >
             <span>AI 教练正在追问</span>
             <span className="inline-flex gap-0.5">
               <span className="animate-pulse">.</span>
