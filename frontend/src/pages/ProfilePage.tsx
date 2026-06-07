@@ -176,29 +176,116 @@ function SettingsCell({
   );
 }
 
-/* ---------- HeatmapStrip ---------- */
+/* ---------- HeatmapStrip (GitHub 风格多行网格) ---------- */
 
 function HeatmapStrip({ data }: { data: HeatmapDay[] }) {
-  const recent = data.slice(-28);
+  // 取最近 90 天数据（或全部，如果少于 90 天）
+  const count = Math.min(90, data.length);
+  const recent = data.slice(-count);
+
+  if (recent.length === 0) {
+    return <div className="py-4 text-center text-xs text-slate-400">暂无数据</div>;
+  }
+
+  // 计算第一天是周几（0=周一, 6=周日）
+  const firstDate = new Date(recent[0].date);
+  const firstDayOfWeek = (firstDate.getDay() + 6) % 7;
+
+  // 构建完整的单元格数组
+  type Cell = { date: string; count: number; isEmpty: boolean };
+  const cells: Cell[] = [];
+
+  // 前面补空，让第一周从周一开始
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    cells.push({ date: '', count: 0, isEmpty: true });
+  }
+
+  // 加入真实数据
+  for (const day of recent) {
+    cells.push({ date: day.date, count: day.count, isEmpty: false });
+  }
+
+  // 按 7 天分组（每周为一列）
+  const weeks: Cell[][] = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7));
+  }
+
+  // 提取月份标签（每个月份第一周显示）
+  const monthLabels: { weekIndex: number; label: string }[] = [];
+  const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+  let lastMonth = -1;
+  weeks.forEach((week, idx) => {
+    const firstDay = week.find((d) => !d.isEmpty);
+    if (firstDay) {
+      const month = new Date(firstDay.date).getMonth();
+      if (month !== lastMonth) {
+        monthLabels.push({ weekIndex: idx, label: monthNames[month] });
+        lastMonth = month;
+      }
+    }
+  });
+
+  // 格式化日期为友好格式
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  };
 
   return (
-    <div className="overflow-x-auto" data-testid="heatmap">
-      <div className="flex min-w-0 gap-[3px]">
-        {recent.map((day) => (
-          <div
-            key={day.date}
-            className={`h-3 w-3 shrink-0 rounded-sm ${heatmapColor(day.count)}`}
-            title={`${day.date}: ${day.count} 次练习`}
-          />
-        ))}
+    <div data-testid="heatmap" className="w-full">
+      {/* 月份标签行 */}
+      <div className="flex pl-[18px] mb-1 text-[10px] text-slate-400 h-4 leading-4">
+        {weeks.map((_, idx) => {
+          const label = monthLabels.find((m) => m.weekIndex === idx);
+          return (
+            <div key={idx} className="w-[15px] flex-shrink-0 text-left">
+              {label ? label.label : ''}
+            </div>
+          );
+        })}
       </div>
-      <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-slate-400">
-        <span>少</span>
+
+      {/* 热力图主体 */}
+      <div className="flex gap-[3px]">
+        {/* 星期标签列（周一、三、五） */}
+        <div className="flex flex-col gap-[3px] w-[15px] text-[10px] text-slate-400 flex-shrink-0">
+          {['', '一', '', '三', '', '五', ''].map((label, idx) => (
+            <div key={idx} className="h-3 flex items-center justify-end pr-1 leading-none">
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {/* 方块网格 */}
+        <div className="flex gap-[3px] flex-1 overflow-hidden">
+          {weeks.map((week, weekIdx) => (
+            <div key={weekIdx} className="flex flex-col gap-[3px] w-[12px] flex-shrink-0">
+              {week.map((day, dayIdx) =>
+                day.isEmpty ? (
+                  <div key={dayIdx} className="h-3 w-3" />
+                ) : (
+                  <div
+                    key={dayIdx}
+                    className={`h-3 w-3 rounded-sm transition-all hover:scale-125 hover:ring-1 hover:ring-brand-400 cursor-pointer ${heatmapColor(day.count)}`}
+                    title={`${formatDate(day.date)} · ${day.count} 次练习`}
+                  />
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 图例 */}
+      <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-slate-400">
+        <span className="font-medium">少</span>
         <span className="h-2.5 w-2.5 rounded-sm bg-slate-100" />
         <span className="h-2.5 w-2.5 rounded-sm bg-brand-200" />
         <span className="h-2.5 w-2.5 rounded-sm bg-brand-400" />
         <span className="h-2.5 w-2.5 rounded-sm bg-brand-600" />
-        <span>多</span>
+        <span className="font-medium">多</span>
       </div>
     </div>
   );
