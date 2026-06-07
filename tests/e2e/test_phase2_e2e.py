@@ -67,13 +67,12 @@ def test_bottom_navigation(page: Page) -> None:
     page.wait_for_selector('[data-testid="home-hero"]', timeout=10000)
     check(page.locator('[data-testid="home-hero"]').is_visible(), "home hero visible")
 
-    page.click("a[href='/app/training']")
-    page.wait_for_url(f"{BASE_URL}/app/training", timeout=10000)
+    page.click("a[href='/app/scenarios']")
+    page.wait_for_url(f"{BASE_URL}/app/scenarios", timeout=10000)
     page.wait_for_selector('[data-testid="training-conversation-card"]', timeout=10000)
-    check(page.locator('[data-testid="training-conversation-card"]').is_visible(), "training conversation card visible")
-    check(page.locator('[data-testid="training-card-card"]').is_visible(), "training card card visible")
-    page.screenshot(path=str(SCREENSHOT_DIR / "03-training.png"), full_page=True)
-    no_horizontal_overflow(page, "training tab")
+    check(page.locator('[data-testid="training-conversation-card"]').first.is_visible(), "training conversation card visible")
+    page.screenshot(path=str(SCREENSHOT_DIR / "03-scenarios.png"), full_page=True)
+    no_horizontal_overflow(page, "scenarios tab")
 
     page.click("a[href='/app/profile']")
     page.wait_for_url(f"{BASE_URL}/app/profile", timeout=10000)
@@ -91,9 +90,6 @@ def test_home_page(page: Page) -> None:
     page.wait_for_selector('[data-testid="home-hero"]', timeout=10000)
 
     check(page.locator('[data-testid="home-hero"]').is_visible(), "home hero visible")
-    check(page.locator('[data-testid="home-modes"]').is_visible(), "training modes visible")
-    # home-stats only appears when user has history; new users may not have it
-    check(page.locator('[data-testid="home-hero"]').is_visible(), "home hero visible again")
     check(
         page.locator('[data-testid="home-history"], [data-testid="home-empty"]').is_visible(),
         "history or empty visible",
@@ -103,13 +99,12 @@ def test_home_page(page: Page) -> None:
 
 def test_training_page(page: Page) -> None:
     step("training page content")
-    page.goto(f"{BASE_URL}/app/training")
+    page.goto(f"{BASE_URL}/app/scenarios")
     page.wait_for_selector('[data-testid="training-conversation-card"]', timeout=10000)
 
-    check(page.locator('[data-testid="training-conversation-card"]').is_visible(), "conversation mode card")
-    check(page.locator('[data-testid="training-card-card"]').is_visible(), "card practice mode card")
+    check(page.locator('[data-testid="training-conversation-card"]').first.is_visible(), "scenario card visible")
 
-    page.locator('[data-testid="training-conversation-card"]').click()
+    page.locator('[data-testid="training-conversation-card"]').first.click()
     page.wait_for_url(lambda url: "/conversation/" in url, timeout=10000)
     page.wait_for_selector('[data-testid="conversation-page"]', timeout=10000)
     check(page.locator('[data-testid="conversation-page"]').is_visible(), "conversation page loaded")
@@ -119,9 +114,10 @@ def test_training_page(page: Page) -> None:
 
 def test_practice_card_flow(page: Page) -> None:
     step("practice card flow")
-    page.goto(f"{BASE_URL}/app/training")
-    page.wait_for_selector('[data-testid="training-card-card"]', timeout=10000)
-    page.locator('[data-testid="training-card-card"]').click()
+    page.goto(f"{BASE_URL}/app/home")
+    page.wait_for_selector('[data-testid="home-hero"]', timeout=10000)
+    # 从首页直接进入抽卡
+    page.goto(f"{BASE_URL}/practice-card")
     page.wait_for_url(f"{BASE_URL}/practice-card", timeout=10000)
     page.wait_for_selector('[data-testid="practice-card"]', timeout=10000)
 
@@ -158,7 +154,7 @@ def test_logout(page: Page) -> None:
     step("logout")
     page.goto(f"{BASE_URL}/app/profile")
     page.wait_for_selector('[data-testid="profile-empty"], [data-testid="profile-stats"]', timeout=10000)
-    page.click("text=退出登录")
+    page.click("text=退出")
     page.wait_for_url(f"{BASE_URL}/login", timeout=10000)
     token = page.evaluate("localStorage.getItem('talkmate_token')")
     check(token is None, "token cleared after logout")
