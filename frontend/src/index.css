@@ -112,6 +112,16 @@ a {
   border-radius: 2px;
 }
 
+/* Hide scrollbar while preserving scroll (phrase chips, etc.) */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

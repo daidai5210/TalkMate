@@ -28,7 +28,10 @@ export default function MessageInput({
       data-testid="message-input-form"
     >
       {starterPhrases.length > 0 && (
-        <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div
+          className="mb-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none [-webkit-overflow-scrolling:touch]"
+          data-testid="starter-phrases-scroll"
+        >
           <button
             type="button"
             onClick={() => setHintsOpen(true)}
