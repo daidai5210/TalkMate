@@ -1,7 +1,7 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import { classNames } from './classNames';
 
-type TMCardVariant = 'plain' | 'elevated' | 'interactive' | 'gradient';
+type TMCardVariant = 'plain' | 'elevated' | 'interactive' | 'gradient' | 'glass';
 
 interface TMCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: TMCardVariant;
@@ -10,10 +10,12 @@ interface TMCardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClass: Record<TMCardVariant, string> = {
-  plain: 'border border-slate-200 bg-white',
-  elevated: 'border border-slate-100 bg-white shadow-card',
-  interactive: 'border border-slate-200 bg-white shadow-card transition hover:border-brand-200 hover:shadow-card-hover active:scale-[0.98]',
+  plain: 'border border-app-border bg-app-surface',
+  elevated: 'border border-slate-100 bg-app-surface shadow-card',
+  interactive:
+    'border border-app-border bg-app-surface shadow-card transition hover:border-brand-200 hover:shadow-card-hover active:scale-[0.98]',
   gradient: 'bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-brand',
+  glass: 'app-glass text-immersive-text shadow-immersive',
 };
 
 export default function TMCard({
@@ -27,7 +29,7 @@ export default function TMCard({
   return (
     <div
       {...props}
-      className={classNames('rounded-2xl p-4', variantClass[variant], className)}
+      className={classNames('rounded-app p-4', variantClass[variant], className)}
     >
       {header && <div className="mb-3">{header}</div>}
       {children}
