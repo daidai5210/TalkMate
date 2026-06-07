@@ -9,6 +9,7 @@ interface TMDialogProps {
   confirmText?: string;
   cancelText?: string;
   danger?: boolean;
+  immersive?: boolean;
   onConfirm?: () => void;
   onClose: () => void;
 }
@@ -21,19 +22,38 @@ export default function TMDialog({
   confirmText = '确认',
   cancelText = '取消',
   danger = false,
+  immersive = false,
   onConfirm,
   onClose,
 }: TMDialogProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] flex items-end justify-center bg-slate-950/45 px-4 pb-[calc(16px+var(--app-safe-bottom))] backdrop-blur-sm">
-      <div className="w-full max-w-[var(--app-max-width)] animate-slide-up rounded-3xl bg-white p-5 shadow-xl">
-        <h2 className="text-lg font-black text-slate-950">{title}</h2>
-        {description && <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>}
+    <div
+      className={`fixed inset-0 z-[9998] flex items-end justify-center px-4 pb-[calc(16px+var(--app-safe-bottom))] backdrop-blur-sm ${
+        immersive ? 'bg-immersive-overlay' : 'bg-slate-950/45'
+      }`}
+    >
+      <div
+        className={`w-full max-w-app animate-slide-up p-5 shadow-xl ${
+          immersive ? 'app-glass-strong rounded-sheet text-immersive-text' : 'rounded-sheet bg-app-surface'
+        }`}
+      >
+        <h2 className={`text-lg font-black ${immersive ? 'text-immersive-text' : 'text-app-text'}`}>
+          {title}
+        </h2>
+        {description && (
+          <p
+            className={`mt-2 text-sm leading-6 ${
+              immersive ? 'text-immersive-text-muted' : 'text-app-text-muted'
+            }`}
+          >
+            {description}
+          </p>
+        )}
         {children && <div className="mt-4">{children}</div>}
         <div className="mt-5 grid grid-cols-2 gap-3">
-          <TMButton variant="secondary" size="md" fullWidth onClick={onClose}>
+          <TMButton variant={immersive ? 'ghost' : 'secondary'} size="md" fullWidth onClick={onClose}>
             {cancelText}
           </TMButton>
           <TMButton

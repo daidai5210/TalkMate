@@ -1,0 +1,89 @@
+/**
+ * TalkMate Scheme C — Design Tokens
+ * Primitive → Semantic → Component (team SOP)
+ */
+
+:root {
+  /* ── Primitive: brand ── */
+  --primitive-brand-50: #eef2ff;
+  --primitive-brand-100: #e0e7ff;
+  --primitive-brand-500: #6366f1;
+  --primitive-brand-600: #4f46e5;
+  --primitive-brand-700: #4338ca;
+  --primitive-brand-800: #3730a3;
+  --primitive-brand-900: #312e81;
+  --primitive-brand-950: #1e1b4b;
+
+  /* ── Primitive: slate (immersive dark) ── */
+  --primitive-slate-50: #f8fafc;
+  --primitive-slate-100: #f1f5f9;
+  --primitive-slate-200: #e2e8f0;
+  --primitive-slate-400: #94a3b8;
+  --primitive-slate-500: #64748b;
+  --primitive-slate-700: #334155;
+  --primitive-slate-800: #1e293b;
+  --primitive-slate-900: #0f172a;
+  --primitive-slate-950: #020617;
+
+  /* ── Primitive: functional ── */
+  --primitive-success: #10b981;
+  --primitive-warning: #f59e0b;
+  --primitive-error: #ef4444;
+  --primitive-info: #3b82f6;
+
+  /* ── Primitive: radius & spacing ── */
+  --primitive-radius-sm: 8px;
+  --primitive-radius-md: 12px;
+  --primitive-radius-lg: 16px;
+  --primitive-radius-xl: 24px;
+
+  /* ── Semantic: light (standard tab pages) ── */
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--primitive-slate-50);
+  --bg-tertiary: var(--primitive-slate-100);
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(15, 23, 42, 0.45);
+  --text-primary: var(--primitive-slate-900);
+  --text-secondary: var(--primitive-slate-700);
+  --text-tertiary: var(--primitive-slate-500);
+  --text-disabled: var(--primitive-slate-400);
+  --text-inverse: #ffffff;
+  --border-default: var(--primitive-slate-200);
+  --border-hover: #cbd5e1;
+  --border-active: var(--primitive-brand-500);
+  --color-primary: var(--primitive-brand-500);
+  --color-primary-hover: var(--primitive-brand-600);
+  --color-primary-active: var(--primitive-brand-700);
+  --color-primary-light: var(--primitive-brand-50);
+  --color-success: var(--primitive-success);
+  --color-warning: var(--primitive-warning);
+  --color-error: var(--primitive-error);
+  --color-info: var(--primitive-info);
+
+  /* ── Semantic: Scheme C immersive (scoped via .app-immersive) ── */
+  --immersive-bg-base: var(--primitive-slate-950);
+  --immersive-bg-gradient-from: var(--primitive-slate-900);
+  --immersive-bg-gradient-via: var(--primitive-brand-950);
+  --immersive-bg-gradient-to: var(--primitive-brand-900);
+  --immersive-text-primary: #f1f5f9;
+  --immersive-text-secondary: #cbd5e1;
+  --immersive-text-tertiary: #94a3b8;
+  --immersive-surface-glass: rgba(255, 255, 255, 0.1);
+  --immersive-surface-glass-strong: rgba(255, 255, 255, 0.16);
+  --immersive-border-glass: rgba(255, 255, 255, 0.12);
+  --immersive-overlay: rgba(2, 6, 23, 0.72);
+
+  /* ── Component tokens ── */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-text: var(--text-inverse);
+  --btn-ghost-bg: var(--immersive-surface-glass);
+  --btn-ghost-text: var(--immersive-text-primary);
+  --card-bg: var(--bg-elevated);
+  --card-border: var(--border-default);
+  --card-radius: var(--primitive-radius-lg);
+  --input-border: var(--border-default);
+  --input-border-focus: var(--border-active);
+  --header-bg: var(--bg-primary);
+  --sheet-bg: var(--bg-elevated);
+  --sheet-radius: var(--primitive-radius-xl);
+}
