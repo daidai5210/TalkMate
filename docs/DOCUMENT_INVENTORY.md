@@ -93,16 +93,24 @@
 | `versions/v0.1.0/deployment/vercel-tidb-ca.md` | Vercel + TiDB CA 证书部署说明 | 系统架构师 |
 | `versions/v0.1.0/operations/deployment-runbook.md` | 部署运维手册 | 系统架构师 |
 
-## v0.2.0（下一版本 — 入口骨架）
+## v0.2.0（中文母语错误画像 + 个性化复练闭环）
 
-| 文件 | 用途 | 维护人 |
-|---|---|---|
-| `versions/v0.2.0/README.md` | v0.2.0 入口与阶段说明 | 全栈开发工程师 |
-| `versions/v0.2.0/requirements/` | 需求文档目录（待填充） | 产品经理 / 全栈开发工程师 |
-| `versions/v0.2.0/designs/` | 方案设计目录（待填充） | 系统架构师 |
-| `versions/v0.2.0/plans/` | 任务拆解目录（待填充） | 全栈开发工程师 |
-| `versions/v0.2.0/tasks/` | 任务执行记录（待填充） | 全栈开发工程师 |
-| `versions/v0.2.0/acceptance/` | 验收交付目录（待填充） | 前端开发工程师 |
-| `versions/v0.2.0/retros/` | 复盘目录（待填充） | 全栈开发工程师 |
-| `versions/v0.2.0/testing/` | 测试记录（待填充） | 测试运维 |
-| `versions/v0.2.0/qa-reports/` | QA 报告目录（待填充） | 测试运维 |
+| 文件 | 用途 | 维护人 | 状态 |
+|---|---|---|---|
+| `versions/v0.2.0/README.md` | v0.2.0 入口与阶段说明 | 全栈开发工程师 | ✅ |
+| `versions/v0.2.0/version-brief.md` | 版本目标、范围、队长确认卡点 | PM / 系统架构师 | ✅ |
+| `versions/v0.2.0/document-manifest.md` | 版本文档清单与状态 | PM / 系统架构师 | ✅ |
+| `versions/v0.2.0/legacy-doc-inventory.md` | 旧文档版本盘点 | 系统架构师 | ✅ |
+| `versions/v0.2.0/architecture/technical-feasibility.md` | 技术可行性评估 | 系统架构师 | ✅ |
+| `versions/v0.2.0/product/requirement-confirmation.md` | 需求确认报告 | 产品经理 | 待填充 |
+| `versions/v0.2.0/product/prd.md` | 产品需求文档 | 产品经理 | 待填充 |
+| `versions/v0.2.0/product/scope-priority.md` | 范围优先级 | 产品经理 | 待填充 |
+| `versions/v0.2.0/product/acceptance-criteria.md` | 验收标准 | 产品经理 | 待填充 |
+| `versions/v0.2.0/product/change-impact-analysis.md` | 影响范围分析 | PM / 系统架构师 | 待填充 |
+| `versions/v0.2.0/design/feature-design.md` | 功能设计 | 产品经理 | 待填充 |
+| `versions/v0.2.0/architecture/` | 技术设计（API/数据/权限） | 系统架构师 | 待填充 |
+| `versions/v0.2.0/qa/testability-review.md` | 可测试性审查 | 测试运维 | 待填充 |
+| `versions/v0.2.0/qa/regression-scope.md` | 回归范围 | 测试运维 | 待填充 |
+| `versions/v0.2.0/planning/task-breakdown.md` | 任务拆解 | PM / 系统架构师 | 待填充 |
+| `versions/v0.2.0/decisions/risk-decision-log.md` | 决策记录 | PM / 系统架构师 | 待填充 |
+| `versions/v0.2.0/version-closure.md` | 版本关闭记录 | PM | 待填充 |
