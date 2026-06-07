@@ -1,110 +1,322 @@
-# TalkMate - AI 英语口语陪练
+<div align="center">
 
-> 让中国英语学习者看见自己的"中式英语"画像，告别盲目练习。
+# TalkMate
 
-[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://talkmate-github-preview.vercel.app)
+### AI 英语口语陪练 · 专为中国学习者诊断「中式英语」
+
+> 不只告诉你「这次错了什么」，更帮你看见「你总在哪些地方翻车」，并给出下一次该怎么练。
+
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://talkmate-github-preview.vercel.app)
 [![Version](https://img.shields.io/badge/version-v0.2.0-blue)](#版本路线)
+[![Stage](https://img.shields.io/badge/stage-MVP-orange)](#mvp-阶段说明)
 [![License](https://img.shields.io/badge/license-Internal-lightgrey)](#许可证)
 
----
+[在线体验](https://talkmate-github-preview.vercel.app) · [快速开始](#快速开始) · [文档导航](#文档导航) · [未来规划](#未来规划)
 
-## 项目简介
-
-**TalkMate** 是一款基于 AI 的英语口语练习应用，专为中国英语学习者设计。通过场景对话、AI 实时纠错、个性化错误画像与定向复练推荐，让每一次练习都有沉淀、每一步成长都看得见。
-
-与市面上其他英语口语 App 不同，TalkMate 不止于"打分"，更聚焦于**"你到底是什么地方老出错"**——这是中式英语学习者最常被忽略的痛点。
+</div>
 
 ---
 
-## 市场调研
+## 目录
 
-### 行业现状
-
-- **市场规模**：中国英语学习者超 3 亿，在线口语练习赛道 2025 年规模约 ¥200 亿，年增速 15%+。
-- **竞品分析**：
-  - 流利说、多邻国、Cake 等：偏重课程化与游戏化，纠错反馈浅层。
-  - ChatGPT/豆包类通用 AI：缺乏针对中式英语的系统化错误追踪。
-  - 真人外教 1v1：成本高（¥80-200/节），难以规模化。
-- **痛点空白**：
-  - 现有产品"打分但不诊断"——用户只看到分数，不知道"我老在哪儿翻车"。
-  - 缺少**长期错误趋势追踪**，每次练习是孤岛，没有累积视角。
-  - 推荐内容与用户弱项脱节，无法形成"刻意练习"闭环。
-
-### 产品定位
-
-> **TalkMate = AI 口语练习 + 中式英语专属错误画像 + 定向复练教练**
-
-我们不做大而全的英语学习平台，只专注一件事：**帮中国学习者系统性解决"中式英语"问题**。
+- [一句话介绍](#一句话介绍)
+- [为什么选择 TalkMate](#为什么选择-talkmate)
+- [产品闭环](#产品闭环)
+- [MVP 阶段说明](#mvp-阶段说明)
+- [当前已实现功能](#当前已实现功能)
+- [已知局限与待完善项](#已知局限与待完善项)
+- [未来规划](#未来规划)
+- [技术架构](#技术架构)
+- [项目结构](#项目结构)
+- [快速开始](#快速开始)
+- [Vercel 部署](#vercel-部署)
+- [版本路线](#版本路线)
+- [文档导航](#文档导航)
+- [开发与贡献](#开发与贡献)
 
 ---
 
-## 核心特色功能
+## 一句话介绍
 
-### 1. 🎯 场景对话练习
+**TalkMate** 是一款面向中国英语学习者的 AI 口语陪练 Web 应用。用户在真实场景（面试、会议、旅行等）中与 AI 角色对话，获得结构化纠错与课后总结；系统进一步将错误归纳为 **5 类「中式英语」标签**，形成跨练习的弱项画像，并推荐下一次该练什么。
 
-- 5 大真实场景：面试、点餐、会议、旅行、日常社交。
-- AI 角色扮演，支持中英自由切换，多轮上下文记忆。
-- 语音输入 + TTS 播放，贴近真实口语交流。
-
-### 2. 📊 AI 智能纠错（v0.1.0）
-
-- 每轮对话结束后，AI 自动识别**语法、用词、表达**问题。
-- 给出原文 → 正确版 → 原因 → 改进建议的完整纠错链。
-- 同步生成**词汇分析**（词汇水平、高级词汇、重复词汇）。
-
-### 3. 🌟 中文母语错误画像 + 个性化复练闭环（v0.2.0 重点功能）
-
-#### 为什么要做这个功能？
-
-**用户原话**："我练完后只知道'这次'犯了多少错，但不知道'我是不是老在同一个坑里'。"
-
-这是中式英语学习者最普遍、却最被忽略的痛点：
-- ✅ v0.1.0 已做：单次总结反馈（告诉你这次哪里错了）。
-- ❌ v0.1.0 没做：跨练习的弱项追踪（告诉你哪些坑你**总是**踩）。
-- ❌ v0.1.0 没做：基于弱项的定向复练（告诉你**下次**该练什么）。
-
-#### 我们怎么做？
-
-**5 类中式英语错误标签**（AI 自动分类）：
-
-| 错误类型 | 含义 | 推荐练习场景 |
-|---|---|---|
-| **中式语序** (word_order) | 受中文语法影响产生的语序错误 | 面试 |
-| **时态** (tense) | 过去/现在/将来时态混用 | 会议 |
-| **冠词** (article) | a/an/the 缺失或误用 | 日常 |
-| **介词** (preposition) | in/on/at/to/for/with 误用 | 旅行 |
-| **直译表达** (direct_translation) | 语法正确但不自然的中式直译 | 日常 |
-
-**两层数据展示**：
-
-- **总结页**：本次练习的 5 类错误柱状分布 + 最高频问题。
-- **首页**：基于最近 5 次练习聚合的**个性化推荐**——"建议你练【会议】场景，重点改善【时态】问题"。
-
-**滑动窗口机制**：
-
-- 按**最近 5 次**练习聚合，确保推荐反映**当前**的弱项，而非历史旧账。
-- 错误率超过 70% 即视为"已解锁画像"。
-- 删除对话时同步从窗口移除，但累计计数保留——既保护隐私，又不丢失历史。
-
-#### 验证效果
-
-- 20 条样本抽检，AI 分类准确率 **70%**（达到 PRD 阈值）。
-- 完整覆盖 AC-001 ~ AC-007 全部验收标准。
-- 本地 UI 运行时验证通过，详见 [QA 验收报告](docs/versions/v0.2.0/qa/acceptance-report.md)。
+我们不做大而全的英语学习平台，只专注一件事：**让练习从「盲目重复」变成「刻意进步」。**
 
 ---
 
-## 技术栈
+## 为什么选择 TalkMate
 
-| 层级 | 技术 |
-|---|---|
-| 前端 | React 18 + TypeScript + Vite + Tailwind CSS + Zustand + React Router |
-| 后端 | FastAPI + SQLAlchemy 2.0 + Pydantic v2 + Pydantic Settings |
-| 数据库 | SQLite (本地) / TiDB Cloud MySQL (生产) |
-| AI | DeepSeek (deepseek-v4-flash, OpenAI 兼容协议) |
-| 鉴权 | JWT (HS256) + bcrypt 密码哈希 |
-| 部署 | Vercel Serverless (Python) + Vercel Static (前端) |
-| 监控 | Vercel Logs + Vercel Inspect |
+### 市场痛点
+
+| 痛点 | 典型现状 | TalkMate 的回应 |
+|------|----------|-----------------|
+| **打分但不诊断** | 用户只知道分数，不知道老在哪儿犯错 | 5 类中式英语错误标签 + 跨练习弱项追踪 |
+| **练习是孤岛** | 每次对话结束即遗忘，没有累积视角 | 滑动窗口画像 + 首页定向复练推荐 |
+| **真人外教成本高** | ¥80–200/节，难以坚持 | AI 7×24 可用，零社交压力 |
+| **通用 AI 缺体系** | ChatGPT 能聊，但不追踪你的长期弱项 | 场景化 prompt + 结构化总结 + 画像存储 |
+| **课程 App 偏游戏化** | 流利说、多邻国重词汇/关卡，口语深度不足 | 聚焦场景对话 + 深度纠错链 |
+
+### 核心差异化（我们的优势）
+
+<table>
+<tr>
+<td width="25%" align="center"><strong>🎯 场景化</strong></td>
+<td width="25%" align="center"><strong>🔍 深度纠错</strong></td>
+<td width="25%" align="center"><strong>📊 中式英语画像</strong></td>
+<td width="25%" align="center"><strong>🔄 复练闭环</strong></td>
+</tr>
+<tr>
+<td valign="top">5 大高频场景：面试、点餐、会议、旅行、日常。AI 按场景角色扮演，贴近真实交流。</td>
+<td valign="top">原文 → 正确表达 → 原因 → 改进建议，完整纠错链；含词汇分析与综合评分。</td>
+<td valign="top">AI 自动将错误归入 5 类中式英语标签（语序/时态/冠词/介词/直译），而非笼统「语法错误」。</td>
+<td valign="top">首页基于最近 5 次弱项推荐「下次练什么场景、重点改什么」，形成刻意练习闭环。</td>
+</tr>
+</table>
+
+### 与竞品对比（MVP 视角）
+
+| 能力维度 | 流利说 / 多邻国 | 通用 AI 对话 | 真人外教 | **TalkMate** |
+|----------|----------------|--------------|----------|--------------|
+| 场景化口语对话 | ★★ | ★★ | ★★★ | ★★★ |
+| 结构化纠错反馈 | ★★ | ★★ | ★★★ | ★★★ |
+| 中式英语专项诊断 | — | — | ★★（依赖老师） | ★★★ |
+| 跨练习弱项追踪 | ★ | — | ★★ | ★★★ |
+| 定向复练推荐 | ★ | — | ★★ | ★★★ |
+| 低社交压力 / 低成本 | ★★★ | ★★★ | ★ | ★★★ |
+
+> 数据来源：内部业务调研与 v0.1.0 MVP 范围定义，详见 [业务调研报告](docs/versions/v0.1.0/product/business-research.md)。
+
+---
+
+## 产品闭环
+
+```mermaid
+flowchart LR
+    A[选择场景] --> B[多轮 AI 对话]
+    B --> C[生成课后总结]
+    C --> D[5 类错误画像更新]
+    D --> E[总结页：本次分布]
+    D --> F[首页：定向推荐]
+    F --> A
+```
+
+**用户价值路径：**
+
+1. **练** — 在指定场景与 AI 完成多轮对话（支持语音输入 + TTS 播放）
+2. **诊** — 对话结束后获得纠错反馈与综合总结（评分、语法、词汇、建议）
+3. **看** — 系统将错误归纳为 5 类中式英语标签，沉淀为个人弱项画像
+4. **练** — 首页推荐「建议场景 + 重点改善项」，引导下一次刻意练习
+
+---
+
+## MVP 阶段说明
+
+> **当前处于 MVP 阶段（v0.2.0）**：核心链路已打通，但大量体验、数据与工程能力仍在迭代中。
+
+| 维度 | 现状 |
+|------|------|
+| **产品** | 核心功能可用：场景对话、AI 总结、错误画像、首页推荐 |
+| **体验** | 移动端 App 化 UI 已完成基础适配；部分页面仍使用占位/模拟数据 |
+| **数据** | 画像需累计 ≥5 次**新生成总结**后解锁；旧总结无法自动回填画像 |
+| **工程** | 生产环境 Vercel + TiDB；本地 SQLite；Alembic 迁移尚未引入 |
+| **测试** | 核心模块有单元测试；profile 专项测试与 E2E 覆盖仍在补充 |
+
+**我们诚实说明：** MVP 的目标是验证「场景对话 + 中式英语诊断 + 定向复练」这条价值假设，而非交付一款功能完备的商业产品。
+
+---
+
+## 当前已实现功能
+
+### v0.1.0 — 基础口语陪练 ✅
+
+| 模块 | 能力 | 状态 |
+|------|------|------|
+| 用户体系 | 注册 / 登录 / JWT 会话 | ✅ |
+| 场景练习 | 5 大场景卡片 + AI 角色对话 | ✅ |
+| 语音交互 | 浏览器 STT 输入 + TTS 播放 | ✅ |
+| 纠错反馈 | 原文 → 正确 → 原因 → 建议 | ✅ |
+| 课后总结 | 评分、语法、词汇、改进建议 | ✅ |
+| 练习记录 | 历史对话列表（场景、日期、评分） | ✅ |
+| 移动端 UI | 375px–1440px 响应式 + 底部 Tab 导航 | ✅ |
+| 部署 | Vercel Serverless + TiDB Cloud | ✅ |
+
+### v0.2.0 — 中式英语画像 + 复练闭环 ✅
+
+| 模块 | 能力 | 状态 |
+|------|------|------|
+| AI 增强 | 总结输出 `error_profile`（5 类 + unknown 兜底） | ✅ |
+| 画像存储 | `user_error_profiles` 表，累计计数 + 最近 5 次滑动窗口 | ✅ |
+| 总结页 | `ErrorProfileCard` — 本次错误分布柱状图 | ✅ |
+| 首页 | `TrainingRecommendBanner` — 个性化场景推荐 | ✅ |
+| 数据一致性 | 删除对话时从滑动窗口移除，累计计数保留 | ✅ |
+| API | `GET /profile/error-summary`、`GET /profile/next-goal` | ✅ |
+
+#### 5 类中式英语错误标签
+
+| 错误类型 | 中文名 | 典型表现 | 推荐练习场景 |
+|----------|--------|----------|--------------|
+| `word_order` | 中式语序 | 受中文语序影响的表达顺序 | 面试 |
+| `tense` | 时态 | 过去/现在/将来时态混用 | 会议 |
+| `article` | 冠词 | a/an/the 缺失或误用 | 日常 |
+| `preposition` | 介词 | in/on/at/to/for/with 误用 | 旅行 |
+| `direct_translation` | 直译表达 | 语法正确但不地道 | 日常 |
+
+#### 抽卡跟练（辅助模块）✅
+
+- 随机练习卡片 + AI 语音评分（发音 / 语法 / 流利度）
+- 成就徽章体系（初次尝试、连续打卡、满分达人等）
+
+---
+
+## 已知局限与待完善项
+
+以下问题已在内部审计中确认，**不影响核心链路存在，但会影响用户感知**：
+
+| 类别 | 说明 | 计划处理 |
+|------|------|----------|
+| 画像解锁门槛 | 需 5 次新生成总结且 AI 返回有效 `error_profile` | v0.3.0 优化引导与旧数据回填 |
+| API 失败静默 | 首页推荐 banner 在 API 失败时不展示任何引导 | v0.3.0 前端降级态 |
+| 无独立画像页 | `error-summary` API 已实现，但「我的」页未消费 | v0.3.0 独立画像页 |
+| 旧总结不兼容 | v0.2.0 前生成的总结无画像数据 | v0.3.0「重新生成总结」 |
+| 数据库迁移 | 依赖 `init_db()` 建表，无 Alembic 版本管理 | v0.3.0 引入 migration |
+| 测试缺口 | profile 模块无专项单元测试 | v0.3.0 补充 |
+| 首页统计 | 部分统计仍 fallback 到 mock 数据 | v0.3.0 接入真实用户统计 API |
+| 流式语音 | 当前为回合制，非实时流式对话 | v0.4.0+ |
+
+---
+
+## 未来规划
+
+> 以下规划基于 PRD 明确不做项、技术可行性评估与 MVP 范围文档整理。**优先级与版本号可能在评审后调整。**
+
+### v0.3.0 — 长期画像与体验完善
+
+**主题：** 从「最近 5 次窗口」扩展到「看得见的长期进步」
+
+| 编号 | 功能 | 用户价值 | 预期交付 |
+|------|------|----------|----------|
+| F-301 | **错误趋势图** | 按周/月查看 5 类错误的增减趋势，感知进步 | 折线图 + 时间筛选 |
+| F-302 | **画像快照** | 保存每次总结后的画像快照，支持历史对比 | 新增 `profile_snapshots` 表 |
+| F-303 | **独立能力画像页** | 「我的」页展示完整 5 类分布、累计 vs 近期对比 | 消费 `error-summary` API |
+| F-304 | **旧总结重新生成** | 一键为历史对话重新生成含画像的总结 | 总结页「重新分析」按钮 |
+| F-305 | **首页真实统计** | 完成练习数、平均分、连续天数接入后端 | 替换 mock 数据 |
+| F-306 | **Banner 降级态** | API 失败时展示引导文案，而非空白 | 前端容错 |
+| F-307 | **Alembic 迁移** | 生产 TiDB  schema 版本化管理 | 部署 runbook 更新 |
+| F-308 | **Profile 单元测试** | 画像更新 / 推荐 / 删除同步全覆盖 | CI 集成 |
+
+**验收方向：**
+
+- 用户可在「我的」页查看完整错误画像
+- 趋势图至少支持「最近 30 天」视图
+- 旧对话可重新生成总结并获得 `error_profile`
+
+---
+
+### v0.4.0 — 智能推荐与纠错增强
+
+**主题：** 从「最高频错误 → 固定场景」升级为「更懂你的教练」
+
+| 编号 | 功能 | 用户价值 | 预期交付 |
+|------|------|----------|----------|
+| F-401 | **用户手动修正错误类型** | AI 分类不准时可手动调整，画像更可信 | 总结页编辑入口 |
+| F-402 | **多维度推荐算法** | 结合错误频率、场景覆盖度、练习间隔综合推荐 | 推荐引擎 v2 |
+| F-403 | **弱项专项练习包** | 针对单一错误类型生成 3–5 条针对性例句/对话 | 与抽卡跟练联动 |
+| F-404 | **实时对话内纠错** | 对话过程中轻量提示（非打断式） | 可选开关 |
+| F-405 | **多 LLM 切换** | 支持 DeepSeek / GPT 等模型按场景切换 | 配置化 + A/B |
+| F-406 | **Prompt 版本管理** | prompt 变更可追踪、可回滚 | Git 化 prompt 仓库 |
+
+---
+
+### v0.5.0 — 语音与交互升级
+
+**主题：** 更接近真实口语交流体验
+
+| 编号 | 功能 | 用户价值 | 预期交付 |
+|------|------|----------|----------|
+| F-501 | **流式实时语音** | 降低回合制等待感，对话更自然 | WebRTC / 流式 STT |
+| F-502 | **发音评测增强** | 音素级反馈，而不只是文本纠错 | 对接专业 ASR/评测 API |
+| F-503 | **对话回放** | 回顾历史对话音频与纠错时间点 | 消息级标记 |
+| F-504 | **离线练习模式** | 弱网环境下缓存卡片与例句 | PWA 能力 |
+
+---
+
+### v1.0 — 产品化与商业化探索
+
+**主题：** 从 MVP 验证走向可持续产品
+
+| 编号 | 功能 | 用户价值 | 预期交付 |
+|------|------|----------|----------|
+| F-601 | **第三方登录** | 微信 / 手机号一键登录，降低注册门槛 | OAuth 集成 |
+| F-602 | **订阅与配额** | 免费额度 + 付费无限练习 | 计费模块 |
+| F-603 | **管理后台** | 场景管理、用户数据、prompt 配置 | Admin SPA |
+| F-604 | **学习报告导出** | PDF/图片分享「我的进步报告」 | 报告生成服务 |
+| F-605 | **社区轻互动** | 匿名弱项排行、打卡分享（可选） | 社交模块 v1 |
+| F-606 | **Native App** | iOS / Android 原生或 React Native | 待定技术选型 |
+
+---
+
+### 明确不在近期路线内
+
+| 功能 | 原因 |
+|------|------|
+| 多语种支持（日语/韩语等） | 当前聚焦中文母语者的英语中式表达 |
+| 完整课程商城 | 非核心定位，与「陪练 + 诊断」方向偏离 |
+| 真人外教对接 | 成本高，与 AI 低成本定位冲突 |
+| 复杂游戏化体系 | 避免偏离「刻意练习」核心价值 |
+
+---
+
+## 技术架构
+
+```mermaid
+flowchart TB
+    subgraph Client["前端 · React SPA"]
+        UI[Pages & Components]
+        Store[Zustand Stores]
+        API_Layer[Axios /api/v1]
+    end
+
+    subgraph Vercel["Vercel 部署"]
+        Static[Static Build · frontend/dist]
+        Serverless[Python Serverless · api/index.py]
+    end
+
+    subgraph Backend["FastAPI 后端"]
+        Auth[auth]
+        Scenario[scenario]
+        Conv[conversation]
+        Summary[summary]
+        Profile[profile]
+        Practice[practice]
+        AI[ai_service → DeepSeek]
+    end
+
+    subgraph Data["数据层"]
+        TiDB[(TiDB Cloud · 生产)]
+        SQLite[(SQLite · 本地)]
+    end
+
+    UI --> Store --> API_Layer
+    API_Layer --> Static
+    API_Layer --> Serverless
+    Serverless --> Backend
+    Backend --> AI
+    Backend --> TiDB
+    Backend --> SQLite
+```
+
+### 技术栈
+
+| 层级 | 技术选型 |
+|------|----------|
+| 前端 | React 18 · TypeScript · Vite · Tailwind CSS · Zustand · React Router |
+| 后端 | FastAPI · SQLAlchemy 2.0 · Pydantic v2 · Pydantic Settings |
+| 数据库 | SQLite（本地开发）/ TiDB Cloud MySQL（生产） |
+| AI | DeepSeek（deepseek-v4-flash，OpenAI 兼容协议） |
+| 语音 | 浏览器 Web Speech API（STT + TTS，零额外成本） |
+| 鉴权 | JWT（HS256）+ bcrypt 密码哈希 |
+| 部署 | Vercel Serverless（Python）+ Vercel Static（前端） |
+| 监控 | Vercel Logs · Vercel Inspect |
 
 ---
 
@@ -112,38 +324,32 @@
 
 ```
 talkmate/
-├── api/                       # Vercel Serverless 入口
-│   └── index.py               #   暴露 FastAPI app 对象
-├── backend/                   # 后端服务（FastAPI）
-│   ├── app/
-│   │   ├── modules/
-│   │   │   ├── auth/          #   认证（注册/登录/JWT）
-│   │   │   ├── scenario/      #   场景管理
-│   │   │   ├── conversation/  #   对话与消息
-│   │   │   ├── summary/       #   AI 总结与纠错
-│   │   │   ├── practice/      #   抽卡跟练
-│   │   │   └── profile/       #   用户错误画像（v0.2.0 新增）
-│   │   ├── core/              #   配置、安全、异常
-│   │   ├── db/                #   数据库连接与初始化
-│   │   └── shared/            #   共享响应与异常
-│   ├── venv/                  #   Python 虚拟环境（不入仓）
-│   └── requirements.txt
-├── frontend/                  # 前端 SPA（React）
-│   ├── src/
-│   │   ├── components/        #   通用组件
-│   │   │   ├── ErrorProfileCard.tsx        # v0.2.0 新增
-│   │   │   └── TrainingRecommendBanner.tsx # v0.2.0 新增
-│   │   ├── pages/             #   路由页面
-│   │   ├── features/          #   业务功能模块
-│   │   ├── services/          #   API 调用层
-│   │   └── stores/            #   Zustand 状态
-│   └── package.json
-├── docs/                      # 项目文档
-│   └── versions/
-│       ├── v0.1.0/            #   MVP + 移动端 App 化
-│       └── v0.2.0/            #   中文母语错误画像（当前）
-├── tests/                     # E2E 测试
-├── vercel.json                # Vercel 部署配置
+├── api/                          # Vercel Serverless 入口
+│   └── index.py
+├── backend/
+│   └── app/
+│       ├── modules/
+│       │   ├── auth/             # 注册 / 登录 / JWT
+│       │   ├── scenario/         # 5 大场景 + seed
+│       │   ├── conversation/     # 对话与消息
+│       │   ├── summary/          # AI 总结与纠错
+│       │   ├── profile/          # 错误画像（v0.2.0）
+│       │   ├── practice/         # 抽卡跟练 + 成就
+│       │   └── ai_service/       # DeepSeek 客户端 + Prompt
+│       ├── core/                 # 配置、安全、异常
+│       ├── db/                   # 数据库连接与 init_db
+│       └── shared/               # 统一响应格式
+├── frontend/
+│   └── src/
+│       ├── app/                  # 路由、Layout、Shell
+│       ├── pages/                # 首页、场景、总结、个人中心
+│       ├── features/             # 对话、场景、认证等业务模块
+│       ├── components/           # ErrorProfileCard、TrainingRecommendBanner 等
+│       ├── services/             # API 调用层
+│       └── stores/               # Zustand 全局状态
+├── docs/versions/                # 按版本归档的 PRD、设计、QA 文档
+├── tests/                        # E2E 测试
+├── vercel.json
 └── README.md
 ```
 
@@ -153,21 +359,20 @@ talkmate/
 
 ### 环境要求
 
-- **Python**：3.12+
-- **Node.js**：18+
-- **SQLite**：内置（本地开发）
-- **DeepSeek API Key**：从队长处获取
+| 依赖 | 版本 |
+|------|------|
+| Python | 3.12+ |
+| Node.js | 18+ |
+| DeepSeek API Key | 向项目负责人获取 |
 
-### 本地启动
-
-#### 1. 克隆仓库
+### 1. 克隆仓库
 
 ```bash
 git clone https://github.com/daidai5210/TalkMate.git
 cd TalkMate
 ```
 
-#### 2. 启动后端
+### 2. 启动后端
 
 ```bash
 cd backend
@@ -175,115 +380,125 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# 复制环境变量模板并填写
 cp .env.example .env
-# 编辑 .env，填入 DEEPSEEK_API_KEY、JWT_SECRET 等
+# 编辑 .env：填入 DEEPSEEK_API_KEY、JWT_SECRET 等
 
-# 启动后端
 PYTHONPATH=. ./venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-后端健康检查：`curl http://localhost:8000/api/health`
+健康检查：
 
-#### 3. 启动前端
+```bash
+curl http://localhost:8000/api/health
+```
+
+### 3. 启动前端
 
 ```bash
 cd frontend
 npm install
 
-# 开发模式（同源：使用 Vite proxy，无需配置 baseURL）
-npm run dev
+# 本地开发：连接本地后端
+echo "VITE_API_BASE_URL=http://127.0.0.1:8000" > .env.local
 
-# 浏览器访问
-open http://localhost:5173
+npm run dev
+# 浏览器访问 http://localhost:5173
 ```
 
-#### 4. 验证
+### 4. 验证 v0.2.0 画像功能
 
-- 注册新用户（验证码见 `REGISTER_CAPTCHA`）
-- 选择场景开始对话
-- 结束后查看总结页错误画像
-- 累计 5 次练习后查看首页个性化推荐
+1. 注册新用户（验证码见 `REGISTER_CAPTCHA` 环境变量）
+2. 选择场景，完成对话并**生成总结**（重复 5 次）
+3. 第 5 次后访问总结页 → 应看到「本次中式英语画像」卡片
+4. 返回首页 → 应看到「建议练习」推荐 banner
+
+> **注意：** 查看旧总结不会触发画像更新；每次需**新生成**总结。
 
 ---
 
 ## Vercel 部署
 
-### 部署架构
+### 架构
 
-- **前端**：Vercel Static Build，输出 `frontend/dist`
-- **后端**：Vercel Python Serverless，入口 `api/index.py`
-- **API 路由**：`/api/*` 同源请求，无需 CORS 跨域
+| 组件 | 说明 |
+|------|------|
+| 前端 | Vercel Static Build → `frontend/dist` |
+| 后端 | Python Serverless → `api/index.py` |
+| API 路由 | 同源 `/api/*`，生产环境无需配置 `VITE_API_BASE_URL` |
+| 数据库 | TiDB Cloud MySQL（SSL 连接） |
 
-### 必需环境变量（Production）
+### 必需环境变量
 
-| 变量 | 说明 | 示例 |
-|---|---|---|
-| `DATABASE_URL` | MySQL 连接串（TiDB Cloud） | `mysql+pymysql://user:pass@host:4000/talkmate?ssl_verify_cert=true&ssl_verify_identity=true` |
-| `JWT_SECRET` | JWT 签名密钥（≥32 字符） | `your-strong-random-secret-32chars` |
-| `CORS_ORIGINS` | 允许的来源域名 | `https://talkmate-github-preview.vercel.app` |
-| `REGISTER_CAPTCHA` | 注册验证码（4 位数字） | `1234` |
-| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 | `sk-xxxxxxxx` |
-| `DEEPSEEK_BASE_URL` | DeepSeek API 地址 | `https://api.deepseek.com/v1` |
-| `DEEPSEEK_MODEL` | 使用的模型 | `deepseek-v4-flash` |
-| `DEEPSEEK_TIMEOUT` | API 超时（秒） | `10.0` |
-
-> ⚠️ **注意**：`VITE_API_BASE_URL` 在 Vercel 同源部署中**不设置**或设置为空，前端通过同源 `/api/*` 调用后端。
+| 变量 | 说明 |
+|------|------|
+| `DATABASE_URL` | TiDB MySQL 连接串 |
+| `TIDB_CA_PEM_B64` | TiDB SSL 证书（Base64 编码） |
+| `JWT_SECRET` | JWT 签名密钥（≥32 字符） |
+| `CORS_ORIGINS` | 允许的前端域名 |
+| `REGISTER_CAPTCHA` | 注册验证码（4 位数字） |
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+| `DEEPSEEK_BASE_URL` | 默认 `https://api.deepseek.com/v1` |
+| `DEEPSEEK_MODEL` | 默认 `deepseek-v4-flash` |
+| `DEEPSEEK_TIMEOUT` | API 超时秒数，建议 `10.0` |
 
 ### 部署步骤
 
-1. **关联 GitHub 仓库**：在 Vercel 控制台导入 `daidai5210/TalkMate`。
-2. **配置环境变量**：在 Project Settings → Environment Variables 中填入上表变量。
-3. **触发部署**：push 到 `main` 分支自动触发 Production 部署。
-4. **验证**：
-   - 访问 `https://<your-domain>/api/health` 应返回 `{"status":"ok"}`
-   - 注册/登录流程正常
-   - 5 次练习后首页显示个性化推荐
+1. Vercel 控制台导入 GitHub 仓库
+2. 配置上述环境变量（Production + Preview 分别配置）
+3. Push 到 `main` 触发自动部署
+4. 验证：`/api/health` 返回 ok；注册登录正常；5 次练习后首页出现推荐
 
 ### 常见问题
 
-#### Q: 登录返回 500？
+<details>
+<summary><strong>登录返回 500</strong></summary>
 
-A: 大概率是 `DATABASE_URL` 或 `JWT_SECRET` 未在 Vercel 环境变量中正确配置。检查：
-1. Vercel Dashboard → Project → Settings → Environment Variables
-2. Production 和 Preview 作用域需分别配置
-3. 使用 `vercel logs <deployment-url>` 查看详细错误
+大概率是 `DATABASE_URL` 或 `JWT_SECRET` 未正确配置。检查 Vercel Dashboard → Environment Variables，并用 `vercel logs` 查看详细错误。
 
-#### Q: API 响应慢？
+</details>
 
-A: Python Serverless 冷启动 + TiDB 首连可能耗时 10s+。可：
-1. 适当延长 `DEEPSEEK_TIMEOUT`
-2. 前端展示加载状态
-3. 升级 Vercel 计划获得更短的冷启动时间
+<details>
+<summary><strong>首页看不到推荐 banner</strong></summary>
 
-更多部署细节：[Vercel 部署手册](docs/versions/v0.1.0/deployment/vercel-tidbcloud.md)
+常见原因：① 练习次数不足 5 次；② 总结未新生成（旧缓存无 `error_profile`）；③ profile API 失败（检查 Network 面板）；④ 前端 `.env` 指向了未部署 v0.2.0 的远端 API。
+
+</details>
+
+<details>
+<summary><strong>API 响应慢（10s+）</strong></summary>
+
+Python Serverless 冷启动 + TiDB 首连耗时较长。可适当延长 `DEEPSEEK_TIMEOUT`，前端展示 loading 态，或升级 Vercel 计划。
+
+</details>
+
+更多细节：[Vercel 部署手册](docs/versions/v0.1.0/deployment/vercel-tidbcloud.md)
 
 ---
 
 ## 版本路线
 
-| 版本 | 主要交付 | 状态 |
-|---|---|---|
+| 版本 | 主题 | 状态 |
+|------|------|------|
 | **v0.1.0** | MVP + 移动端 App 化 + Vercel/TiDB 部署 | ✅ 已发布 |
-| **v0.2.0** | 中文母语错误画像 + 个性化复练闭环 | ✅ 已发布 |
-| v0.3.0 | 趋势图 / 快照 / 长期画像 | 📋 规划中 |
-
-### v0.2.0 新增功能一览
-
-- 后端：5 类错误标签、滑动窗口聚合、删除对话同步
-- 前端：`ErrorProfileCard` 总结页卡片、`TrainingRecommendBanner` 首页推荐
-- AI：DeepSeek prompt 增强，输出 `error_profile` 字段
-- 文档：PRD、技术设计、QA 验收报告完整归档
+| **v0.2.0** | 中式英语错误画像 + 个性化复练闭环 | ✅ 已发布 |
+| **v0.3.0** | 趋势图 / 快照 / 独立画像页 / 工程完善 | 📋 规划中 |
+| **v0.4.0** | 智能推荐 v2 + 手动修正 + 对话内纠错 | 📋 规划中 |
+| **v0.5.0** | 流式语音 + 发音评测增强 | 📋 规划中 |
+| **v1.0** | 产品化：登录扩展 / 订阅 / 管理后台 | 📋 远期 |
 
 ---
 
 ## 文档导航
 
-- 📋 [需求文档](docs/versions/v0.2.0/product/prd.md)
-- 🏗️ [技术设计](docs/versions/v0.2.0/architecture/tech-design.md)
-- ✅ [QA 验收报告](docs/versions/v0.2.0/qa/acceptance-report.md)
-- 🚀 [Vercel 部署手册](docs/versions/v0.1.0/deployment/vercel-tidbcloud.md)
-- 📚 [完整文档索引](docs/INDEX.md)
+| 文档 | 说明 |
+|------|------|
+| [v0.2.0 PRD](docs/versions/v0.2.0/product/prd.md) | 错误画像功能需求 |
+| [v0.2.0 技术设计](docs/versions/v0.2.0/architecture/tech-design.md) | 数据模型、API、Prompt 设计 |
+| [v0.2.0 QA 验收报告](docs/versions/v0.2.0/qa/acceptance-report.md) | 验收标准与测试结果 |
+| [v0.1.0 MVP 范围](docs/versions/v0.1.0/product/mvp-scope.md) | MVP 功能边界 |
+| [业务调研报告](docs/versions/v0.1.0/product/business-research.md) | 用户画像与竞品分析 |
+| [Vercel 部署手册](docs/versions/v0.1.0/deployment/vercel-tidbcloud.md) | 生产环境部署 |
+| [文档索引](docs/INDEX.md) | 完整文档目录 |
 
 ---
 
@@ -291,36 +506,35 @@ A: Python Serverless 冷启动 + TiDB 首连可能耗时 10s+。可：
 
 ### 代码规范
 
-- 后端：遵循 [PEP 8](https://peps.python.org/pep-0008/)，类型注解完整
-- 前端：ESLint + TypeScript strict 模式
-- 提交信息：[Conventional Commits](https://www.conventionalcommits.org/) 规范
+- 后端：[PEP 8](https://peps.python.org/pep-0008/)，类型注解完整
+- 前端：ESLint + TypeScript strict
+- 提交：[Conventional Commits](https://www.conventionalcommits.org/) 规范
 
 ### 测试
 
 ```bash
 # 后端单元测试
-cd backend
-PYTHONPATH=. ./venv/bin/pytest app -q
+cd backend && PYTHONPATH=. ./venv/bin/pytest app -q
 
 # 前端构建验证
-cd frontend
-npm run build
+cd frontend && npm run build
 ```
 
 ### PR 流程
 
 1. 从 `main` 创建特性分支：`git checkout -b feat/your-feature`
-2. 提交并推送：`git push origin feat/your-feature`
-3. 创建 PR，标题和描述需包含：功能描述、实现思路、测试方式
-4. CI 通过后由 Reviewer 合并
+2. 提交并推送，创建 PR（含功能描述、实现思路、测试方式）
+3. CI 通过后由 Reviewer 合并
 
 ---
 
 ## 团队
 
-- **PM/FS**：兼产品与全栈开发
-- **QA**：测试运维
-- **队长**：项目决策与最终验收
+| 角色 | 职责 |
+|------|------|
+| PM / FS | 产品定义 + 全栈开发 |
+| QA | 测试与运维 |
+| 队长 | 项目决策与最终验收 |
 
 ---
 
@@ -330,4 +544,10 @@ Internal use only. 未经许可不得外传或商业化使用。
 
 ---
 
-> 📌 **当前版本**：v0.2.0 | 最后更新：2026-06-07
+<div align="center">
+
+**TalkMate** · 让中国英语学习者看见自己的「中式英语」画像
+
+当前版本 **v0.2.0** · 最后更新 **2026-06-07**
+
+</div>
