@@ -100,7 +100,7 @@ export default function ScenariosPage() {
 
   if (loading) {
     return (
-      <div className="px-4 py-6 space-y-4" data-testid="scenarios-loading">
+      <div className="space-y-4 px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]" data-testid="scenarios-loading">
         {[1, 2, 3].map((i) => (
           <div key={i} className="animate-pulse rounded-2xl bg-slate-200 h-28" />
         ))}
@@ -110,7 +110,7 @@ export default function ScenariosPage() {
 
   if (error) {
     return (
-      <div className="px-4 py-6">
+      <div className="px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center" data-testid="scenarios-error">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-red-400" strokeWidth={1.5} />
           <p className="text-red-700 mb-3">加载失败：{error}</p>
@@ -127,7 +127,7 @@ export default function ScenariosPage() {
 
   if (!loading && !error && scenarios.length === 0 && MOCK_SCENARIOS.length === 0) {
     return (
-      <div className="px-4 py-6">
+      <div className="px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center" data-testid="scenarios-empty">
           <MessageCircle className="mx-auto mb-2 h-10 w-10 text-slate-300" strokeWidth={1} />
           <p className="text-sm font-bold text-slate-700">暂无训练场景</p>
@@ -138,7 +138,7 @@ export default function ScenariosPage() {
   }
 
   return (
-    <div className="px-4 pb-[calc(28px+var(--app-safe-bottom))] pt-4">
+    <div className="px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
       <header className="mb-5">
         <h1 className="text-lg font-black text-slate-950">场景对话</h1>
         <p className="mt-1 text-xs text-slate-400">选择一个场景，开始角色扮演对话练习</p>

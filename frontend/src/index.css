@@ -11,18 +11,19 @@
 html,
 body,
 #root {
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  overflow: hidden;
   background: #f8fafc;
 }
 
 :root {
   --app-max-width: 430px;
   --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-bottom-nav-height: 3.5rem;
 
   /* Brand shadow tokens */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);

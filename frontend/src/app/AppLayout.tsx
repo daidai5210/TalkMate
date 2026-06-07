@@ -21,14 +21,17 @@ export default function AppLayout() {
   const showBottomNav = ['/app/home', '/app/scenarios', '/app/profile'].includes(location.pathname);
 
   return (
-    <div className="flex flex-col min-h-dvh bg-slate-50">
-      <div className="flex-1 overflow-auto">
-        <Outlet />
-      </div>
+    <div className="flex h-dvh flex-col overflow-hidden bg-slate-50">
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-[var(--app-max-width)]">
+          <Outlet />
+        </div>
+      </main>
       {showBottomNav && (
         <nav
-          className="flex-shrink-0 border-t border-slate-200 bg-white"
+          className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white"
           style={{ paddingBottom: 'var(--app-safe-bottom)' }}
+          data-testid="bottom-tab-bar"
         >
           <div className="mx-auto flex max-w-[var(--app-max-width)]">
             {tabs.map(({ path, label, Icon }) => (
