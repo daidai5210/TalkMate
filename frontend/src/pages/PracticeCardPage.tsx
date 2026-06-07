@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Drawer } from 'vaul';
-import { Layers, AlertCircle, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
+import { Layers, AlertCircle, RotateCcw, ChevronLeft, Volume2, Sparkles, Star } from 'lucide-react';
 import AppShell from '../app/AppShell';
 import VoiceLongPressButton from '../components/VoiceLongPressButton';
 import api from '../services/api';
@@ -46,6 +46,36 @@ function difficultyColor(d: number) {
   return 'bg-rose-500/20 text-rose-300';
 }
 
+/** MVP 展示用积分，仅用于卡面鼓励展示 */
+function displayEncourageScore(cardId: number, difficulty: number): number {
+  const base = 60 + (cardId % 25);
+  const bonus = difficulty === 1 ? 15 : difficulty === 2 ? 10 : 5;
+  return Math.min(99, base + bonus);
+}
+
+function SparkleBurst({ show }: { show: boolean }) {
+  if (!show) return null;
+  const particles = Array.from({ length: 12 }, (_, i) => i);
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {particles.map((i) => (
+        <motion.span
+          key={i}
+          className="absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-amber-300"
+          initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0, 1.5, 0],
+            x: Math.cos((i / 12) * Math.PI * 2) * (60 + (i % 3) * 20),
+            y: Math.sin((i / 12) * Math.PI * 2) * (60 + (i % 3) * 20),
+          }}
+          transition={{ duration: 0.8, delay: 0.15 + i * 0.03, ease: 'easeOut' }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function PracticeCardPage() {
   const navigate = useNavigate();
   const [card, setCard] = useState<PracticeCard | null>(null);
@@ -53,6 +83,7 @@ export default function PracticeCardPage() {
   const [pageState, setPageState] = useState<PageState>('loading');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [flipped, setFlipped] = useState(false);
+  const [showSparkle, setShowSparkle] = useState(false);
   const evaluatingRef = useRef(false);
 
   const fetchCard = useCallback(async () => {
@@ -60,13 +91,18 @@ export default function PracticeCardPage() {
     setErrorMsg(null);
     setResult(null);
     setFlipped(false);
+    setShowSparkle(false);
     evaluatingRef.current = false;
     try {
       const { data } = await api.get('/api/v1/practice-cards/random');
       if (data.code === 0 && data.data) {
         setCard(data.data);
         setPageState('ready');
-        setTimeout(() => setFlipped(true), 100);
+        setTimeout(() => {
+          setFlipped(true);
+          setShowSparkle(true);
+          setTimeout(() => setShowSparkle(false), 1200);
+        }, 200);
       } else {
         setCard(null);
         setPageState('empty');
@@ -105,14 +141,17 @@ export default function PracticeCardPage() {
 
   const handleNextCard = useCallback(() => {
     setFlipped(false);
+    setShowSparkle(false);
     fetchCard();
   }, [fetchCard]);
 
   const showCard = (pageState === 'ready' || pageState === 'recording' || pageState === 'evaluating' || pageState === 'result') && card;
+  const encourageScore = card ? displayEncourageScore(card.id, card.difficulty) : 0;
 
   return (
     <AppShell className="relative flex min-h-dvh flex-col overflow-hidden bg-gradient-to-b from-slate-950 via-indigo-950/90 to-slate-900 shadow-none animate-fade-in">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.12),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(244,63,94,0.08),transparent_50%)]" />
 
       <header className="relative z-10 flex shrink-0 items-center gap-3 px-4 pb-2 pt-[max(8px,env(safe-area-inset-top))]">
         <button
@@ -121,14 +160,21 @@ export default function PracticeCardPage() {
         >
           <ChevronLeft className="h-5 w-5" strokeWidth={2} />
         </button>
-        <h1 className="text-[17px] font-black text-white">抽卡跟练</h1>
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-rose-400" strokeWidth={2} />
+          <h1 className="text-[17px] font-black text-white">抽卡跟练</h1>
+        </div>
       </header>
 
       {pageState === 'loading' && (
         <div className="relative z-10 flex flex-1 items-center justify-center" data-testid="practice-loading">
           <div className="text-center">
-            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-rose-400" />
-            <p className="mt-3 text-sm text-white/50">抽取卡片中…</p>
+            <motion.div
+              className="mx-auto h-14 w-10 rounded-xl border-2 border-white/20 bg-gradient-to-b from-rose-500/40 to-indigo-600/40"
+              animate={{ rotateY: [0, 180, 360], scale: [1, 1.1, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <p className="mt-4 text-sm text-white/50">正在抽取卡片…</p>
           </div>
         </div>
       )}
@@ -168,39 +214,69 @@ export default function PracticeCardPage() {
 
       {showCard && (
         <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4" data-testid="practice-card">
-          <div className="flex flex-1 items-center justify-center perspective-[1200px]">
+          <div className="relative flex flex-1 items-center justify-center [perspective:1200px]">
+            <SparkleBurst show={showSparkle} />
             <AnimatePresence mode="wait">
               <motion.div
                 key={card.id}
-                initial={{ rotateY: -90, opacity: 0 }}
-                animate={{ rotateY: flipped ? 0 : -90, opacity: flipped ? 1 : 0 }}
-                exit={{ rotateY: 90, opacity: 0 }}
-                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="w-full max-w-md"
+                initial={{ rotateY: -180, opacity: 0, scale: 0.85, y: 40 }}
+                animate={{
+                  rotateY: flipped ? 0 : -180,
+                  opacity: flipped ? 1 : 0,
+                  scale: flipped ? 1 : 0.85,
+                  y: flipped ? 0 : 40,
+                }}
+                exit={{ rotateY: 180, opacity: 0, scale: 0.85, y: -20 }}
+                transition={{ duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
+                className="relative w-full max-w-md"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <div className="rounded-[1.75rem] border border-white/15 bg-white/10 p-6 shadow-[0_8px_40px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-gradient-to-br from-white/15 via-white/8 to-indigo-500/10 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+                  <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-rose-500/20 blur-2xl" />
+                  <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-indigo-500/20 blur-2xl" />
+
+                  <div className="relative mb-4 flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-indigo-500/30 px-2.5 py-0.5 text-xs font-bold text-indigo-200">{card.scenario}</span>
                     <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-white/60">{card.role}</span>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${difficultyColor(card.difficulty)}`}>
                       {difficultyLabel(card.difficulty)}
                     </span>
                   </div>
-                  <p className="text-xl font-bold leading-relaxed text-white">{card.content}</p>
+
+                  <p className="relative text-xl font-bold leading-relaxed text-white">{card.content}</p>
+
                   {card.hint && (
-                    <div className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3">
+                    <div className="relative mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3">
                       <p className="text-xs font-bold text-amber-300">提示</p>
                       <p className="mt-1 text-sm text-amber-100/80">{card.hint}</p>
                     </div>
                   )}
+
+                  <div
+                    className="relative mt-5 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                    data-testid="card-encourage-score"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-amber-400" strokeWidth={2} fill="currentColor" />
+                      <span className="text-xs font-medium text-white/50">挑战积分</span>
+                    </div>
+                    <motion.span
+                      className="text-2xl font-black text-amber-300"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: flipped ? 1 : 0 }}
+                      transition={{ delay: 0.4, type: 'spring', stiffness: 300 }}
+                    >
+                      +{encourageScore}
+                    </motion.span>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
           {(pageState === 'ready' || pageState === 'recording') && (
-            <div className="shrink-0 py-8 flex justify-center">
+            <div className="shrink-0 py-8 flex flex-col items-center gap-2">
+              <p className="text-xs text-white/40">长按录音，完成本句挑战</p>
               <VoiceLongPressButton
                 key={card.id}
                 disabled={pageState !== 'ready' && pageState !== 'recording'}
@@ -237,9 +313,14 @@ export default function PracticeCardPage() {
                   <Volume2 className="h-4 w-4 text-white/40" strokeWidth={1.5} />
                   <p className="text-sm text-white/60">综合评分</p>
                 </div>
-                <div className={`mt-2 text-5xl font-black ${scoreColor(result.score)}`}>
+                <motion.div
+                  className={`mt-2 text-5xl font-black ${scoreColor(result.score)}`}
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 200 }}
+                >
                   {result.score}
-                </div>
+                </motion.div>
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   <ScorePill label="发音" value={result.pronunciation} />
                   <ScorePill label="语法" value={result.grammar} />
