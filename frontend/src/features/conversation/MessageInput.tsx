@@ -8,10 +8,10 @@ interface Props {
 export default function MessageInput({ onSend, disabled }: Props) {
   return (
     <div
-      className="border-t border-slate-100 bg-white/95 px-3 pb-[calc(12px+var(--app-safe-bottom))] pt-3"
+      className="shrink-0 border-t border-slate-200 bg-white px-4 pb-[calc(12px+var(--app-safe-bottom))] pt-3"
       data-testid="message-input-form"
     >
-      <p className="mb-3 text-center text-xs font-medium text-slate-400">
+      <p className="mb-3 text-center text-[13px] font-medium text-slate-400">
         长按麦克风说话，松开发送
       </p>
       <div className="flex justify-center">

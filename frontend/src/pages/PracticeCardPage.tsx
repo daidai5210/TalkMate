@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layers, AlertCircle, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
+import AppShell from '../app/AppShell';
 import VoiceLongPressButton from '../components/VoiceLongPressButton';
 import api from '../services/api';
 
@@ -97,17 +98,18 @@ export default function PracticeCardPage() {
   }, [fetchCard]);
 
   return (
+    <AppShell className="flex min-h-dvh flex-col bg-slate-50">
     <div className="flex min-h-0 flex-1 flex-col px-4 pb-[calc(28px+var(--app-safe-bottom))] pt-4">
       {/* Header */}
       <header className="mb-4 flex items-center gap-3">
         <button
           onClick={() => navigate('/app/home')}
-          className="flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-brand-600"
+          className="flex min-h-11 items-center gap-1 text-[13px] font-semibold text-slate-500 hover:text-brand-600"
         >
           <ChevronLeft className="h-4 w-4" strokeWidth={2} />
           返回
         </button>
-        <h1 className="text-lg font-black text-slate-950">抽卡跟练</h1>
+        <h1 className="text-[17px] font-black text-slate-950">抽卡跟练</h1>
       </header>
 
       {/* Loading */}
@@ -158,7 +160,7 @@ export default function PracticeCardPage() {
       {/* Card + Recording */}
       {(pageState === 'ready' || pageState === 'recording') && card && (
         <div className="flex flex-1 flex-col" data-testid="practice-card">
-          <div className="rounded-[1.5rem] bg-white p-5 shadow-card border border-slate-200">
+          <div className="rounded-[14px] border border-slate-200 bg-white p-5 shadow-md">
             <div className="flex items-center gap-2 mb-3">
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">{card.scenario}</span>
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{card.role}</span>
@@ -198,7 +200,7 @@ export default function PracticeCardPage() {
       {pageState === 'result' && result && card && (
         <div className="flex flex-1 flex-col" data-testid="practice-result">
           {/* Original card */}
-          <div className="rounded-[1.5rem] bg-white p-5 shadow-card border border-slate-200 opacity-60">
+          <div className="rounded-[14px] border border-slate-200 bg-white p-5 opacity-60 shadow-md">
             <div className="flex items-center gap-2 mb-3">
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">{card.scenario}</span>
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{card.role}</span>
@@ -207,7 +209,7 @@ export default function PracticeCardPage() {
           </div>
 
           {/* Score */}
-          <div className="mt-4 rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-lg">
+          <div className="mt-4 rounded-[14px] bg-slate-950 p-5 text-white shadow-lg">
             <div className="flex items-center gap-2">
               <Volume2 className="h-4 w-4 text-slate-400" strokeWidth={1.5} />
               <p className="text-sm text-slate-300">综合评分</p>
@@ -243,7 +245,7 @@ export default function PracticeCardPage() {
           <div className="mt-auto py-6">
             <button
               onClick={handleNextCard}
-              className="w-full min-h-12 rounded-2xl bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-brand hover:bg-brand-700 active:scale-[0.98]"
+              className="h-12 w-full rounded-[10px] bg-brand-600 text-[15px] font-bold text-white shadow-brand hover:bg-brand-700 active:scale-[0.98]"
             >
               下一张卡片
             </button>
@@ -251,5 +253,6 @@ export default function PracticeCardPage() {
         </div>
       )}
     </div>
+    </AppShell>
   );
 }

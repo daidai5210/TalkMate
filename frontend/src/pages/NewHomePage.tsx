@@ -8,7 +8,6 @@ import {
   Flame,
   Target,
   Zap,
-  Users,
   Star,
 } from 'lucide-react';
 import { listConversations } from '../features/conversation/conversationService';
@@ -133,7 +132,6 @@ export default function NewHomePage() {
   };
 
   const todayTaskDifficulty = '中等';
-  const todayTaskParticipants = 1247;
 
   const pageLoading = (scenariosLoading || historyLoading) && history.length === 0 && scenarios.length === 0;
   const pageError = scenariosError && historyError && history.length === 0 && scenarios.length === 0;
@@ -179,60 +177,63 @@ export default function NewHomePage() {
         {!pageLoading && !pageError && (
           <main className="space-y-5 animate-fade-in-up">
             {/* 今日推荐 — 大卡片 */}
-            <button
-              onClick={() => navigate(`/conversation/${todayTask.id}`)}
-              className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-left text-white shadow-brand transition active:scale-[0.98]"
+            <section
+              className="relative w-full overflow-hidden rounded-[14px] bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-left text-white shadow-brand"
               data-testid="home-hero"
             >
               <div className="absolute right-3 top-3 rounded-full bg-white/20 px-2.5 py-0.5">
                 <span className="text-xs font-bold text-brand-100">今日推荐</span>
               </div>
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-white/20">
                 <Flame className="h-6 w-6 text-amber-300" strokeWidth={1.5} />
               </div>
-              <h2 className="text-xl font-black">{todayTask.name}</h2>
-              <p className="mt-1.5 text-sm text-brand-200">{todayTask.description}</p>
-              <div className="mt-4 flex items-center gap-3 text-xs text-brand-200">
+              <h2 className="text-[17px] font-black">{todayTask.name}</h2>
+              <p className="mt-1.5 text-[13px] leading-5 text-brand-200">{todayTask.description}</p>
+              <div className="mt-3 flex items-center gap-3 text-[13px] text-brand-200">
                 <span className="flex items-center gap-1">
                   <Star className="h-3 w-3" strokeWidth={2} />
                   {(todayTask as any).difficulty || todayTaskDifficulty}
                 </span>
                 <span className="h-1 w-1 rounded-full bg-brand-300" />
-                <span className="flex items-center gap-1">
-                  <Users className="h-3 w-3" strokeWidth={2} />
-                  {(todayTask as any).participants || todayTaskParticipants} 人参与
-                </span>
+                <span>预计 5-10 分钟</span>
               </div>
-            </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/conversation/${todayTask.id}`)}
+                className="mt-4 h-12 w-full rounded-[10px] bg-white text-[15px] font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50 active:scale-[0.98]"
+              >
+                开始训练
+              </button>
+            </section>
 
             <TrainingRecommendBanner />
 
             {/* 快捷入口 */}
             <section>
-              <h2 className="mb-3 text-sm font-bold text-slate-700">开始训练</h2>
+              <h2 className="mb-3 text-[15px] font-bold text-slate-700">开始训练</h2>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => navigate('/app/scenarios')}
-                  className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition hover:shadow-card-hover active:scale-[0.98]"
+                  className="flex flex-col items-center gap-2.5 rounded-[14px] border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg active:scale-[0.98]"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-[12px] bg-brand-50">
                     <MessageCircle className="h-7 w-7 text-brand-600" strokeWidth={1.5} />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-sm font-bold text-slate-900">场景对话</h3>
-                    <p className="mt-0.5 text-xs text-slate-400">角色扮演练习</p>
+                    <h3 className="text-[15px] font-bold text-slate-900">场景对话</h3>
+                    <p className="mt-0.5 text-[13px] text-slate-400">角色扮演练习</p>
                   </div>
                 </button>
                 <button
                   onClick={() => navigate('/practice-card')}
-                  className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition hover:shadow-card-hover active:scale-[0.98]"
+                  className="flex flex-col items-center gap-2.5 rounded-[14px] border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg active:scale-[0.98]"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-[12px] bg-amber-50">
                     <Layers className="h-7 w-7 text-amber-600" strokeWidth={1.5} />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-sm font-bold text-slate-900">抽卡跟练</h3>
-                    <p className="mt-0.5 text-xs text-slate-400">随机精准训练</p>
+                    <h3 className="text-[15px] font-bold text-slate-900">抽卡跟练</h3>
+                    <p className="mt-0.5 text-[13px] text-slate-400">随机精准训练</p>
                   </div>
                 </button>
               </div>
@@ -241,10 +242,10 @@ export default function NewHomePage() {
             {/* 统计概览 */}
             <section className="grid grid-cols-3 gap-3" data-testid="home-stats">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
-                  <stat.icon className={`mb-1 h-5 w-5 ${stat.color}`} strokeWidth={1.5} />
-                  <p className="text-lg font-black text-slate-900">{stat.value}</p>
-                  <p className="text-xs text-slate-400">{stat.label}</p>
+                <div key={stat.label} className="flex flex-col items-center rounded-[14px] bg-white p-4 shadow-sm">
+                  <stat.icon className={`mb-1.5 h-5 w-5 ${stat.color}`} strokeWidth={1.5} />
+                  <p className="text-[24px] font-black text-slate-900">{stat.value}</p>
+                  <p className="text-[13px] text-slate-400">{stat.label}</p>
                 </div>
               ))}
             </section>
@@ -252,7 +253,7 @@ export default function NewHomePage() {
             {/* 最近练习 */}
             <section data-testid="home-history">
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-bold text-slate-700">最近练习</h2>
+                <h2 className="text-[15px] font-bold text-slate-700">最近练习</h2>
                 <button
                   onClick={fetchHistory}
                   disabled={historyLoading}
@@ -283,7 +284,7 @@ export default function NewHomePage() {
                     <button
                       key={item.id}
                       onClick={() => navigate(`/conversation/${item.id}/summary`)}
-                      className="flex w-full items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
+                      className="flex w-full items-center gap-3 rounded-[14px] border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
                     >
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm">
                         {item.scenario.icon}
@@ -307,7 +308,7 @@ export default function NewHomePage() {
                     <button
                       key={item.id}
                       onClick={() => navigate(`/conversation/${item.id}/summary`)}
-                      className="flex w-full items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
+                      className="flex w-full items-center gap-3 rounded-[14px] border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
                     >
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm">
                         {item.scenario.icon}

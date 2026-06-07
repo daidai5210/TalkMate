@@ -5,8 +5,8 @@ interface Props {
 }
 
 const ROLE_STYLE: Record<Message['role'], string> = {
-  user: 'bg-brand-600 text-white ml-auto shadow-brand-100',
-  ai: 'bg-slate-100 text-slate-900 mr-auto shadow-slate-100',
+  user: 'ml-auto border border-brand-200 bg-brand-50 text-brand-900 shadow-sm',
+  ai: 'mr-auto bg-slate-100 text-slate-900 shadow-sm',
 };
 
 export default function MessageBubble({ message }: Props) {
@@ -17,7 +17,7 @@ export default function MessageBubble({ message }: Props) {
       data-testid={`message-${message.role}`}
     >
       <div
-        className={`max-w-[88%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-sm whitespace-pre-wrap break-words ${ROLE_STYLE[message.role]}`}
+        className={`max-w-[88%] rounded-[14px] px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap break-words ${ROLE_STYLE[message.role]}`}
       >
         {!isUser && <p className="mb-2 text-xs font-bold uppercase text-slate-500">AI Coach</p>}
         <p className="break-words">{message.text}</p>
