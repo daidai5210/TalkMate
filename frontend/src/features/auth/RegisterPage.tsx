@@ -51,22 +51,22 @@ export default function RegisterPage() {
 
   return (
     <AppShell className="relative flex min-h-dvh flex-col overflow-hidden !bg-transparent p-0 shadow-none">
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900 to-brand-900"
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-0 bg-auth-gradient" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(99,102,241,0.35),transparent_55%)]" aria-hidden />
 
-      <div className="relative z-10 flex shrink-0 flex-col items-center justify-center px-8 py-10">
-        <div className="flex h-16 w-16 items-center justify-center rounded-[1.125rem] bg-white/10 shadow-lg shadow-black/25 ring-1 ring-white/15 backdrop-blur-md">
-          <MessageCircle className="h-8 w-8 text-white" strokeWidth={1.5} />
+      <div className="relative z-10 flex shrink-0 flex-col items-center justify-center px-8 py-8">
+        <div className="relative">
+          <div className="absolute inset-0 scale-150 rounded-full bg-brand-500/20 blur-2xl" />
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-white/10 shadow-immersive-glow ring-1 ring-white/20 backdrop-blur-md">
+            <MessageCircle className="h-8 w-8 text-white" strokeWidth={1.5} />
+          </div>
         </div>
-        <h1 className="mt-4 text-2xl font-black tracking-tight text-white">TalkMate</h1>
+        <h1 className="mt-5 text-2xl font-black tracking-tight text-white">TalkMate</h1>
         <p className="mt-1.5 text-center text-sm font-medium text-slate-300">创建你的口语成长档案</p>
       </div>
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end">
-        <div className="max-h-[68dvh] shrink-0 overflow-y-auto rounded-t-3xl bg-white px-6 pb-[calc(1.5rem+var(--app-safe-bottom))] pt-3 shadow-[0_-12px_40px_rgba(0,0,0,0.35)] animate-slide-up">
-          <div className="mx-auto mb-6 h-1 w-10 rounded-full bg-slate-200" aria-hidden />
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-end px-5 pb-[calc(1.25rem+var(--app-safe-bottom))]">
+        <div className="max-h-[68dvh] shrink-0 overflow-y-auto rounded-[1.75rem] border border-white/10 bg-white/95 px-6 pb-6 pt-5 shadow-sheet backdrop-blur-xl animate-slide-up">
 
           <h2 className="mb-5 text-xl font-bold tracking-tight text-slate-900">创建账号</h2>
 
