@@ -173,6 +173,8 @@ flowchart LR
 ## 应用截图
 
 > 想先看实际效果？👉 [**🌐 打开在线演示**](https://talkmate-github-preview.vercel.app) · [**🎬 观看演示视频**](https://share.feijipan.com/s/0ebsqAvV)
+>
+> 🔑 **演示账号**：`demo` / **密码**：`demo123`（已预置练习数据，可直接体验完整功能）
 
 > 移动端 375px 宽度下主要页面的实际效果。所有截图均来自 v0.2.0 实际部署版本。
 
