@@ -5,3 +5,4 @@ export { default as TMEmpty } from './TMEmpty';
 export { default as TMSkeleton } from './TMSkeleton';
 export { showTMToast } from './TMToast';
 export { classNames } from './classNames';
+export type { AppShellVariant } from '../../app/AppShell';
