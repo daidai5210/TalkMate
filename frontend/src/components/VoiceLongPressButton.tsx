@@ -11,10 +11,11 @@ interface Props {
 export default function VoiceLongPressButton({ onStart, onStop, onError, disabled = false }: Props) {
   const [state, setState] = useState<'idle' | 'recording' | 'sending'>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [transcript, setTranscript] = useState('');
   const sttRef = useRef<STTHandle | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPressingRef = useRef(false);
+  const transcriptRef = useRef('');
+  const submittedRef = useRef(false);
 
   const supported = isSTTSupported();
 
@@ -32,24 +33,32 @@ export default function VoiceLongPressButton({ onStart, onStop, onError, disable
     isPressingRef.current = false;
   }, [clearPressTimer]);
 
+  const submitTranscript = useCallback((text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || submittedRef.current) return;
+    submittedRef.current = true;
+    onStop?.(trimmed);
+  }, [onStop]);
+
   const startRecording = useCallback(() => {
     setError(null);
-    setTranscript('');
+    transcriptRef.current = '';
+    submittedRef.current = false;
     const stt = createSTT({
       onStart: () => {
         setState('recording');
         onStart?.();
       },
       onResult: (text, isFinal) => {
-        setTranscript(text);
+        transcriptRef.current = text;
         if (isFinal) {
           setState('sending');
           sttRef.current?.stop();
-          onStop?.(text);
+          submitTranscript(text);
           setTimeout(() => {
             if (sttRef.current) return;
             setState('idle');
-            setTranscript('');
+            transcriptRef.current = '';
           }, 500);
         }
       },
@@ -62,7 +71,7 @@ export default function VoiceLongPressButton({ onStart, onStop, onError, disable
       onEnd: () => {
         if (!isPressingRef.current) {
           setState('idle');
-          setTranscript('');
+          transcriptRef.current = '';
         }
         sttRef.current = null;
       },
@@ -76,7 +85,7 @@ export default function VoiceLongPressButton({ onStart, onStop, onError, disable
     sttRef.current?.abort();
     sttRef.current = stt;
     stt.start();
-  }, [cleanup, onStart, onStop, onError]);
+  }, [cleanup, onStart, submitTranscript, onError]);
 
   const handlePressStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
@@ -93,16 +102,14 @@ export default function VoiceLongPressButton({ onStart, onStop, onError, disable
     if (state === 'recording') {
       sttRef.current?.stop();
       setState('sending');
-      if (transcript) {
-        onStop?.(transcript);
-      }
+      submitTranscript(transcriptRef.current);
       setTimeout(() => {
         setState('idle');
-        setTranscript('');
+        transcriptRef.current = '';
       }, 500);
     }
     isPressingRef.current = false;
-  }, [clearPressTimer, state, transcript, onStop]);
+  }, [clearPressTimer, state, submitTranscript]);
 
   if (!supported) {
     return (
