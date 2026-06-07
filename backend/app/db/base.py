@@ -9,7 +9,11 @@ settings = get_settings()
 engine = create_engine(
     settings.DATABASE_URL,
     echo=False,
-    **build_engine_kwargs(settings.DATABASE_URL),
+    **build_engine_kwargs(
+        settings.DATABASE_URL,
+        ca_pem=settings.TIDB_CA_PEM or None,
+        ca_pem_b64=settings.TIDB_CA_PEM_B64 or None,
+    ),
 )
 
 

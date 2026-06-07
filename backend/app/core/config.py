@@ -12,7 +12,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    DATABASE_URL: str = "sqlite:///./talkmate.db"
+    # Required: set in backend/.env (TiDB Cloud MySQL for local dev and production).
+    DATABASE_URL: str
+    # TiDB Cloud TLS CA; loaded from .env locally, from process env on Vercel.
+    TIDB_CA_PEM: str = ""
+    TIDB_CA_PEM_B64: str = ""
     JWT_SECRET: str = "dev-secret-change-me"
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_DAYS: int = 7

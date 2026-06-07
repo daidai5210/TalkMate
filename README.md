@@ -118,7 +118,7 @@ flowchart LR
 | **产品** | 核心功能可用：场景对话、AI 总结、错误画像、首页推荐 |
 | **体验** | 移动端 App 化 UI 已完成基础适配；部分页面仍使用占位/模拟数据 |
 | **数据** | 画像需累计 ≥5 次**新生成总结**后解锁；旧总结无法自动回填画像 |
-| **工程** | 生产环境 Vercel + TiDB；本地 SQLite；Alembic 迁移尚未引入 |
+| **工程** | Vercel + TiDB Cloud（本地开发与生产共用）；Alembic 迁移尚未引入 |
 | **测试** | 核心模块有单元测试；profile 专项测试与 E2E 覆盖仍在补充 |
 
 **我们诚实说明：** MVP 的目标是验证「场景对话 + 中式英语诊断 + 定向复练」这条价值假设，而非交付一款功能完备的商业产品。
@@ -292,8 +292,7 @@ flowchart TB
     end
 
     subgraph Data["数据层"]
-        TiDB[(TiDB Cloud · 生产)]
-        SQLite[(SQLite · 本地)]
+        TiDB[(TiDB Cloud · 本地 + 生产)]
     end
 
     UI --> Store --> API_Layer
@@ -302,7 +301,6 @@ flowchart TB
     Serverless --> Backend
     Backend --> AI
     Backend --> TiDB
-    Backend --> SQLite
 ```
 
 ### 技术栈
@@ -311,7 +309,7 @@ flowchart TB
 |------|----------|
 | 前端 | React 18 · TypeScript · Vite · Tailwind CSS · Zustand · React Router |
 | 后端 | FastAPI · SQLAlchemy 2.0 · Pydantic v2 · Pydantic Settings |
-| 数据库 | SQLite（本地开发）/ TiDB Cloud MySQL（生产） |
+| 数据库 | TiDB Cloud MySQL（本地开发与 Vercel 生产共用） |
 | AI | DeepSeek（deepseek-v4-flash，OpenAI 兼容协议） |
 | 语音 | 浏览器 Web Speech API（STT + TTS，零额外成本） |
 | 鉴权 | JWT（HS256）+ bcrypt 密码哈希 |
@@ -381,7 +379,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# 编辑 .env：填入 DEEPSEEK_API_KEY、JWT_SECRET 等
+# 编辑 .env：填入 DATABASE_URL、TIDB_CA_PEM_B64、DEEPSEEK_API_KEY、JWT_SECRET 等
+# TiDB 连接与 SSL 说明见 docs/versions/v0.1.0/deployment/vercel-tidb-ca.md
 
 PYTHONPATH=. ./venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```

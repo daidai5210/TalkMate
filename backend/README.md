@@ -8,6 +8,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+# 编辑 .env：配置 DATABASE_URL 与 TIDB_CA_PEM_B64（TiDB Cloud，本地与生产共用）
 
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
