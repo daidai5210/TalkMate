@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import { getNextGoal, type NextGoalResponse } from '../services/profileService';
 
 export default function TrainingRecommendBanner() {
@@ -33,10 +34,10 @@ export default function TrainingRecommendBanner() {
 
   if (loading) {
     return (
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" data-testid="recommend-banner-loading">
-        <div className="h-4 w-24 animate-pulse rounded-full bg-slate-100" />
-        <div className="mt-3 h-6 w-3/4 animate-pulse rounded-full bg-slate-100" />
-        <div className="mt-3 h-4 w-full animate-pulse rounded-full bg-slate-100" />
+      <section className="rounded-[12px] border border-slate-100 bg-white p-4" data-testid="recommend-banner-loading">
+        <div className="h-3 w-20 animate-pulse rounded bg-slate-100" />
+        <div className="mt-2.5 h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+        <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />
       </section>
     );
   }
@@ -45,42 +46,42 @@ export default function TrainingRecommendBanner() {
 
   if (!goal.has_enough_data || !goal.recommended_scenario_id) {
     return (
-      <section className="rounded-3xl border border-brand-100 bg-white p-5 shadow-sm" data-testid="recommend-banner-empty">
-        <p className="text-xs font-bold uppercase text-brand-600">Chinese English Profile</p>
-        <h2 className="mt-2 text-xl font-black text-slate-950">中式英语画像</h2>
-        <p className="mt-2 break-words text-sm leading-6 text-slate-600">
-          {goal.hint ?? '完成 5 次练习后解锁你的中式英语画像'}
-        </p>
-        <button
-          type="button"
-          onClick={() => navigate('/conversation/1')}
-          className="mt-4 min-h-11 rounded-2xl bg-slate-950 px-5 text-sm font-semibold text-white hover:bg-brand-700"
-        >
-          开始练习
-        </button>
+      <section className="rounded-[12px] border border-slate-100 bg-white p-4" data-testid="recommend-banner-empty">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50">
+            <Sparkles className="h-4 w-4 text-brand-600" strokeWidth={1.5} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-bold text-slate-900">中式英语画像</p>
+            <p className="mt-0.5 text-[12px] leading-5 text-slate-400">
+              {goal.hint ?? '完成 5 次练习后解锁个性化推荐'}
+            </p>
+          </div>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="rounded-3xl border border-brand-100 bg-brand-50 p-5 shadow-sm" data-testid="recommend-banner">
-      <p className="text-xs font-bold uppercase text-brand-700">Next Training</p>
-      <h2 className="mt-2 text-xl font-black text-slate-950">
-        建议练习：{goal.recommended_scenario_name}
-      </h2>
-      <p className="mt-2 text-sm font-semibold text-brand-700">
-        重点改善：{goal.focus_error_label}
-      </p>
-      <p className="mt-2 break-words text-sm leading-6 text-slate-700">
-        {goal.reason}
-      </p>
-      <button
-        type="button"
-        onClick={() => goal.recommended_scenario_id && navigate(`/conversation/${goal.recommended_scenario_id}`)}
-        className="mt-4 min-h-11 rounded-2xl bg-slate-950 px-5 text-sm font-semibold text-white hover:bg-brand-700"
-      >
-        开始针对性练习
-      </button>
-    </section>
+    <button
+      type="button"
+      onClick={() => goal.recommended_scenario_id && navigate(`/conversation/${goal.recommended_scenario_id}`)}
+      className="flex w-full items-center gap-3 rounded-[12px] border border-brand-100 bg-brand-50/50 p-4 text-left transition hover:bg-brand-50 active:scale-[0.99]"
+      data-testid="recommend-banner"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white">
+        <Sparkles className="h-4 w-4 text-brand-600" strokeWidth={1.5} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-600">针对性推荐</p>
+        <p className="mt-0.5 truncate text-[14px] font-bold text-slate-900">
+          {goal.recommended_scenario_name}
+        </p>
+        <p className="mt-0.5 truncate text-[12px] text-slate-500">
+          重点：{goal.focus_error_label}
+        </p>
+      </div>
+      <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" strokeWidth={1.5} />
+    </button>
   );
 }

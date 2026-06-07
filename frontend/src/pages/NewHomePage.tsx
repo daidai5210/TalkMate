@@ -1,79 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  MessageCircle,
-  Layers,
   ChevronRight,
   TrendingUp,
   Flame,
   Target,
-  Zap,
-  Star,
+  Clock,
 } from 'lucide-react';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
 import TrainingRecommendBanner from '../components/TrainingRecommendBanner';
 import { useScenarioStore } from '../features/scenario/scenarioStore';
+import { getTrainingTaskMeta } from '../features/training/trainingDesign';
+import { getScenarioLucideIcon } from '../features/scenario/ScenarioCard';
+import { fetchHeatmap, computeStreakDays } from '../services/userStatsService';
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
 }
 
-/* ---------- 虚拟数据 ---------- */
-
-const MOCK_STATS = [
-  { label: '完成练习', value: 12, icon: Target, color: 'text-brand-500' },
-  { label: '平均评分', value: 85, icon: TrendingUp, color: 'text-emerald-500' },
-  { label: '连续天数', value: 7, icon: Flame, color: 'text-amber-500' },
-];
-
-const MOCK_HISTORY: ConversationHistoryItem[] = [
-  {
-    id: 101,
-    scenario: { id: 1, name: '面试场景', icon: '💼' },
-    created_at: '2026-06-05T10:00:00Z',
-    finished_at: '2026-06-05T10:15:00Z',
-    message_count: 8,
-    has_summary: true,
-    summary_score: 82,
-  },
-  {
-    id: 102,
-    scenario: { id: 2, name: '餐厅点餐', icon: '🍽️' },
-    created_at: '2026-06-04T14:30:00Z',
-    finished_at: '2026-06-04T14:42:00Z',
-    message_count: 6,
-    has_summary: true,
-    summary_score: 78,
-  },
-  {
-    id: 103,
-    scenario: { id: 4, name: '机场旅行', icon: '✈️' },
-    created_at: '2026-06-03T09:00:00Z',
-    finished_at: null,
-    message_count: 4,
-    has_summary: false,
-    summary_score: null,
-  },
-  {
-    id: 104,
-    scenario: { id: 3, name: '会议讨论', icon: '📊' },
-    created_at: '2026-06-02T16:00:00Z',
-    finished_at: '2026-06-02T16:18:00Z',
-    message_count: 10,
-    has_summary: true,
-    summary_score: 88,
-  },
-  {
-    id: 105,
-    scenario: { id: 5, name: '日常社交', icon: '💬' },
-    created_at: '2026-06-01T11:00:00Z',
-    finished_at: '2026-06-01T11:12:00Z',
-    message_count: 6,
-    has_summary: true,
-    summary_score: 75,
-  },
-];
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return '早上好';
+  if (hour < 18) return '下午好';
+  return '晚上好';
+}
 
 /* ---------- Page ---------- */
 
@@ -83,6 +34,7 @@ export default function NewHomePage() {
   const [history, setHistory] = useState<ConversationHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
+  const [streakDays, setStreakDays] = useState(0);
   const mountedRef = useRef(false);
   const requestIdRef = useRef(0);
 
@@ -102,71 +54,63 @@ export default function NewHomePage() {
     }
   }, []);
 
+  const fetchStreak = useCallback(async () => {
+    try {
+      const heatmap = await fetchHeatmap(90);
+      if (mountedRef.current) setStreakDays(computeStreakDays(heatmap));
+    } catch {
+      // streak is non-critical; keep 0
+    }
+  }, []);
+
   useEffect(() => {
     mountedRef.current = true;
     if (!fetched) fetchScenarios();
     fetchHistory();
+    fetchStreak();
     return () => { mountedRef.current = false; };
-  }, [fetched, fetchScenarios, fetchHistory]);
+  }, [fetched, fetchScenarios, fetchHistory, fetchStreak]);
 
-  // 使用真实数据或虚拟数据
-  const displayHistory = history.length > 0 ? history : MOCK_HISTORY;
-  const completedCount = displayHistory.filter((h) => h.has_summary).length;
-  const scoredHistory = displayHistory.filter((h) => h.summary_score !== null);
+  const completedCount = history.filter((h) => h.has_summary).length;
+  const scoredHistory = history.filter((h) => h.summary_score !== null);
   const averageScore = scoredHistory.length === 0
     ? null
     : Math.round(scoredHistory.reduce((s, h) => s + (h.summary_score ?? 0), 0) / scoredHistory.length);
-  const streakDays = 7;
+
+  const todayTask = scenarios[0] ?? null;
+  const todayTaskMeta = todayTask ? getTrainingTaskMeta(todayTask.name) : null;
 
   const stats = [
-    { label: '完成练习', value: completedCount || MOCK_STATS[0].value, icon: Target, color: 'text-brand-500' },
-    { label: '平均评分', value: averageScore ?? MOCK_STATS[1].value, icon: TrendingUp, color: 'text-emerald-500' },
+    { label: '完成练习', value: completedCount, icon: Target, color: 'text-brand-500' },
+    { label: '平均评分', value: averageScore ?? '-', icon: TrendingUp, color: 'text-emerald-500' },
     { label: '连续天数', value: streakDays, icon: Flame, color: 'text-amber-500' },
   ];
-
-  const todayTask = scenarios[0] || {
-    id: 1,
-    name: '面试场景对话',
-    description: '模拟英文面试问答，提升求职英语口语表达能力',
-    icon: '💼',
-  };
-
-  const todayTaskDifficulty = '中等';
 
   const pageLoading = (scenariosLoading || historyLoading) && history.length === 0 && scenarios.length === 0;
   const pageError = scenariosError && historyError && history.length === 0 && scenarios.length === 0;
 
   return (
-    <div className="pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
-      {/* 顶部欢迎区 - 深色渐变背景 */}
-      <header className="bg-gradient-to-r from-brand-600 to-brand-700 px-4 pb-6 pt-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-            <Zap className="h-5 w-5 text-white" strokeWidth={2} />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-lg font-black text-white">你好，练习者</h1>
-            <p className="text-xs text-brand-200">今天也是练习的好日子！</p>
-          </div>
-        </div>
+    <div className="bg-white pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
+      <header className="border-b border-slate-100 px-4 pb-4 pt-5">
+        <h1 className="text-[20px] font-black text-slate-950">{greeting()}，练习者</h1>
+        <p className="mt-0.5 text-[13px] text-slate-400">今天继续开口练口语吧</p>
       </header>
 
-      <div className="-mt-4 px-4">
-        {/* Loading */}
+      <div className="px-4 pt-4">
         {pageLoading && (
-          <div className="space-y-5" data-testid="home-loading">
-            <div className="animate-pulse rounded-2xl bg-slate-200 h-40" />
-            <div className="animate-pulse rounded-2xl bg-slate-200 h-24" />
-            <div className="animate-pulse rounded-2xl bg-slate-200 h-32" />
+          <div className="space-y-4" data-testid="home-loading">
+            <div className="h-24 animate-pulse rounded-[12px] bg-slate-100" />
+            <div className="h-16 animate-pulse rounded-[12px] bg-slate-100" />
+            <div className="h-20 animate-pulse rounded-[12px] bg-slate-100" />
+            <div className="h-32 animate-pulse rounded-[12px] bg-slate-100" />
           </div>
         )}
 
-        {/* Error */}
         {!pageLoading && pageError && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center" data-testid="home-error">
-            <p className="text-red-700 mb-3">加载失败，请检查网络后重试</p>
+          <div className="rounded-[12px] border border-red-200 bg-red-50 p-6 text-center" data-testid="home-error">
+            <p className="mb-3 text-red-700">加载失败，请检查网络后重试</p>
             <button
-              onClick={() => { fetchScenarios(); fetchHistory(); }}
+              onClick={() => { fetchScenarios(); fetchHistory(); fetchStreak(); }}
               className="min-h-11 rounded-xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
             >
               重试
@@ -175,154 +119,109 @@ export default function NewHomePage() {
         )}
 
         {!pageLoading && !pageError && (
-          <main className="space-y-5 animate-fade-in-up">
-            {/* 今日推荐 — 大卡片 */}
-            <section
-              className="relative w-full overflow-hidden rounded-[14px] bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-left text-white shadow-brand"
-              data-testid="home-hero"
-            >
-              <div className="absolute right-3 top-3 rounded-full bg-white/20 px-2.5 py-0.5">
-                <span className="text-xs font-bold text-brand-100">今日推荐</span>
-              </div>
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-white/20">
-                <Flame className="h-6 w-6 text-amber-300" strokeWidth={1.5} />
-              </div>
-              <h2 className="text-[17px] font-black">{todayTask.name}</h2>
-              <p className="mt-1.5 text-[13px] leading-5 text-brand-200">{todayTask.description}</p>
-              <div className="mt-3 flex items-center gap-3 text-[13px] text-brand-200">
-                <span className="flex items-center gap-1">
-                  <Star className="h-3 w-3" strokeWidth={2} />
-                  {(todayTask as any).difficulty || todayTaskDifficulty}
-                </span>
-                <span className="h-1 w-1 rounded-full bg-brand-300" />
-                <span>预计 5-10 分钟</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate(`/conversation/${todayTask.id}`)}
-                className="mt-4 h-12 w-full rounded-[10px] bg-white text-[15px] font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50 active:scale-[0.98]"
+          <main className="space-y-4 animate-fade-in-up">
+            {/* 今日任务 — 极简卡片 */}
+            {todayTask && todayTaskMeta && (
+              <section
+                className="rounded-[12px] border border-slate-100 bg-white p-4 shadow-sm"
+                data-testid="home-hero"
               >
-                开始训练
-              </button>
-            </section>
-
-            <TrainingRecommendBanner />
-
-            {/* 快捷入口 */}
-            <section>
-              <h2 className="mb-3 text-[15px] font-bold text-slate-700">开始训练</h2>
-              <div className="grid grid-cols-2 gap-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">今日任务</p>
+                <h2 className="mt-1 text-[16px] font-bold text-slate-900">{todayTask.name}</h2>
+                <p className="mt-1 line-clamp-2 text-[13px] leading-5 text-slate-400">
+                  {todayTaskMeta.goal || todayTask.description}
+                </p>
+                <div className="mt-2.5 flex items-center gap-2 text-[12px] text-slate-400">
+                  <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{todayTaskMeta.duration}</span>
+                  <span className="text-slate-200">|</span>
+                  <span>{todayTaskMeta.level}</span>
+                </div>
                 <button
-                  onClick={() => navigate('/app/scenarios')}
-                  className="flex flex-col items-center gap-2.5 rounded-[14px] border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg active:scale-[0.98]"
+                  type="button"
+                  onClick={() => navigate(`/conversation/${todayTask.id}`)}
+                  className="mt-3 h-10 w-full rounded-[10px] bg-brand-600 text-[14px] font-semibold text-white transition hover:bg-brand-700 active:scale-[0.98]"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-[12px] bg-brand-50">
-                    <MessageCircle className="h-7 w-7 text-brand-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-[15px] font-bold text-slate-900">场景对话</h3>
-                    <p className="mt-0.5 text-[13px] text-slate-400">角色扮演练习</p>
-                  </div>
+                  开始训练
                 </button>
-                <button
-                  onClick={() => navigate('/practice-card')}
-                  className="flex flex-col items-center gap-2.5 rounded-[14px] border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg active:scale-[0.98]"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-[12px] bg-amber-50">
-                    <Layers className="h-7 w-7 text-amber-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-[15px] font-bold text-slate-900">抽卡跟练</h3>
-                    <p className="mt-0.5 text-[13px] text-slate-400">随机精准训练</p>
-                  </div>
-                </button>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* 统计概览 */}
-            <section className="grid grid-cols-3 gap-3" data-testid="home-stats">
+            <section className="grid grid-cols-3 gap-2.5" data-testid="home-stats">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center rounded-[14px] bg-white p-4 shadow-sm">
-                  <stat.icon className={`mb-1.5 h-5 w-5 ${stat.color}`} strokeWidth={1.5} />
-                  <p className="text-[24px] font-black text-slate-900">{stat.value}</p>
-                  <p className="text-[13px] text-slate-400">{stat.label}</p>
+                <div key={stat.label} className="flex flex-col items-center rounded-[12px] border border-slate-100 bg-white py-3.5">
+                  <stat.icon className={`mb-1 h-4 w-4 ${stat.color}`} strokeWidth={1.5} />
+                  <p className="text-[20px] font-black text-slate-900">{stat.value}</p>
+                  <p className="text-[11px] text-slate-400">{stat.label}</p>
                 </div>
               ))}
             </section>
 
-            {/* 最近练习 */}
+            <TrainingRecommendBanner />
+
+            {/* 最近练习 — 飞书风格列表 */}
             <section data-testid="home-history">
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-2.5 flex items-center justify-between">
                 <h2 className="text-[15px] font-bold text-slate-700">最近练习</h2>
                 <button
                   onClick={fetchHistory}
                   disabled={historyLoading}
-                  className="text-xs font-medium text-brand-600 disabled:opacity-50"
+                  className="text-[12px] font-medium text-brand-600 disabled:opacity-50"
                 >
                   刷新
                 </button>
               </div>
 
               {historyLoading && history.length === 0 && (
-                <div className="space-y-2">
+                <div className="overflow-hidden rounded-[12px] border border-slate-100 bg-white">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse rounded-2xl bg-slate-100 h-16" />
+                    <div key={i} className={`h-16 animate-pulse bg-slate-50 ${i < 3 ? 'border-b border-slate-100' : ''}`} />
                   ))}
                 </div>
               )}
 
               {historyError && history.length === 0 && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-center text-sm text-red-600">
+                <div className="rounded-[12px] border border-red-200 bg-red-50 p-4 text-center text-sm text-red-600">
                   {historyError}
                   <button onClick={fetchHistory} className="ml-2 underline">重试</button>
                 </div>
               )}
 
               {!historyLoading && !historyError && history.length === 0 && (
-                <div className="space-y-2">
-                  {MOCK_HISTORY.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => navigate(`/conversation/${item.id}/summary`)}
-                      className="flex w-full items-center gap-3 rounded-[14px] border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
-                    >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm">
-                        {item.scenario.icon}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-bold text-slate-900 truncate">{item.scenario.name}</span>
-                        <span className="block text-xs text-slate-400">{formatDate(item.created_at)}</span>
-                      </span>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${item.summary_score !== null ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                        {item.summary_score !== null ? `${item.summary_score} 分` : '未评分'}
-                      </span>
-                      <ChevronRight className="h-4 w-4 text-slate-300" strokeWidth={1.5} />
-                    </button>
-                  ))}
+                <div className="rounded-[12px] border border-dashed border-slate-200 bg-white p-6 text-center">
+                  <p className="text-[14px] font-bold text-slate-700">暂无练习记录</p>
+                  <p className="mt-1 text-[12px] text-slate-400">完成第一次对话后，记录会显示在这里</p>
                 </div>
               )}
 
               {history.length > 0 && (
-                <div className="space-y-2">
-                  {history.slice(0, 5).map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => navigate(`/conversation/${item.id}/summary`)}
-                      className="flex w-full items-center gap-3 rounded-[14px] border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
-                    >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm">
-                        {item.scenario.icon}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-bold text-slate-900 truncate">{item.scenario.name}</span>
-                        <span className="block text-xs text-slate-400">{formatDate(item.created_at)}</span>
-                      </span>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${item.summary_score !== null ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                        {item.summary_score !== null ? `${item.summary_score} 分` : '未评分'}
-                      </span>
-                      <ChevronRight className="h-4 w-4 text-slate-300" strokeWidth={1.5} />
-                    </button>
-                  ))}
+                <div className="overflow-hidden rounded-[12px] border border-slate-100 bg-white">
+                  {history.slice(0, 5).map((item, index) => {
+                    const { icon: Icon, color } = getScenarioLucideIcon(item.scenario.name);
+                    const [iconColor, iconBg] = color.split(' ');
+                    const isLast = index === Math.min(history.length, 5) - 1;
+
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => navigate(`/conversation/${item.id}/summary`)}
+                        className={`flex w-full items-center gap-3 px-3.5 py-3 text-left transition hover:bg-slate-50 active:bg-slate-100 ${!isLast ? 'border-b border-slate-100' : ''}`}
+                      >
+                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${iconBg}`}>
+                          <Icon className={`h-4 w-4 ${iconColor}`} strokeWidth={1.5} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[14px] font-semibold text-slate-900">{item.scenario.name}</span>
+                          <span className="block text-[12px] text-slate-400">{formatDate(item.created_at)} · {item.message_count} 条消息</span>
+                        </span>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${item.summary_score !== null ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                          {item.summary_score !== null ? `${item.summary_score}分` : '未评分'}
+                        </span>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" strokeWidth={1.5} />
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </section>
