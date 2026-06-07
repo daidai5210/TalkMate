@@ -1,119 +1,74 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Clock, ChevronRight, AlertCircle, Users } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { useScenarioStore } from '../features/scenario/scenarioStore';
+import ScenarioList, { ScenarioListSkeleton, ScenarioListEmpty } from '../features/scenario/ScenarioList';
+import type { ScenarioProgress } from '../features/scenario/ScenarioList';
+import { listConversations } from '../features/conversation/conversationService';
+import type { ConversationHistoryItem } from '../features/conversation/types';
 
-/* ---------- 虚拟场景数据 ---------- */
-interface MockScenario {
-  id: number;
-  name: string;
-  description: string;
-  icon: string;
-  duration: string;
-  difficulty: string;
-  participants: number;
-  color: string;
-}
-
-const MOCK_SCENARIOS: MockScenario[] = [
-  {
-    id: 1,
-    name: '面试场景',
-    description: '模拟英文面试问答，提升求职英语口语表达能力',
-    icon: '💼',
-    duration: '5-10 分钟',
-    difficulty: '中等',
-    participants: 1247,
-    color: 'bg-blue-50 text-blue-600',
-  },
-  {
-    id: 2,
-    name: '餐厅点餐',
-    description: '模拟餐厅点餐、结账等用餐场景',
-    icon: '🍽️',
-    duration: '5-10 分钟',
-    difficulty: '简单',
-    participants: 892,
-    color: 'bg-orange-50 text-orange-600',
-  },
-  {
-    id: 3,
-    name: '会议讨论',
-    description: '模拟英文会议发言、讨论与汇报',
-    icon: '📊',
-    duration: '10-15 分钟',
-    difficulty: '困难',
-    participants: 654,
-    color: 'bg-purple-50 text-purple-600',
-  },
-  {
-    id: 4,
-    name: '机场旅行',
-    description: '模拟机场、酒店、问路、购物等旅行场景',
-    icon: '✈️',
-    duration: '5-10 分钟',
-    difficulty: '简单',
-    participants: 1083,
-    color: 'bg-sky-50 text-sky-600',
-  },
-  {
-    id: 5,
-    name: '日常社交',
-    description: '日常社交聊天，培养开口说英语的信心',
-    icon: '💬',
-    duration: '5-10 分钟',
-    difficulty: '简单',
-    participants: 2156,
-    color: 'bg-green-50 text-green-600',
-  },
-];
-
-function difficultyColor(difficulty: string) {
-  switch (difficulty) {
-    case '简单': return 'bg-emerald-50 text-emerald-700';
-    case '中等': return 'bg-amber-50 text-amber-700';
-    case '困难': return 'bg-rose-50 text-rose-700';
-    default: return 'bg-slate-50 text-slate-700';
+function buildProgressMap(history: ConversationHistoryItem[]): Record<number, ScenarioProgress> {
+  const map: Record<number, ScenarioProgress> = {};
+  for (const item of history) {
+    const sid = item.scenario.id;
+    const existing = map[sid] ?? { completedCount: 0, bestScore: null };
+    if (item.has_summary) {
+      existing.completedCount += 1;
+      if (item.summary_score != null) {
+        existing.bestScore = existing.bestScore == null
+          ? item.summary_score
+          : Math.max(existing.bestScore, item.summary_score);
+      }
+    }
+    map[sid] = existing;
   }
+  return map;
 }
 
 export default function ScenariosPage() {
-  const navigate = useNavigate();
   const { scenarios, loading, error, fetched, fetchScenarios } = useScenarioStore();
+  const [history, setHistory] = useState<ConversationHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const mountedRef = useRef(false);
+
+  const fetchHistory = useCallback(async () => {
+    if (mountedRef.current) setHistoryLoading(true);
+    try {
+      const records = await listConversations();
+      if (mountedRef.current) setHistory(records);
+    } catch {
+      // progress is non-critical
+    } finally {
+      if (mountedRef.current) setHistoryLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     if (!fetched) fetchScenarios();
-  }, [fetched, fetchScenarios]);
+    fetchHistory();
+    return () => { mountedRef.current = false; };
+  }, [fetched, fetchScenarios, fetchHistory]);
 
-  const displayScenarios: MockScenario[] = scenarios.length > 0
-    ? scenarios.map((s) => ({
-        id: s.id,
-        name: s.name,
-        description: s.description,
-        icon: s.icon,
-        duration: '5-10 分钟',
-        difficulty: '简单',
-        participants: 0,
-        color: 'bg-brand-50 text-brand-600',
-      }))
-    : MOCK_SCENARIOS;
+  const progressByScenarioId = buildProgressMap(history);
 
   if (loading) {
     return (
-      <div className="space-y-4 px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]" data-testid="scenarios-loading">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse rounded-2xl bg-slate-200 h-28" />
-        ))}
+      <div className="bg-white px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4" data-testid="scenarios-loading">
+        <header className="mb-4">
+          <h1 className="text-[17px] font-black text-slate-950">场景对话</h1>
+          <p className="mt-0.5 text-[13px] text-slate-400">选择场景，开始角色扮演练习</p>
+        </header>
+        <ScenarioListSkeleton />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center" data-testid="scenarios-error">
+      <div className="bg-white px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
+        <div className="rounded-[12px] border border-red-200 bg-red-50 p-6 text-center" data-testid="scenarios-error">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-red-400" strokeWidth={1.5} />
-          <p className="text-red-700 mb-3">加载失败：{error}</p>
+          <p className="mb-3 text-red-700">加载失败：{error}</p>
           <button
             onClick={fetchScenarios}
             className="min-h-11 rounded-xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
@@ -125,58 +80,23 @@ export default function ScenariosPage() {
     );
   }
 
-  if (!loading && !error && scenarios.length === 0 && MOCK_SCENARIOS.length === 0) {
+  if (scenarios.length === 0) {
     return (
-      <div className="px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center" data-testid="scenarios-empty">
-          <MessageCircle className="mx-auto mb-2 h-10 w-10 text-slate-300" strokeWidth={1} />
-          <p className="text-sm font-bold text-slate-700">暂无训练场景</p>
-          <p className="mt-1 text-xs text-slate-400">场景数据正在准备中，请稍后再来</p>
-        </div>
+      <div className="bg-white px-4 py-6 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
+        <ScenarioListEmpty />
       </div>
     );
   }
 
   return (
-    <div className="px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
-      <header className="mb-5">
+    <div className="bg-white px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
+      <header className="mb-4">
         <h1 className="text-[17px] font-black text-slate-950">场景对话</h1>
-        <p className="mt-1 text-[13px] text-slate-400">选择一个场景，开始角色扮演对话练习</p>
+        <p className="mt-0.5 text-[13px] text-slate-400">选择场景，开始角色扮演练习</p>
       </header>
 
-      <div className="space-y-3 animate-fade-in">
-        {displayScenarios.map((scenario) => (
-          <button
-            key={scenario.id}
-            onClick={() => navigate(`/conversation/${scenario.id}`)}
-            className="flex w-full items-center gap-4 rounded-[14px] bg-white p-4 text-left shadow-md transition hover:shadow-lg active:scale-[0.98]"
-            data-testid="training-conversation-card"
-          >
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] ${scenario.color || 'bg-brand-50 text-brand-600'}`}>
-              <span className="text-xl">{scenario.icon}</span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h2 className="text-[15px] font-bold text-slate-900">{scenario.name}</h2>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${difficultyColor(scenario.difficulty || '简单')}`}>
-                  {scenario.difficulty}
-                </span>
-              </div>
-              <p className="mt-1 text-[13px] leading-5 text-slate-500 line-clamp-2">{scenario.description}</p>
-              <div className="mt-2 flex items-center gap-3 text-[13px] text-slate-400">
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" strokeWidth={2} />
-                  {scenario.duration || '5-10 分钟'}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Users className="h-3 w-3" strokeWidth={2} />
-                  {(scenario as any).participants || 0} 人参与
-                </span>
-              </div>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-slate-300" strokeWidth={1.5} />
-          </button>
-        ))}
+      <div className={`animate-fade-in ${historyLoading ? 'opacity-80' : ''}`}>
+        <ScenarioList scenarios={scenarios} progressByScenarioId={progressByScenarioId} />
       </div>
     </div>
   );
