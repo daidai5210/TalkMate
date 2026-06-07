@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { createSTT, isSTTSupported, type STTHandle } from '../utils/stt';
 
 interface Props {
@@ -32,6 +32,15 @@ export default function VoiceLongPressButton({ onStart, onStop, onError, disable
     sttRef.current = null;
     isPressingRef.current = false;
   }, [clearPressTimer]);
+
+  useEffect(() => {
+    if (disabled) {
+      cleanup();
+      setState('idle');
+    }
+  }, [disabled, cleanup]);
+
+  useEffect(() => () => cleanup(), [cleanup]);
 
   const submitTranscript = useCallback((text: string) => {
     const trimmed = text.trim();
