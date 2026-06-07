@@ -27,5 +27,5 @@ TalkMate — AI 英语口语练习搭档，提供场景对话、语音交互、A
 
 - `README.md` — 项目简介（长期保留在根目录）
 - `docs/` — 所有项目文档的唯一下属目录
-- LCP 上下文文件（`task_plan.md`、`findings.md`、`progress.md`）— 位于 `docs/` 下，归档副本在 `docs/versions/v0.1.0/`
+- LCP 上下文文件（`task_plan.md`、`findings.md`、`progress.md`）— 已归档至 `docs/versions/v0.1.0/`
 - `.dev-constraints.md` — 开发约束（已在 .gitignore 中排除，不随 git 追踪）
