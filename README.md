@@ -7,11 +7,12 @@
 > 不只告诉你「这次错了什么」，更帮你看见「你总在哪些地方翻车」，并给出下一次该怎么练。
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://talkmate-github-preview.vercel.app)
+[![演示视频](https://img.shields.io/badge/演示视频-▶-red?logo=youtube&logoColor=white)](https://share.feijipan.com/s/0ebsqAvV)
 [![Version](https://img.shields.io/badge/version-v0.2.0-blue)](#版本路线)
 [![Stage](https://img.shields.io/badge/stage-MVP-orange)](#mvp-阶段说明)
 [![License](https://img.shields.io/badge/license-Internal-lightgrey)](#许可证)
 
-[在线体验](https://talkmate-github-preview.vercel.app) · [快速开始](#快速开始) · [文档导航](#文档导航) · [未来规划](#未来规划)
+[🌐 在线演示](https://talkmate-github-preview.vercel.app) · [🎬 演示视频](https://share.feijipan.com/s/0ebsqAvV) · [快速开始](#快速开始) · [文档导航](#文档导航) · [未来规划](#未来规划)
 
 </div>
 
@@ -170,6 +171,8 @@ flowchart LR
 ---
 
 ## 应用截图
+
+> 想先看实际效果？👉 [**🌐 打开在线演示**](https://talkmate-github-preview.vercel.app) · [**🎬 观看演示视频**](https://share.feijipan.com/s/0ebsqAvV)
 
 > 移动端 375px 宽度下主要页面的实际效果。所有截图均来自 v0.2.0 实际部署版本。
 
