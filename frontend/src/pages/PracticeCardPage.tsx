@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Layers, AlertCircle, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
 import VoiceLongPressButton from '../components/VoiceLongPressButton';
 import api from '../services/api';
 
@@ -34,6 +35,12 @@ function difficultyLabel(d: number) {
   if (d === 1) return '简单';
   if (d === 2) return '中等';
   return '困难';
+}
+
+function difficultyColor(d: number) {
+  if (d === 1) return 'bg-emerald-50 text-emerald-700';
+  if (d === 2) return 'bg-amber-50 text-amber-700';
+  return 'bg-rose-50 text-rose-700';
 }
 
 export default function PracticeCardPage() {
@@ -94,10 +101,11 @@ export default function PracticeCardPage() {
       {/* Header */}
       <header className="mb-4 flex items-center gap-3">
         <button
-          onClick={() => navigate('/app/training')}
-          className="text-sm font-semibold text-slate-500 hover:text-brand-600"
+          onClick={() => navigate('/app/home')}
+          className="flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-brand-600"
         >
-          ← 返回
+          <ChevronLeft className="h-4 w-4" strokeWidth={2} />
+          返回
         </button>
         <h1 className="text-lg font-black text-slate-950">抽卡跟练</h1>
       </header>
@@ -116,13 +124,14 @@ export default function PracticeCardPage() {
       {pageState === 'empty' && (
         <div className="flex flex-1 items-center justify-center" data-testid="practice-empty">
           <div className="text-center">
-            <p className="text-3xl mb-2">🎴</p>
+            <Layers className="mx-auto mb-2 h-10 w-10 text-slate-300" strokeWidth={1} />
             <p className="text-sm font-bold text-slate-700">暂无可用卡片</p>
             <p className="mt-1 text-xs text-slate-400">卡片数据正在准备中</p>
             <button
               onClick={fetchCard}
-              className="mt-4 min-h-11 rounded-2xl bg-slate-950 px-5 py-2 text-sm font-semibold text-white"
+              className="mt-4 flex items-center justify-center gap-2 min-h-11 rounded-2xl bg-brand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700"
             >
+              <RotateCcw className="h-4 w-4" strokeWidth={2} />
               重试
             </button>
           </div>
@@ -133,11 +142,13 @@ export default function PracticeCardPage() {
       {pageState === 'error' && (
         <div className="flex flex-1 items-center justify-center" data-testid="practice-error">
           <div className="text-center">
+            <AlertCircle className="mx-auto mb-2 h-10 w-10 text-red-400" strokeWidth={1.5} />
             <p className="text-red-600 mb-3">{errorMsg}</p>
             <button
               onClick={fetchCard}
-              className="min-h-11 rounded-2xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
+              className="flex items-center justify-center gap-2 min-h-11 rounded-2xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
             >
+              <RotateCcw className="h-4 w-4" strokeWidth={2} />
               重试
             </button>
           </div>
@@ -147,11 +158,13 @@ export default function PracticeCardPage() {
       {/* Card + Recording */}
       {(pageState === 'ready' || pageState === 'recording') && card && (
         <div className="flex flex-1 flex-col" data-testid="practice-card">
-          <div className="rounded-[1.5rem] bg-white p-5 shadow-sm border border-slate-200">
+          <div className="rounded-[1.5rem] bg-white p-5 shadow-card border border-slate-200">
             <div className="flex items-center gap-2 mb-3">
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">{card.scenario}</span>
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{card.role}</span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{difficultyLabel(card.difficulty)}</span>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${difficultyColor(card.difficulty)}`}>
+                {difficultyLabel(card.difficulty)}
+              </span>
             </div>
             <p className="text-lg font-bold text-slate-900 leading-relaxed">{card.content}</p>
             {card.hint && (
@@ -185,7 +198,7 @@ export default function PracticeCardPage() {
       {pageState === 'result' && result && card && (
         <div className="flex flex-1 flex-col" data-testid="practice-result">
           {/* Original card */}
-          <div className="rounded-[1.5rem] bg-white p-5 shadow-sm border border-slate-200 opacity-60">
+          <div className="rounded-[1.5rem] bg-white p-5 shadow-card border border-slate-200 opacity-60">
             <div className="flex items-center gap-2 mb-3">
               <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">{card.scenario}</span>
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{card.role}</span>
@@ -195,7 +208,10 @@ export default function PracticeCardPage() {
 
           {/* Score */}
           <div className="mt-4 rounded-[1.5rem] bg-slate-950 p-5 text-white shadow-lg">
-            <p className="text-sm text-slate-300">综合评分</p>
+            <div className="flex items-center gap-2">
+              <Volume2 className="h-4 w-4 text-slate-400" strokeWidth={1.5} />
+              <p className="text-sm text-slate-300">综合评分</p>
+            </div>
             <div className={`mt-2 text-5xl font-black ${scoreColor(result.score)}`}>
               {result.score}
             </div>
@@ -217,7 +233,7 @@ export default function PracticeCardPage() {
 
           {/* Feedback */}
           {result.feedback && (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
               <p className="text-xs font-bold text-slate-500">AI 反馈</p>
               <p className="mt-2 text-sm leading-6 text-slate-700">{result.feedback}</p>
             </div>
@@ -227,7 +243,7 @@ export default function PracticeCardPage() {
           <div className="mt-auto py-6">
             <button
               onClick={handleNextCard}
-              className="w-full min-h-12 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-brand-700"
+              className="w-full min-h-12 rounded-2xl bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-brand hover:bg-brand-700 active:scale-[0.98]"
             >
               下一张卡片
             </button>

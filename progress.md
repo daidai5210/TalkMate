@@ -110,3 +110,43 @@
 - 已补齐本机 GitHub SSH host key：创建 `~/.ssh/known_hosts` 并写入 `github.com` host key。
 - 远程推送复核：`git push -u origin feature/mobile-app-ui-shell` 仍失败，错误更新为 `Permission denied (publickey)`。
 - 最新阻塞结论：SSH host key 阻塞已解除；当前环境缺少可用 GitHub SSH 私钥或仓库访问权限，仍无法创建远程 PR。
+
+## 2026-06-06T04:47:23Z
+
+- 用户要求：为新全栈开发人员产出完整详细交付文档，说明项目目标、当前进度和继续上手方式。
+- 当前阶段：S6 验收交付 / 交接移交。
+- 已读取：LCP 总纲、阶段产物模板、质量门禁、上下文交接规范、文档归档规范、`task_plan.md`、`findings.md`、`progress.md`、关键验收/测试/审查文档和 Git 状态。
+- 关键核查：当时 `main` 与 `origin/main` 均指向 `174186c [开发实施] 手机端App化界面调整 (#2)`，说明历史远程 PR 阻塞已解除，PR #2 已合入主线；2026-06-06T10:56 后续核查主线已推进到 `898bfbd`。
+- 当前工作区：仍有 `talkmate.db` 本地运行数据变更，未跟踪 `docs/retros/RETRO-002-mobile-app-frp-deployment.md`、`evidence/` 和 `frontend/src/app/AppLayout.tsx`。
+- 补充发现：`frontend/src/app/AppLayout.tsx` 包含 `/app/home`、`/app/training`、`/app/profile` 底部导航布局草稿；2026-06-06 队长已确认接受当前 App 化 UI 方向，后续可纳入提交范围。
+- 已产出：`docs/acceptance/HANDOFF-001-fullstack-takeover.md`。
+- 已产出：`docs/INDEX.md`。
+- 已更新：`task_plan.md`、`findings.md`、`progress.md`，同步本次交接和最新 Git 事实。
+- S6 门禁结论：有条件通过。条件项为本地未提交/未跟踪材料的归档策略需队长或接手开发人员确认。
+
+## 2026-06-06 S1/S2/S3 补档
+
+- 用户反馈：接手开发人员找不到 S1 需求、S2 方案、S3 计划文档。
+- 当前阶段：S6 交接移交中的前置阶段产物补档。
+- 已核查：S1/S2/S3 内容原本存在，但散落在 `docs/product/project-brief.md`、`docs/product/mvp-scope.md`、`docs/uiux/UI-001-mobile-app-layout-adjustment-discussion.md`、`docs/superpowers/plans/2026-06-05-mobile-app-ui-three-phase-plan.md` 等位置。
+- 已补齐 S1 标准文档：`docs/requirements/REQ-001-mvp-and-mobile-app-ui.md`。
+- 已补齐 S2 标准文档：`docs/designs/DESIGN-001-mvp-and-mobile-app-ui.md`。
+- 已补齐 S3 标准文档：`docs/plans/PLAN-001-mvp-and-mobile-app-ui.md`。
+- 已更新：`docs/INDEX.md`、`docs/acceptance/HANDOFF-001-fullstack-takeover.md`、`task_plan.md`、`findings.md`、`progress.md`。
+- 门禁结论：S1/S2/S3 补档通过；后续接手者可优先从标准三目录恢复上下文。
+
+## 2026-06-06T10:56:05Z UI 方向确认、依赖修复与交接补全
+
+- 用户/队长确认：接受当前 App 化 UI 方向；需要补 `lucide-react` 依赖并执行修复验证；本地产物忽略不上传；交接文档补全。
+- 当前阶段：S4 修复实施 / S5 验证 / S6 交接补全。
+- RED 证据：`npm --prefix /home/user13/Desktop/talkmate/frontend run build` 曾失败，错误为多处 `TS2307: Cannot find module 'lucide-react'`。
+- 已执行依赖修复：`npm --prefix /home/user13/Desktop/talkmate/frontend install lucide-react --save`，新增 `lucide-react@1.17.0` 到 `frontend/package.json` 和 `frontend/package-lock.json`。
+- 已更新根 `.gitignore`：忽略 `node_modules/`、虚拟环境、pytest 缓存、`*.pid`、`*.log`、`*.db`、`*.db-journal`、FRP 本地配置和 `evidence/`。
+- 本地产物说明：未跟踪本地产物已从普通 `git status` 中消失；根目录 `talkmate.db` 因已被 Git 跟踪，仍显示本地变更，提交时必须排除。
+- 已补全文档：`docs/acceptance/HANDOFF-001-fullstack-takeover.md`、`docs/INDEX.md`、`docs/requirements/REQ-001-mvp-and-mobile-app-ui.md`、`docs/plans/PLAN-001-mvp-and-mobile-app-ui.md`。
+- 验证完成：前端构建 `npm --prefix /home/user13/Desktop/talkmate/frontend run build` 通过。
+- 验证完成：后端模块测试 `/home/user13/Desktop/talkmate/backend/venv/bin/pytest ... -q` 通过，结果 `41 passed, 47 warnings`。
+- 验证完成：Phase 2 E2E `/home/user13/Desktop/talkmate/venv_e2e/bin/python /home/user13/Desktop/talkmate/tests/e2e/test_phase2_e2e.py` 通过，覆盖注册、登录、底部导航、场景页、对话页、抽卡跟练、个人中心和退出。
+- 服务清理：通过工具会话 Ctrl-C 停止本次启动的前端与后端；`lsof` 检查 8000/4180 无监听进程。
+- 安全/依赖风险：`npm audit --audit-level=moderate` 发现 Vite/esbuild 2 个 moderate 漏洞，修复建议需破坏性升级到 `vite@8.0.16`；本次未执行 `npm audit fix --force`。
+- 门禁结论：S4/S5 修复验证通过；S6 交接补全有条件通过。条件项为后续提交必须精确 staged，排除 `talkmate.db` 和本地运行产物。

@@ -1,5 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  LogOut,
+  Target,
+  TrendingUp,
+  Flame,
+  ChevronRight,
+  Trophy,
+  Calendar,
+  Star,
+  Award,
+  Zap,
+  Clock,
+  Lock,
+} from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
@@ -13,8 +27,6 @@ import {
   type ScorePoint,
 } from '../services/userStatsService';
 
-/* ---------- helpers ---------- */
-
 function formatDateLabel(value: string) {
   return new Date(value).toLocaleDateString('zh-CN', {
     month: '2-digit',
@@ -27,6 +39,58 @@ function daysAgo(days: number): string {
   d.setDate(d.getDate() - days);
   return d.toISOString().split('T')[0];
 }
+
+/* ---------- 虚拟数据 ---------- */
+
+const MOCK_ACHIEVEMENTS: Achievement[] = [
+  { key: 'first-step', label: '初出茅庐', description: '完成第一次练习', icon: 'Target', unlocked: true, unlocked_at: '2026-06-01' },
+  { key: 'week-streak', label: '坚持7天', description: '连续练习7天', icon: 'Flame', unlocked: true, unlocked_at: '2026-06-07' },
+  { key: 'perfect-score', label: '完美发音', description: '单次评分达到90分以上', icon: 'Star', unlocked: false },
+  { key: 'hundred-minutes', label: '百分钟达人', description: '累计练习超过100分钟', icon: 'Clock', unlocked: true, unlocked_at: '2026-06-05' },
+  { key: 'all-scenarios', label: '场景通', description: '完成所有场景练习', icon: 'Award', unlocked: false },
+  { key: 'early-bird', label: '早起鸟', description: '在早上6点前完成练习', icon: 'Zap', unlocked: false },
+];
+
+const MOCK_HEATMAP: HeatmapDay[] = [
+  { date: '2026-05-25', count: 0 },
+  { date: '2026-05-26', count: 1 },
+  { date: '2026-05-27', count: 2 },
+  { date: '2026-05-28', count: 0 },
+  { date: '2026-05-29', count: 3 },
+  { date: '2026-05-30', count: 1 },
+  { date: '2026-05-31', count: 2 },
+  { date: '2026-06-01', count: 2 },
+  { date: '2026-06-02', count: 1 },
+  { date: '2026-06-03', count: 3 },
+  { date: '2026-06-04', count: 0 },
+  { date: '2026-06-05', count: 2 },
+  { date: '2026-06-06', count: 1 },
+];
+
+const MOCK_SCORE_TREND: ScorePoint[] = [
+  { date: '2026-06-01', score: 72, type: 'conversation' },
+  { date: '2026-06-02', score: 78, type: 'card' },
+  { date: '2026-06-03', score: 85, type: 'conversation' },
+  { date: '2026-06-04', score: 80, type: 'conversation' },
+  { date: '2026-06-05', score: 82, type: 'card' },
+  { date: '2026-06-06', score: 88, type: 'conversation' },
+];
+
+const MOCK_REPORTS = [
+  { id: 1, scenario: { name: '面试场景', icon: '💼' }, date: '06/05', score: 82 },
+  { id: 2, scenario: { name: '餐厅点餐', icon: '🍽️' }, date: '06/04', score: 78 },
+  { id: 3, scenario: { name: '会议讨论', icon: '📊' }, date: '06/02', score: 88 },
+  { id: 4, scenario: { name: '日常社交', icon: '💬' }, date: '06/01', score: 75 },
+];
+
+const ACHIEVEMENT_ICONS: Record<string, React.ElementType> = {
+  Target,
+  Flame,
+  Star,
+  Clock,
+  Award,
+  Zap,
+};
 
 /* ---------- HeatmapCalendar ---------- */
 
@@ -44,9 +108,9 @@ function HeatmapCalendar({ data }: { data: HeatmapDay[] }) {
 
   function colorClass(count: number) {
     if (count === 0) return 'bg-slate-100';
-    if (count <= 2) return 'bg-indigo-200';
-    if (count <= 5) return 'bg-indigo-400';
-    return 'bg-indigo-600';
+    if (count <= 2) return 'bg-brand-200';
+    if (count <= 5) return 'bg-brand-400';
+    return 'bg-brand-600';
   }
 
   return (
@@ -67,9 +131,9 @@ function HeatmapCalendar({ data }: { data: HeatmapDay[] }) {
       <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-slate-400">
         <span>少</span>
         <span className="h-[10px] w-[10px] rounded-sm bg-slate-100" />
-        <span className="h-[10px] w-[10px] rounded-sm bg-indigo-200" />
-        <span className="h-[10px] w-[10px] rounded-sm bg-indigo-400" />
-        <span className="h-[10px] w-[10px] rounded-sm bg-indigo-600" />
+        <span className="h-[10px] w-[10px] rounded-sm bg-brand-200" />
+        <span className="h-[10px] w-[10px] rounded-sm bg-brand-400" />
+        <span className="h-[10px] w-[10px] rounded-sm bg-brand-600" />
         <span>多</span>
       </div>
     </div>
@@ -117,7 +181,9 @@ function ScoreChart({ data }: { data: ScorePoint[] }) {
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${range === r ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-500'}`}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition ${
+                range === r ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500'
+              }`}
             >
               {r} 天
             </button>
@@ -154,7 +220,7 @@ function ScoreChart({ data }: { data: ScorePoint[] }) {
         </svg>
       )}
       <div className="mt-1 flex items-center justify-center gap-3 text-[10px] text-slate-400">
-        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-indigo-500" /> 对话</span>
+        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-brand-500" /> 对话</span>
         <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-500" /> 抽卡</span>
       </div>
     </div>
@@ -182,10 +248,7 @@ export default function ProfilePage() {
   const fetchHistory = useCallback(async () => {
     const rid = ridRef.current + 1;
     ridRef.current = rid;
-    if (mountedRef.current) {
-      setHistoryLoading(true);
-      setHistoryError(null);
-    }
+    if (mountedRef.current) { setHistoryLoading(true); setHistoryError(null); }
     try {
       const records = await listConversations();
       if (mountedRef.current && ridRef.current === rid) setHistory(records);
@@ -214,7 +277,7 @@ export default function ProfilePage() {
         setAchievements(achievementsData);
       }
     } catch {
-      // 统计加载失败静默处理，不影响主流程
+      // 统计加载失败静默处理
     } finally {
       if (mountedRef.current) {
         setHeatmapLoading(false);
@@ -236,18 +299,26 @@ export default function ProfilePage() {
     ? null
     : Math.round(scoredHistory.reduce((s, h) => s + (h.summary_score ?? 0), 0) / scoredHistory.length);
   const completedCount = history.filter((h) => h.has_summary).length;
-  const streakDays = computeStreakDays(heatmap);
+  const streakDays = computeStreakDays(heatmap.length > 0 ? heatmap : MOCK_HEATMAP);
 
   const initial = user?.username?.[0]?.toUpperCase() ?? '?';
 
   const pageLoading = historyLoading && history.length === 0;
   const pageError = historyError && history.length === 0;
 
+  // 使用真实数据或虚拟数据
+  const displayAchievements = achievements.length > 0 ? achievements : MOCK_ACHIEVEMENTS;
+  const displayHeatmap = heatmap.length > 0 ? heatmap : MOCK_HEATMAP;
+  const displayScoreTrend = scoreTrend.length > 0 ? scoreTrend : MOCK_SCORE_TREND;
+  const displayReports = history.length > 0
+    ? history.filter((h) => h.has_summary).slice(0, 10)
+    : MOCK_REPORTS.map((r) => ({ ...r, created_at: `2026-${r.date.replace('/', '-')}`, has_summary: true, summary_score: r.score } as unknown as ConversationHistoryItem));
+
   return (
     <div className="px-4 pb-[calc(28px+var(--app-safe-bottom))] pt-4">
       {/* Profile header */}
       <section className="flex items-center gap-3 mb-5">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-lg font-bold text-brand-700">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-600 text-base font-black text-white">
           {initial}
         </div>
         <div className="min-w-0 flex-1">
@@ -256,9 +327,10 @@ export default function ProfilePage() {
         </div>
         <button
           onClick={logout}
-          className="shrink-0 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 hover:border-red-200 hover:text-red-600"
+          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:text-red-600"
         >
-          退出登录
+          <LogOut className="h-3.5 w-3.5" strokeWidth={2} />
+          退出
         </button>
       </section>
 
@@ -273,64 +345,58 @@ export default function ProfilePage() {
 
       {/* Error */}
       {!pageLoading && pageError && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center" data-testid="profile-error">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center" data-testid="profile-error">
           <p className="text-red-700 mb-3">加载失败：{historyError}</p>
           <button
             onClick={fetchHistory}
-            className="min-h-11 rounded-2xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
+            className="min-h-11 rounded-xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700"
           >
             重试
           </button>
         </div>
       )}
 
-      {/* Empty */}
-      {!pageLoading && !pageError && history.length === 0 && (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center" data-testid="profile-empty">
-          <p className="text-3xl mb-2">📊</p>
-          <p className="text-sm font-bold text-slate-700">还没有练习数据</p>
-          <p className="mt-1 text-xs text-slate-400">完成第一次口语练习后，这里会展示你的成长数据</p>
-          <button
-            onClick={() => navigate('/app/training')}
-            className="mt-4 min-h-11 rounded-2xl bg-slate-950 px-5 py-2 text-sm font-semibold text-white"
-          >
-            开始练习
-          </button>
-        </div>
-      )}
-
       {/* Content */}
-      {!pageLoading && !pageError && history.length > 0 && (
-        <div className="space-y-5">
+      {!pageLoading && !pageError && (
+        <div className="space-y-5 animate-fade-in">
           {/* Stats */}
           <section className="grid grid-cols-3 gap-3" data-testid="profile-stats">
-            <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
-              <p className="text-xl font-black text-slate-900">{completedCount}</p>
+            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
+              <Target className="mb-1 h-5 w-5 text-brand-500" strokeWidth={1.5} />
+              <p className="text-lg font-black text-slate-900">{completedCount}</p>
               <p className="text-xs text-slate-400">总练习</p>
             </div>
-            <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
-              <p className="text-xl font-black text-slate-900">{averageScore ?? '-'}</p>
+            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
+              <TrendingUp className="mb-1 h-5 w-5 text-emerald-500" strokeWidth={1.5} />
+              <p className="text-lg font-black text-slate-900">{averageScore ?? '-'}</p>
               <p className="text-xs text-slate-400">平均分</p>
             </div>
-            <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
-              <p className="text-xl font-black text-slate-900">{streakDays}</p>
+            <div className="flex flex-col items-center rounded-2xl bg-white p-3 shadow-card">
+              <Flame className="mb-1 h-5 w-5 text-amber-500" strokeWidth={1.5} />
+              <p className="text-lg font-black text-slate-900">{streakDays}</p>
               <p className="text-xs text-slate-400">连续天数</p>
             </div>
           </section>
 
           {/* Heatmap */}
-          <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-heatmap">
-            <h2 className="text-sm font-bold text-slate-700 mb-3">练习热力图（近 3 个月）</h2>
+          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-heatmap">
+            <div className="mb-3 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-brand-500" strokeWidth={1.5} />
+              <h2 className="text-sm font-bold text-slate-700">练习热力图（近 3 个月）</h2>
+            </div>
             {heatmapLoading ? (
               <div className="animate-pulse rounded-xl bg-slate-200 h-24" />
             ) : (
-              <HeatmapCalendar data={heatmap} />
+              <HeatmapCalendar data={displayHeatmap} />
             )}
           </section>
 
           {/* Achievements */}
-          <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-achievements">
-            <h2 className="text-sm font-bold text-slate-700 mb-3">成就徽章</h2>
+          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-achievements">
+            <div className="mb-3 flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-amber-500" strokeWidth={1.5} />
+              <h2 className="text-sm font-bold text-slate-700">成就徽章</h2>
+            </div>
             {achievementsLoading ? (
               <div className="grid grid-cols-3 gap-3">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -339,43 +405,54 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-3">
-                {achievements.map((a) => (
-                  <div
-                    key={a.key}
-                    className={`rounded-xl p-3 text-center transition ${a.unlocked ? 'bg-brand-50' : 'bg-slate-50 opacity-50'}`}
-                  >
-                    <span className="text-2xl">{a.icon}</span>
-                    <p className={`mt-1 text-xs font-bold ${a.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>
-                      {a.label}
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-slate-400 leading-tight">{a.description}</p>
-                  </div>
-                ))}
+                {displayAchievements.map((a) => {
+                  const IconComponent = ACHIEVEMENT_ICONS[a.icon] || Star;
+                  return (
+                    <div
+                      key={a.key}
+                      className={`rounded-xl p-3 text-center transition ${
+                        a.unlocked ? 'bg-brand-50' : 'bg-slate-50 opacity-50'
+                      }`}
+                    >
+                      <div className="flex justify-center mb-1">
+                        {a.unlocked ? (
+                          <IconComponent className="h-6 w-6 text-brand-600" strokeWidth={1.5} />
+                        ) : (
+                          <Lock className="h-6 w-6 text-slate-400" strokeWidth={1.5} />
+                        )}
+                      </div>
+                      <p className={`text-xs font-bold ${a.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>
+                        {a.label}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-slate-400 leading-tight">{a.description}</p>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>
 
           {/* Score trend */}
-          <section className="rounded-2xl bg-white p-4 shadow-sm" data-testid="profile-trend">
+          <section className="rounded-2xl bg-white p-4 shadow-card" data-testid="profile-trend">
             {scoreTrendLoading ? (
               <div className="animate-pulse rounded-xl bg-slate-200 h-36" />
             ) : (
-              <ScoreChart data={scoreTrend} />
+              <ScoreChart data={displayScoreTrend} />
             )}
           </section>
 
           {/* Report list */}
           <section data-testid="profile-reports">
-            <h2 className="text-sm font-bold text-slate-700 mb-3">分析报告</h2>
+            <h2 className="mb-3 text-sm font-bold text-slate-700">分析报告</h2>
             <div className="space-y-2">
-              {history
+              {displayReports
                 .filter((h) => h.has_summary)
                 .slice(0, 10)
                 .map((item) => (
                   <button
                     key={item.id}
                     onClick={() => navigate(`/conversation/${item.id}/summary`)}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100"
+                    className="flex w-full items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:border-brand-100 active:scale-[0.98]"
                   >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm">
                       {item.scenario.icon}
@@ -384,8 +461,9 @@ export default function ProfilePage() {
                       <span className="block text-sm font-bold text-slate-900 truncate">{item.scenario.name}</span>
                       <span className="block text-xs text-slate-400">{formatDateLabel(item.created_at)}</span>
                     </span>
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                    <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
                       {item.summary_score} 分
+                      <ChevronRight className="h-3 w-3" strokeWidth={2} />
                     </span>
                   </button>
                 ))}
