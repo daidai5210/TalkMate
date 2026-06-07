@@ -176,29 +176,54 @@ flowchart LR
 
 > 移动端 375px 宽度下主要页面的实际效果。所有截图均来自 v0.2.0 实际部署版本。
 
-### 入口与场景
+### 入口：登录 → 首页 → 场景列表
 
-登录入口、应用首页、场景列表三屏联动：从注册登录到选择目标场景，开启一次刻意练习。
+三屏联动，从注册登录到选择目标场景，开启一次刻意练习。
 
-| 登录 | 首页 | 场景列表 |
-|------|------|----------|
-| ![登录页](imgs/607a8f66b2dd4038acdf8429af0fb91d.jpg) | ![首页](imgs/6bbb9087-ff98-4490-b761-cfde1825f0cb.png) | ![场景列表](imgs/c2495670-d8fd-4197-901f-b14f2d9807e9.png) |
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="imgs/6ccb00ab-7070-42a4-94dc-c9bf6cc523bf.png" height="520" alt="登录页"/></td>
+    <td align="center" width="33%"><img src="imgs/6bbb9087-ff98-4490-b761-cfde1825f0cb.png" height="520" alt="首页"/></td>
+    <td align="center" width="33%"><img src="imgs/c2495670-d8fd-4197-901f-b14f2d9807e9.png" height="520" alt="场景列表"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>登录</b><br/>简洁的移动端登录入口</td>
+    <td align="center"><b>首页</b><br/>今日任务 + 抽卡入口 + 统计 + 定向推荐</td>
+    <td align="center"><b>场景列表</b><br/>5 大场景：面试 / 点餐 / 会议 / 旅行 / 日常</td>
+  </tr>
+</table>
 
-### 场景对话流
+### 核心：场景对话流
 
-进入「面试」场景后的完整对话路径：开场引导 → 多轮交互（用户/AI 消息流） → 开口前提示卡（完整例句辅助）。
+进入「面试」场景后的完整对话路径：开场引导 → 多轮 AI 交互 → 开口前提示卡（完整例句辅助）。
 
-| 对话开场 | 多轮交互 | 开口提示 |
-|----------|----------|----------|
-| ![对话开场](imgs/05e35b98-9c7f-4db6-ac18-824b521e75ea.png) | ![对话多轮](imgs/912eadac-aff7-49e9-b436-3b23b2ed2635.png) | ![开口提示](imgs/b03479da440ab370b18a954b410283a9.jpg) |
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="imgs/05e35b98-9c7f-4db6-ac18-824b521e75ea.png" height="520" alt="对话开场"/></td>
+    <td align="center" width="33%"><img src="imgs/607a8f66b2dd4038acdf8429af0fb91d.jpg" height="520" alt="对话多轮"/></td>
+    <td align="center" width="33%"><img src="imgs/b03479da440ab370b18a954b410283a9.jpg" height="520" alt="开口前提示卡"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>对话开场</b><br/>进度 1/10，引导用户说出第一句</td>
+    <td align="center"><b>多轮 AI 交互</b><br/>进度 2/10，AI Coach 引导回复</td>
+    <td align="center"><b>开口前提示卡</b><br/>浮层展示完整例句，可直接朗读</td>
+  </tr>
+</table>
 
 ### 抽卡跟练 & 个人中心
 
 辅助模块 + 数据沉淀：随机抽卡长按录音由 AI 评分；「我的」页汇总总练习、平均分、连续天数、GitHub 风格练习热力图与得分趋势。
 
-| 抽卡跟练 | 我的 |
-|----------|------|
-| ![抽卡跟练](imgs/6ccb00ab-7070-42a4-94dc-c9bf6cc523bf.png) | ![我的](imgs/b15bd43a-c864-441f-9e5e-c9f9bb0ca66f.png) |
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="imgs/912eadac-aff7-49e9-b436-3b23b2ed2635.png" height="520" alt="抽卡跟练"/></td>
+    <td align="center" width="50%"><img src="imgs/b15bd43a-c864-441f-9e5e-c9f9bb0ca66f.png" height="520" alt="个人中心"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>抽卡跟练</b><br/>随机卡片 + 长按录音 + AI 评分</td>
+    <td align="center"><b>我的（个人中心）</b><br/>学习热力图 + 得分趋势 + 成就徽章</td>
+  </tr>
+</table>
 
 ---
 
