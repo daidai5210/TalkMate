@@ -315,7 +315,7 @@ export default function ProfilePage() {
     : MOCK_REPORTS.map((r) => ({ ...r, created_at: `2026-${r.date.replace('/', '-')}`, has_summary: true, summary_score: r.score } as unknown as ConversationHistoryItem));
 
   return (
-    <div className="px-4 pb-[calc(28px+var(--app-safe-bottom))] pt-4">
+    <div className="px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
       {/* Profile header */}
       <section className="flex items-center gap-3 mb-5">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-600 text-base font-black text-white">

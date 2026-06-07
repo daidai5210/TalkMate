@@ -139,7 +139,7 @@ export default function NewHomePage() {
   const pageError = scenariosError && historyError && history.length === 0 && scenarios.length === 0;
 
   return (
-    <div className="pb-[calc(28px+var(--app-safe-bottom))]">
+    <div className="pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))]">
       {/* 顶部欢迎区 - 深色渐变背景 */}
       <header className="bg-gradient-to-r from-brand-600 to-brand-700 px-4 pb-6 pt-5">
         <div className="flex items-center gap-3">
