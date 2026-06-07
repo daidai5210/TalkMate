@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AppShell from './AppShell';
 import NavBar from './NavBar';
 import PracticeHistoryList from '../components/PracticeHistoryList';
+import TrainingRecommendBanner from '../components/TrainingRecommendBanner';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
 import ScenarioList, {
@@ -97,6 +98,8 @@ export default function HomePage() {
               开始推荐任务
             </button>
           </section>
+
+          <TrainingRecommendBanner />
 
           <section data-testid="task-section">
             <div className="mb-4">

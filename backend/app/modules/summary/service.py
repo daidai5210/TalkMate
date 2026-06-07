@@ -13,6 +13,7 @@ from app.modules.ai_service.prompts import (
 from app.modules.ai_service.service import AIService
 from app.modules.conversation.models import Conversation
 from app.modules.conversation.repository import ConversationRepository
+from app.modules.profile.service import ProfileService
 from app.modules.summary.models import Summary
 from app.modules.summary.repository import SummaryRepository
 from app.shared.exceptions import BusinessError
@@ -80,9 +81,10 @@ class SummaryService:
         suggestions_json = json.dumps(
             summary_data.get("suggestions", []), ensure_ascii=False
         )
-        grammar_issues_json = json.dumps(
-            summary_data.get("grammar_issues", {}), ensure_ascii=False
-        )
+        grammar_issues = summary_data.get("grammar_issues", {})
+        if isinstance(grammar_issues, dict) and isinstance(summary_data.get("error_profile"), dict):
+            grammar_issues["error_profile"] = summary_data["error_profile"]
+        grammar_issues_json = json.dumps(grammar_issues, ensure_ascii=False)
         vocabulary_usage_json = json.dumps(
             summary_data.get("vocabulary_usage", {}), ensure_ascii=False
         )
@@ -97,6 +99,7 @@ class SummaryService:
         )
 
         conv.finished_at = datetime.utcnow()
+        self._update_error_profile(conv.user_id, conversation_id, summary_data)
         self.db.commit()
         return new_summary
 
@@ -128,6 +131,24 @@ class SummaryService:
                 "grammar_issues": {},
                 "vocabulary_usage": {},
             }
+
+    def _update_error_profile(
+        self,
+        user_id: int,
+        conversation_id: int,
+        summary_data: dict[str, Any],
+    ) -> None:
+        """从 summary_data 中提取 error_profile 并更新画像。"""
+        error_profile = summary_data.get("error_profile")
+        if not isinstance(error_profile, dict):
+            return
+        valid = {
+            k: max(0, int(v))
+            for k, v in error_profile.items()
+            if k != "unknown" and isinstance(v, (int, float))
+        }
+        profile_svc = ProfileService(self.db)
+        profile_svc.update_from_summary(user_id, conversation_id, valid)
 
     def _parse_json_list(self, raw: str, label: str) -> list[dict[str, Any]]:
         text = raw.strip()

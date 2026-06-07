@@ -5,6 +5,7 @@ from app.modules.auth.routes import router as auth_router
 from app.modules.conversation.routes import router as conversation_router
 from app.modules.practice.routes import router as practice_router
 from app.modules.practice.user_routes import router as user_stats_router
+from app.modules.profile.routes import router as profile_router
 from app.modules.scenario.routes import router as scenario_router
 from app.modules.summary.routes import router as summary_router
 
@@ -15,3 +16,4 @@ api_v1_router.include_router(practice_router)
 api_v1_router.include_router(user_stats_router)
 api_v1_router.include_router(scenario_router)
 api_v1_router.include_router(summary_router)
+api_v1_router.include_router(profile_router)

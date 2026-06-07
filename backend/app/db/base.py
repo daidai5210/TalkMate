@@ -23,5 +23,6 @@ def init_db() -> None:
     from app.modules.scenario.models import Scenario  # noqa: F401
     from app.modules.summary.models import Summary  # noqa: F401
     from app.modules.practice.models import PracticeCard, PracticeRecord, UserAchievement  # noqa: F401
+    from app.modules.profile.models import UserErrorProfile  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

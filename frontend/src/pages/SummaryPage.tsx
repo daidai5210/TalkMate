@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../app/AppShell';
+import ErrorProfileCard from '../components/ErrorProfileCard';
 import {
   generateSummary,
   getSummary,
@@ -259,6 +260,8 @@ export default function SummaryPage() {
           </div>
 
           <div className="space-y-6">
+            {summary.has_enough_data && summary.error_profile && <ErrorProfileCard data={summary.error_profile} />}
+
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="summary-grammar">
               <h2 className="text-xl font-bold text-slate-900">语法问题</h2>
               {grammarEntries.length === 0 ? (

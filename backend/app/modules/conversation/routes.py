@@ -12,6 +12,7 @@ from app.modules.conversation.schemas import (
     SendMessageResponse,
 )
 from app.modules.conversation.service import ConversationService
+from app.modules.profile.service import ProfileService
 from app.shared.exceptions import AuthError, BusinessError
 from app.shared.responses import ok
 
@@ -79,3 +80,19 @@ def send_message(
         conversation_id=conversation_id, text=payload.text, user_id=user_id
     )
     return ok(data=result.model_dump(mode="json"), message="消息已发送")
+
+
+@router.delete("/{conversation_id}", status_code=status.HTTP_200_OK)
+def delete_conversation(
+    conversation_id: int,
+    authorization: Optional[str] = Header(default=None),
+    db: Session = Depends(get_db),
+) -> dict:
+    user_id = _require_user_id(authorization)
+    service = ConversationService(db)
+    service.delete(conversation_id=conversation_id, user_id=user_id)
+
+    profile_svc = ProfileService(db)
+    profile_svc.remove_from_window(conversation_id)
+
+    return ok(message="对话已删除")
