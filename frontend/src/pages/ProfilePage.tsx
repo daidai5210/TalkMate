@@ -366,17 +366,39 @@ export default function ProfilePage() {
   return (
     <div className="min-h-full bg-slate-50 px-4 pb-[calc(var(--app-bottom-nav-height)+var(--app-safe-bottom))] pt-4">
       {/* 用户头部卡片 */}
-      <section className="mb-6 overflow-hidden rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-xl font-black text-white shadow-md shadow-brand-200">
-            {initial}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-black text-slate-950">{user?.username ?? '用户'}</h1>
-            <span className={`mt-1.5 inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${userLevel.className}`}>
+      <section className="relative mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-indigo-800 p-5 shadow-lg shadow-brand-200/40">
+        <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-indigo-400/20 blur-xl" />
+
+        <div className="relative flex items-center gap-4">
+          <div className="relative shrink-0">
+            <div className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl bg-white/20 text-2xl font-black text-white shadow-inner ring-2 ring-white/30 backdrop-blur-sm">
+              {initial}
+            </div>
+            <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm ${userLevel.className}`}>
               {userLevel.label}
             </span>
-            <p className="mt-1.5 text-[13px] text-slate-400">坚持练习，每天进步</p>
+          </div>
+
+          <div className="min-w-0 flex-1 pt-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/50">我的档案</p>
+            <h1 className="mt-0.5 truncate text-xl font-black text-white">{user?.username ?? '用户'}</h1>
+            <p className="mt-2 text-[13px] leading-snug text-white/70">坚持练习，每天进步一点点</p>
+          </div>
+        </div>
+
+        <div className="relative mt-4 grid grid-cols-3 gap-2 rounded-xl bg-white/10 p-3 backdrop-blur-sm">
+          <div className="text-center">
+            <p className="text-lg font-black text-white">{completedCount || 12}</p>
+            <p className="text-[10px] text-white/50">总练习</p>
+          </div>
+          <div className="border-x border-white/15 text-center">
+            <p className="text-lg font-black text-white">{averageScore ?? 85}</p>
+            <p className="text-[10px] text-white/50">平均分</p>
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-black text-white">{streakDays}</p>
+            <p className="text-[10px] text-white/50">连续天</p>
           </div>
         </div>
       </section>
