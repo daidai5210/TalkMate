@@ -174,11 +174,18 @@ export default function ConversationPage() {
           {!isHistoryMode && (
             <div className="mt-4 rounded-2xl bg-brand-50 p-3" data-testid="starter-phrases">
               <p className="text-sm font-bold text-brand-800">开口前提示卡</p>
+              <p className="mt-1 text-xs leading-5 text-brand-700">
+                以下是完整例句，可直接朗读，方便 AI 分析语法与表达。
+              </p>
               <div className="mt-3 grid gap-2">
-                {task.starterPhrases.map((phrase) => (
-                  <span key={phrase} className="rounded-2xl bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">
+                {task.starterPhrases.map((phrase, index) => (
+                  <p
+                    key={phrase}
+                    className="rounded-2xl bg-white px-3 py-2.5 text-sm leading-6 text-slate-700 shadow-sm"
+                    data-testid={`starter-phrase-${index}`}
+                  >
                     {phrase}
-                  </span>
+                  </p>
                 ))}
               </div>
             </div>

@@ -21,10 +21,11 @@ const taskMetas: TrainingTaskMeta[] = [
     duration: '8 分钟',
     focus: ['结构清晰', '避免中文直译', '突出成果'],
     starterPhrases: [
-      'I would like to briefly introduce myself.',
-      'One project I am proud of is...',
-      'My main responsibility was...',
-      'This experience helped me develop...',
+      'Hello, my name is Alex. I have five years of experience in software development.',
+      'I would like to briefly introduce myself and explain why I am interested in this role.',
+      'One project I am proud of is the mobile app I built last year, which improved our team efficiency by thirty percent.',
+      'My main responsibility was to lead the frontend team and deliver features on time.',
+      'This experience helped me develop strong communication skills and the ability to work under pressure.',
     ],
   },
   {
@@ -36,10 +37,11 @@ const taskMetas: TrainingTaskMeta[] = [
     duration: '10 分钟',
     focus: ['观点表达', '礼貌反驳', '总结推进'],
     starterPhrases: [
-      'I would like to share my perspective.',
-      'I see your point, but I have a different view.',
-      'Could we align on the next step?',
-      'To summarize, I think we should...',
+      'I would like to share my perspective on the timeline for this project.',
+      'I see your point, but I have a different view on how we should prioritize the features.',
+      'Could we align on the next step before we end the meeting today?',
+      'To summarize, I think we should launch the beta version next month and gather user feedback.',
+      'I agree with the general direction, and I would like to add one more suggestion for the rollout plan.',
     ],
   },
   {
@@ -51,10 +53,11 @@ const taskMetas: TrainingTaskMeta[] = [
     duration: '7 分钟',
     focus: ['礼貌请求', '问题说明', '协商表达'],
     starterPhrases: [
-      'Excuse me, I have a problem with...',
-      'Could you please help me check it?',
-      'Is it possible to change...',
-      'I would appreciate it if you could...',
+      'Excuse me, I have a problem with my reservation. The room number on my key card does not match my booking.',
+      'Could you please help me check whether my flight has been delayed?',
+      'Is it possible to change my room to a quieter one on a higher floor?',
+      'I would appreciate it if you could arrange a taxi to the airport for me tomorrow morning.',
+      'Thank you for your help. Could you tell me the best way to get to the city center from here?',
     ],
   },
   {
@@ -66,10 +69,11 @@ const taskMetas: TrainingTaskMeta[] = [
     duration: '6 分钟',
     focus: ['自然提问', '偏好说明', '礼貌表达'],
     starterPhrases: [
-      'Could you recommend something popular?',
-      'I would like to order...',
-      'Does this dish contain...?',
-      'Could I have it without...?',
+      'Could you recommend something popular that is not too spicy?',
+      'I would like to order the grilled salmon with a side salad, please.',
+      'Does this dish contain any nuts or dairy products? I have a mild allergy.',
+      'Could I have it without onions and with the sauce on the side?',
+      'That sounds great. I will have a glass of water and the check when we are finished, please.',
     ],
   },
   {
@@ -81,10 +85,11 @@ const taskMetas: TrainingTaskMeta[] = [
     duration: '8 分钟',
     focus: ['破冰表达', '开放式提问', '延续话题'],
     starterPhrases: [
-      'It is nice to meet you.',
-      'What do you usually do in your free time?',
-      'That sounds interesting. Could you tell me more?',
-      'I have been trying to improve my English speaking.',
+      'It is nice to meet you. I just moved to this neighborhood last week.',
+      'What do you usually do in your free time on weekends?',
+      'That sounds interesting. Could you tell me more about how you got started with that hobby?',
+      'I have been trying to improve my English speaking by practicing with native speakers.',
+      'I really enjoy hiking and trying new restaurants around the city.',
     ],
   },
 ];
@@ -98,10 +103,11 @@ const fallbackTask: TrainingTaskMeta = {
   duration: '8 分钟',
   focus: ['大胆开口', '表达完整', '自然回应'],
   starterPhrases: [
-    'I would like to explain my idea.',
-    'Could you give me a moment to think?',
-    'Let me put it another way.',
-    'That is a good question.',
+    'I would like to explain my idea and why I think it could work well in this situation.',
+    'Could you give me a moment to think about your question before I answer?',
+    'Let me put it another way so my point is easier to understand.',
+    'That is a good question. In my experience, the best approach is to start with a clear goal.',
+    'Thank you for sharing that. I agree with most of what you said, and I have one follow-up thought.',
   ],
 };
 
