@@ -54,3 +54,4 @@ frpc.ini
 
 # 本地截图和验证证据包
 evidence/
+.vercel
