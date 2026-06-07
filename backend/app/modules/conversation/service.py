@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
@@ -57,6 +58,14 @@ class ConversationService:
             raise BusinessError(self.ERR_CONVERSATION_NOT_FOUND, "对话不存在")
         self._ensure_owner(conv, user_id)
         return self._to_public(conv)
+
+    def delete(self, conversation_id: int, user_id: int) -> None:
+        conv = self.conv_repo.get_by_id(conversation_id)
+        if conv is None:
+            raise BusinessError(self.ERR_CONVERSATION_NOT_FOUND, "对话不存在")
+        self._ensure_owner(conv, user_id)
+        conv.deleted_at = datetime.utcnow()
+        self.db.commit()
 
     def send_message(self, conversation_id: int, text: str, user_id: int) -> SendMessageResponse:
         conv = self.conv_repo.get_by_id(conversation_id)

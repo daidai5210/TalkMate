@@ -67,7 +67,7 @@ def build_summary_messages(user_texts: Sequence[str]) -> List[dict]:
     """构造课后总结 prompt。
 
     AI 返回 JSON 对象:score(0-100)/suggestions(数组)/grammar_issues(对象)
-    /vocabulary_usage(对象)。
+    /vocabulary_usage(对象)/error_profile(对象)。
     """
     system = (
         "You are a professional English teacher evaluating a Chinese learner's speaking "
@@ -89,7 +89,21 @@ def build_summary_messages(user_texts: Sequence[str]) -> List[dict]:
         '"original" (learner\'s sentence), "improved" (a more natural version), '
         '"explanation" (1 sentence in Chinese explaining the improvement)\n'
         '- "next_practice_advice": string (2-3 sentences in Chinese with specific recommendations '
-        'for what to practice next, targeting the weakest areas identified)\n\n'
+        'for what to practice next, targeting the weakest areas identified)\n'
+        '- "error_profile": object with 6 integer keys classifying each grammar issue into '
+        'exactly one Chinese-learner error type:\n'
+        '  * "word_order": wrong word order due to Chinese sentence structure influence\n'
+        '  * "tense": missing or incorrect tense (past/present/future/perfect)\n'
+        '  * "article": missing, extra, or wrong article (a/an/the)\n'
+        '  * "preposition": wrong preposition choice (in/on/at/to/for/with)\n'
+        '  * "direct_translation": unnatural expression directly translated from Chinese\n'
+        '  * "unknown": error does not fit any of the above 5 types\n\n'
+        "Classification rules:\n"
+        "- Each grammar issue maps to exactly ONE error_type\n"
+        '- "unknown" is a last resort — prefer the 5 specific types whenever possible\n'
+        "- Word order vs tense: if the sentence structure is Chinese-like but tenses are correct, classify as word_order\n"
+        "- Direct translation vs others: if the expression is grammatically correct but sounds unnatural, classify as direct_translation\n"
+        '- Output "error_profile" as a flat JSON object with all 6 keys, each value is an integer count\n\n'
         "Output rules:\n"
         "- Output ONLY a JSON object (no markdown code fences, no commentary).\n"
         "- Be specific and constructive, not generic.\n"

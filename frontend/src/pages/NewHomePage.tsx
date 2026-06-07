@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
+import TrainingRecommendBanner from '../components/TrainingRecommendBanner';
 import { useScenarioStore } from '../features/scenario/scenarioStore';
 
 function formatDate(value: string) {
@@ -203,6 +204,8 @@ export default function NewHomePage() {
                 </span>
               </div>
             </button>
+
+            <TrainingRecommendBanner />
 
             {/* 快捷入口 */}
             <section>

@@ -45,6 +45,8 @@ export interface ConversationSummary {
   suggestions: SuggestionItem[];
   grammar_issues: GrammarIssues | null;
   vocabulary_usage: VocabularyUsage | null;
+  error_profile?: Record<string, number>;
+  has_enough_data?: boolean;
   example_sentences?: ExampleSentence[];
   next_practice_advice?: string;
   created_at: string;

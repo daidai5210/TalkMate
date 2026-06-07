@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token
 from app.db.session import get_db
+from app.modules.profile.service import ProfileService
 from app.modules.summary.models import Summary
 from app.modules.summary.schemas import SummaryPublic
 from app.modules.summary.service import SummaryService
@@ -34,10 +35,13 @@ def generate_or_get_summary(
 ):
     service = SummaryService(db)
     summary: Summary = service.get_or_generate(conversation_id, user_id)
+    profile = ProfileService(db).get_error_summary(user_id)
     return {
         "code": 0,
         "message": "总结生成成功",
-        "data": SummaryPublic.from_orm_with_json(summary).model_dump(mode="json"),
+        "data": SummaryPublic.from_orm_with_json(
+            summary, has_enough_data=profile["has_enough_data"]
+        ).model_dump(mode="json"),
     }
 
 
@@ -53,8 +57,11 @@ def get_summary(
 ):
     service = SummaryService(db)
     summary = service.get_existing(conversation_id, user_id)
+    profile = ProfileService(db).get_error_summary(user_id)
     return {
         "code": 0,
         "message": "success",
-        "data": SummaryPublic.from_orm_with_json(summary).model_dump(mode="json"),
+        "data": SummaryPublic.from_orm_with_json(
+            summary, has_enough_data=profile["has_enough_data"]
+        ).model_dump(mode="json"),
     }
