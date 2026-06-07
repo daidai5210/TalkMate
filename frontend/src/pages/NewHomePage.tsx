@@ -6,6 +6,7 @@ import {
   Flame,
   Target,
   Clock,
+  Sparkles,
 } from 'lucide-react';
 import { listConversations } from '../features/conversation/conversationService';
 import type { ConversationHistoryItem } from '../features/conversation/types';
@@ -146,6 +147,24 @@ export default function NewHomePage() {
                 </button>
               </section>
             )}
+
+            {/* 抽卡跟练入口 */}
+            <button
+              type="button"
+              onClick={() => navigate('/practice-card')}
+              className="flex w-full items-center gap-3 rounded-[12px] border border-rose-100 bg-gradient-to-r from-rose-50 via-white to-amber-50 p-4 text-left shadow-sm transition hover:border-rose-200 hover:shadow-md active:scale-[0.99]"
+              data-testid="home-practice-card"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-amber-500 shadow-md shadow-rose-200">
+                <Sparkles className="h-5 w-5 text-white" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-rose-500">碎片时间</p>
+                <p className="mt-0.5 text-[15px] font-bold text-slate-900">抽卡跟练</p>
+                <p className="mt-0.5 text-[12px] text-slate-500">随机抽卡，精准发音挑战</p>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" strokeWidth={1.5} />
+            </button>
 
             {/* 统计概览 */}
             <section className="grid grid-cols-3 gap-2.5" data-testid="home-stats">
