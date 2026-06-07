@@ -17,6 +17,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
 
+# 确保 User 模型先被导入，使 users 表在 Base.metadata 中注册
+# 这样外键 ForeignKey("users.id") 才能正确解析
+from app.modules.auth.models import User  # noqa: F401
+
 PK_TYPE = BigInteger().with_variant(Integer, "sqlite")
 
 
