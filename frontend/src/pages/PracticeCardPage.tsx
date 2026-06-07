@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layers, AlertCircle, RotateCcw, ChevronLeft, Volume2 } from 'lucide-react';
 import AppShell from '../app/AppShell';
@@ -50,11 +50,13 @@ export default function PracticeCardPage() {
   const [result, setResult] = useState<EvaluateResult | null>(null);
   const [pageState, setPageState] = useState<PageState>('loading');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const evaluatingRef = useRef(false);
 
   const fetchCard = useCallback(async () => {
     setPageState('loading');
     setErrorMsg(null);
     setResult(null);
+    evaluatingRef.current = false;
     try {
       const { data } = await api.get('/api/v1/practice-cards/random');
       if (data.code === 0 && data.data) {
@@ -75,7 +77,8 @@ export default function PracticeCardPage() {
   }, [fetchCard]);
 
   const handleVoiceStop = useCallback(async (text: string) => {
-    if (!card) return;
+    if (!card || evaluatingRef.current) return;
+    evaluatingRef.current = true;
     setPageState('evaluating');
     setErrorMsg(null);
     try {
@@ -85,10 +88,12 @@ export default function PracticeCardPage() {
         setPageState('result');
       } else {
         setErrorMsg(data.message || '评分失败');
+        evaluatingRef.current = false;
         setPageState('error');
       }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : '评分请求失败');
+      evaluatingRef.current = false;
       setPageState('error');
     }
   }, [card]);
@@ -179,6 +184,9 @@ export default function PracticeCardPage() {
 
           <div className="mt-auto py-6 flex justify-center">
             <VoiceLongPressButton
+              key={card.id}
+              disabled={pageState !== 'ready' && pageState !== 'recording'}
+              onStart={() => setPageState('recording')}
               onStop={handleVoiceStop}
               onError={(err) => setErrorMsg(err)}
             />
